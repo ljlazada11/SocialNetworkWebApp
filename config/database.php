@@ -1,6 +1,6 @@
 <?php
 // config/database.php
-// Database configuration and PDO connection for SocialNetworkWebApp
+// Database configuration and PDO connection for SMCC Connect
 
 class Database {
     private static $host = '127.0.0.1';

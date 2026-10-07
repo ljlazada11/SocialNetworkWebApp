@@ -40,6 +40,26 @@ if (isset($_SESSION['user_id'])) {
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <!-- Theme initialization (inline to prevent theme flash) -->
+    <script>
+        (function() {
+            var stored = localStorage.getItem('smcc_theme_preference');
+            var theme = 'light';
+            if (stored === 'dark' || stored === 'light') {
+                theme = stored;
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                theme = 'dark';
+            }
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                document.documentElement.classList.add('dark-theme');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                document.documentElement.classList.remove('dark-theme');
+            }
+        })();
+    </script>
+
     <!-- Custom Modern Stylesheet -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/style.css">
 </head>
@@ -138,6 +158,11 @@ if (isset($_SESSION['user_id'])) {
 
                 <!-- Right Header Actions -->
                 <div class="header-actions">
+                    <!-- Dark Mode / Light Mode Toggle -->
+                    <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch Theme" aria-label="Toggle Dark Mode or Light Mode">
+                        <span class="theme-toggle-icon">🌙</span>
+                    </button>
+
                     <button class="header-icon-btn" title="Notifications" aria-label="Notifications">
                         <i class="bi bi-bell"></i>
                     </button>
@@ -152,7 +177,7 @@ if (isset($_SESSION['user_id'])) {
                                 <div class="user-avatar-sm">
                                     <?= htmlspecialchars($userInitials); ?>
                                 </div>
-                                <span class="header-user-name d-none d-sm-inline"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username']); ?></span>
+                                <span class="header-user-name d-none d-sm-inline"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User'); ?></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="headerUserDropdown">
                                 <li>

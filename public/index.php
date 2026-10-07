@@ -54,10 +54,41 @@ switch ($action) {
         $postController->create();
         break;
 
-    case 'add_comment':
+    case 'edit_post':
         require_once __DIR__ . '/../app/controllers/PostController.php';
         $postController = new PostController();
-        $postController->comment();
+        $postController->edit();
+        break;
+
+    case 'update_post':
+        require_once __DIR__ . '/../app/controllers/PostController.php';
+        $postController = new PostController();
+        $postController->update();
+        break;
+
+    case 'create_comment':
+    case 'add_comment':
+        require_once __DIR__ . '/../app/controllers/CommentController.php';
+        $commentController = new CommentController();
+        $commentController->create();
+        break;
+
+    case 'edit_comment':
+        require_once __DIR__ . '/../app/controllers/CommentController.php';
+        $commentController = new CommentController();
+        $commentController->edit();
+        break;
+
+    case 'update_comment':
+        require_once __DIR__ . '/../app/controllers/CommentController.php';
+        $commentController = new CommentController();
+        $commentController->update();
+        break;
+
+    case 'delete_comment':
+        require_once __DIR__ . '/../app/controllers/CommentController.php';
+        $commentController = new CommentController();
+        $commentController->delete();
         break;
 
     case 'like_post':

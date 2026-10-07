@@ -51,15 +51,9 @@ class PostModel {
      * @return array
      */
     public function getCommentsByPostId($postId) {
-        $sql = "SELECT c.*, u.username, u.full_name, u.profile_image
-                FROM comments c
-                JOIN users u ON c.user_id = u.id
-                WHERE c.post_id = :post_id
-                ORDER BY c.created_at ASC";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':post_id' => $postId]);
-        return $stmt->fetchAll();
+        require_once __DIR__ . '/CommentModel.php';
+        $commentModel = new CommentModel();
+        return $commentModel->getCommentsByPost($postId);
     }
 
     /**
@@ -91,13 +85,9 @@ class PostModel {
      * @return bool
      */
     public function addComment($postId, $userId, $content) {
-        $sql = "INSERT INTO comments (post_id, user_id, content, created_at) VALUES (:post_id, :user_id, :content, NOW())";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':post_id' => $postId,
-            ':user_id' => $userId,
-            ':content' => $content
-        ]);
+        require_once __DIR__ . '/CommentModel.php';
+        $commentModel = new CommentModel();
+        return (bool)$commentModel->createComment($postId, $userId, $content);
     }
 
     /**
@@ -140,15 +130,44 @@ class PostModel {
     }
 
     /**
-     * Get a post by its ID.
+     * Get a post by its ID (including author information).
      *
      * @param int $postId
      * @return array|false
      */
     public function getPostById($postId) {
-        $sql = "SELECT * FROM posts WHERE id = :id LIMIT 1";
+        $sql = "SELECT p.*, 
+                       u.username, 
+                       u.full_name, 
+                       u.profile_image
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.id = :id 
+                LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $postId]);
         return $stmt->fetch();
+    }
+
+    /**
+     * Update an existing post (only if user is author).
+     *
+     * @param int $postId
+     * @param int $userId
+     * @param string $content
+     * @param string|null $image
+     * @return bool
+     */
+    public function updatePost($postId, $userId, $content, $image = null) {
+        $sql = "UPDATE posts 
+                SET content = :content, image = :image 
+                WHERE id = :post_id AND user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':content' => $content,
+            ':image'   => $image,
+            ':post_id' => $postId,
+            ':user_id' => $userId
+        ]);
     }
 }

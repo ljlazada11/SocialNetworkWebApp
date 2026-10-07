@@ -130,16 +130,21 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                                     <i class="bi bi-three-dots fs-5"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-bookmark me-2"></i>Save post</a></li>
-                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-link-45deg me-2"></i>Copy link</a></li>
                                     <?php if ($currentUserId && $currentUserId == $post['user_id']): ?>
-                                        <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <a class="dropdown-item small text-danger" href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post?');">
+                                            <a class="dropdown-item small text-primary" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
+                                                <i class="bi bi-pencil-square me-2"></i>Edit post
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item small text-danger" href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
                                                 <i class="bi bi-trash me-2"></i>Delete post
                                             </a>
                                         </li>
+                                        <li><hr class="dropdown-divider"></li>
                                     <?php endif; ?>
+                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-bookmark me-2"></i>Save post</a></li>
+                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-link-45deg me-2"></i>Copy link</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -166,20 +171,33 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                             <?php endif; ?>
                         <?php endif; ?>
 
-                        <!-- Post Engagement Actions (Like / Comment) -->
-                        <div class="post-footer-actions">
-                            <form action="<?= BASE_URL ?>/index.php?action=like_post" method="POST" class="d-inline">
-                                <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-                                <button type="submit" class="post-action-btn <?= !empty($post['is_liked']) ? 'liked' : '' ?>" title="Like">
-                                    <i class="bi <?= !empty($post['is_liked']) ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
-                                    <span><?= (int)$post['likes_count']; ?></span>
-                                </button>
-                            </form>
+                        <!-- Post Engagement Actions (Like / Comment / Edit / Delete) -->
+                        <div class="post-footer-actions d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <form action="<?= BASE_URL ?>/index.php?action=like_post" method="POST" class="d-inline">
+                                    <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                                    <button type="submit" class="post-action-btn <?= !empty($post['is_liked']) ? 'liked' : '' ?>" title="Like">
+                                        <i class="bi <?= !empty($post['is_liked']) ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
+                                        <span><?= (int)$post['likes_count']; ?></span>
+                                    </button>
+                                </form>
 
-                            <button type="button" class="post-action-btn" onclick="toggleComments(<?= $post['id'] ?>)" title="Comments">
-                                <i class="bi bi-chat"></i>
-                                <span><?= (int)$post['comments_count']; ?></span>
-                            </button>
+                                <button type="button" class="post-action-btn" onclick="toggleComments(<?= $post['id'] ?>)" title="Comments">
+                                    <i class="bi bi-chat"></i>
+                                    <span><?= (int)$post['comments_count']; ?></span>
+                                </button>
+                            </div>
+
+                            <?php if ($currentUserId && $currentUserId == $post['user_id']): ?>
+                                <div class="d-flex align-items-center gap-1">
+                                    <a href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>" class="btn btn-sm btn-light text-primary border-0 rounded-pill px-2 py-1 small" title="Edit your post">
+                                        <i class="bi bi-pencil-square me-1"></i>Edit
+                                    </a>
+                                    <a href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" class="btn btn-sm btn-light text-danger border-0 rounded-pill px-2 py-1 small" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');" title="Delete your post">
+                                        <i class="bi bi-trash me-1"></i>Delete
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Comments Section -->
@@ -187,18 +205,64 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                             <?php if (!empty($post['comments'])): ?>
                                 <?php foreach ($post['comments'] as $comment): ?>
                                     <?php
-                                    $cParts = explode(' ', trim($comment['full_name']));
+                                    $cParts = explode(' ', trim($comment['full_name'] ?? 'User'));
                                     $cInitials = count($cParts) >= 2
                                         ? strtoupper(mb_substr($cParts[0], 0, 1) . mb_substr($cParts[count($cParts)-1], 0, 1))
-                                        : strtoupper(mb_substr($comment['full_name'], 0, 2));
+                                        : strtoupper(mb_substr($comment['full_name'] ?? 'U', 0, 2));
+
+                                    $cTimeDiff = time() - strtotime($comment['created_at']);
+                                    if ($cTimeDiff < 60) {
+                                        $cTimeBadge = 'Just now';
+                                    } elseif ($cTimeDiff < 3600) {
+                                        $cTimeBadge = floor($cTimeDiff / 60) . 'm ago';
+                                    } elseif ($cTimeDiff < 86400) {
+                                        $cTimeBadge = floor($cTimeDiff / 3600) . 'h ago';
+                                    } else {
+                                        $cTimeBadge = date('M j, Y', strtotime($comment['created_at']));
+                                    }
+                                    $cFullTime = date('M j, Y \a\t g:i a', strtotime($comment['created_at']));
                                     ?>
-                                    <div class="comment-bubble">
-                                        <div class="comment-avatar">
-                                            <?= htmlspecialchars($cInitials) ?>
-                                        </div>
+                                    <div class="comment-bubble" id="comment-<?= $comment['id'] ?>">
+                                        <?php if (!empty($comment['profile_image'])): ?>
+                                            <img 
+                                                src="<?= BASE_URL ?>/public/uploads/avatars/<?= htmlspecialchars(basename($comment['profile_image'])) ?>" 
+                                                alt="<?= htmlspecialchars($comment['full_name']); ?>" 
+                                                class="comment-avatar"
+                                                onerror="this.onerror=null; this.outerHTML='<div class=\'comment-avatar\'><?= htmlspecialchars($cInitials) ?></div>';"
+                                            >
+                                        <?php else: ?>
+                                            <div class="comment-avatar">
+                                                <?= htmlspecialchars($cInitials) ?>
+                                            </div>
+                                        <?php endif; ?>
+
                                         <div class="comment-content-box">
-                                            <span class="comment-author"><?= htmlspecialchars($comment['full_name']); ?></span>
-                                            <?= htmlspecialchars($comment['content']); ?>
+                                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                                                <div>
+                                                    <span class="comment-author"><?= htmlspecialchars($comment['full_name']); ?></span>
+                                                    <span class="text-muted small">@<?= htmlspecialchars($comment['username']); ?></span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <small class="text-muted" title="<?= htmlspecialchars($cFullTime); ?>">
+                                                        <?= htmlspecialchars($cTimeBadge); ?>
+                                                    </small>
+
+                                                    <?php if ($currentUserId && (int)$currentUserId === (int)$comment['user_id']): ?>
+                                                        <a href="<?= BASE_URL ?>/index.php?action=edit_comment&comment_id=<?= $comment['id'] ?>" class="comment-btn-action text-primary" title="Edit comment">
+                                                            <i class="bi bi-pencil-square"></i> Edit
+                                                        </a>
+                                                        <form action="<?= BASE_URL ?>/index.php?action=delete_comment" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this comment? This action cannot be undone.');">
+                                                            <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
+                                                            <button type="submit" class="comment-btn-action text-danger" title="Delete comment">
+                                                                <i class="bi bi-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                            <div class="comment-text">
+                                                <?= nl2br(htmlspecialchars($comment['content'])); ?>
+                                            </div>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -206,16 +270,17 @@ $currentUserId = $_SESSION['user_id'] ?? null;
 
                             <!-- Add Comment Form -->
                             <?php if ($currentUserId): ?>
-                                <form action="<?= BASE_URL ?>/index.php?action=add_comment" method="POST" class="comment-input-row">
+                                <form action="<?= BASE_URL ?>/index.php?action=create_comment" method="POST" class="comment-input-row">
                                     <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
                                     <input 
                                         type="text" 
                                         name="content" 
                                         class="form-control" 
                                         placeholder="Write a comment..." 
+                                        maxlength="1000"
                                         required
                                     >
-                                    <button type="submit" class="btn btn-sm btn-accent rounded-pill px-3">
+                                    <button type="submit" class="btn btn-sm btn-accent rounded-pill px-3" title="Post comment">
                                         <i class="bi bi-send-fill"></i>
                                     </button>
                                 </form>

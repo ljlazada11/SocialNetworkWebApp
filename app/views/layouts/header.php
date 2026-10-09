@@ -13,6 +13,7 @@ if (!defined('BASE_URL')) {
 }
 
 $currentAction = $_GET['action'] ?? 'home';
+$isLoggedIn = isset($_SESSION['user_id']);
 
 // Generate CSRF token if not set
 if (empty($_SESSION['csrf_token'])) {
@@ -22,7 +23,7 @@ if (empty($_SESSION['csrf_token'])) {
 // Get current user avatar if logged in
 $userInitials = 'U';
 $userAvatarPath = null;
-if (isset($_SESSION['user_id'])) {
+if ($isLoggedIn) {
     $name = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User';
     $parts = explode(' ', trim($name));
     if (count($parts) >= 2) {
@@ -68,127 +69,98 @@ if (isset($_SESSION['user_id'])) {
     <!-- Custom Modern Stylesheet -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/style.css">
 </head>
-<body>
+<body class="<?= $isLoggedIn ? 'app-logged-in' : 'app-logged-out' ?>">
 
 <div class="app-layout">
 
-    <!-- Mobile Backdrop -->
-    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+    <?php if ($isLoggedIn): ?>
+        <!-- Mobile Backdrop -->
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-    <!-- LEFT SIDEBAR -->
-    <aside class="app-sidebar" id="appSidebar">
-        <!-- Sidebar Brand / Logo -->
-        <div class="sidebar-header">
-            <a href="<?= BASE_URL ?>/" class="brand-link">
-                <div class="brand-icon-box">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <span>SMCC Connect</span>
-            </a>
-        </div>
-
-        <!-- Sidebar Navigation Menu -->
-        <div class="sidebar-nav">
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                <!-- ADMIN DASHBOARD LINK FOR AUTHORIZED ADMINS ONLY -->
-                <a href="<?= BASE_URL ?>/index.php?action=admin" class="nav-link <?= (strpos($currentAction, 'admin') === 0 || $currentAction === 'admin') ? 'active' : '' ?>">
-                    <i class="bi bi-shield-lock-fill text-warning"></i>
-                    <span>Admin Dashboard</span>
+        <!-- LEFT SIDEBAR (Only for Logged-In Users) -->
+        <aside class="app-sidebar" id="appSidebar">
+            <!-- Sidebar Brand / Logo -->
+            <div class="sidebar-header">
+                <a href="<?= BASE_URL ?>/" class="brand-link">
+                    <div class="brand-icon-box">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <span>SMCC Connect</span>
                 </a>
-            <?php endif; ?>
+            </div>
 
-            <a href="<?= BASE_URL ?>/" class="nav-link <?= ($currentAction === 'home') ? 'active' : '' ?>">
-                <i class="bi bi-house-door-fill"></i>
-                <span>Home</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=people" class="nav-link <?= ($currentAction === 'people') ? 'active' : '' ?>">
-                <i class="bi bi-people"></i>
-                <span>People</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=groups" class="nav-link <?= ($currentAction === 'groups') ? 'active' : '' ?>">
-                <i class="bi bi-people-gear"></i>
-                <span>Groups</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=events" class="nav-link <?= ($currentAction === 'events') ? 'active' : '' ?>">
-                <i class="bi bi-calendar-event"></i>
-                <span>Events</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=messages" class="nav-link <?= ($currentAction === 'messages') ? 'active' : '' ?>">
-                <i class="bi bi-chat-dots"></i>
-                <span>Messages</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=saved" class="nav-link <?= ($currentAction === 'saved') ? 'active' : '' ?>">
-                <i class="bi bi-bookmark"></i>
-                <span>Saved</span>
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=reports" class="nav-link <?= ($currentAction === 'reports') ? 'active' : '' ?>">
-                <i class="bi bi-bar-chart-line"></i>
-                <span>Reports</span>
-            </a>
+            <!-- Sidebar Navigation Menu -->
+            <div class="sidebar-nav">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <!-- ADMIN DASHBOARD LINK FOR AUTHORIZED ADMINS ONLY -->
+                    <a href="<?= BASE_URL ?>/index.php?action=admin" class="nav-link <?= (strpos($currentAction, 'admin') === 0 || $currentAction === 'admin') ? 'active' : '' ?>">
+                        <i class="bi bi-shield-lock-fill text-warning"></i>
+                        <span>Admin Dashboard</span>
+                    </a>
+                <?php endif; ?>
 
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="<?= BASE_URL ?>/index.php?action=profile" class="nav-link <?= ($currentAction === 'profile') ? 'active' : '' ?>">
-                    <i class="bi bi-person"></i>
-                    <span>Profile</span>
+                <a href="<?= BASE_URL ?>/" class="nav-link <?= ($currentAction === 'home') ? 'active' : '' ?>">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Home</span>
                 </a>
-            <?php endif; ?>
+                <a href="<?= BASE_URL ?>/index.php?action=messages" class="nav-link <?= ($currentAction === 'messages') ? 'active' : '' ?>">
+                    <i class="bi bi-chat-dots"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="<?= BASE_URL ?>/index.php?action=saved" class="nav-link <?= ($currentAction === 'saved') ? 'active' : '' ?>">
+                    <i class="bi bi-bookmark"></i>
+                    <span>Saved</span>
+                </a>
+                <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="nav-link <?= ($currentAction === 'edit_profile') ? 'active' : '' ?>">
+                    <i class="bi bi-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
 
-            <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="nav-link <?= ($currentAction === 'edit_profile') ? 'active' : '' ?>">
-                <i class="bi bi-gear"></i>
-                <span>Settings</span>
-            </a>
-        </div>
-
-        <!-- Sidebar Footer (Sign Out / Sign In) -->
-        <div class="sidebar-footer">
-            <?php if (isset($_SESSION['user_id'])): ?>
+            <!-- Sidebar Footer (Sign Out) -->
+            <div class="sidebar-footer">
                 <a href="<?= BASE_URL ?>/index.php?action=logout" class="nav-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Sign Out</span>
                 </a>
-            <?php else: ?>
-                <a href="<?= BASE_URL ?>/index.php?action=login" class="nav-link text-white">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span>Sign In</span>
-                </a>
-            <?php endif; ?>
-        </div>
-    </aside>
+            </div>
+        </aside>
+    <?php endif; ?>
 
     <!-- MAIN CONTENT AREA WRAPPER -->
-    <div class="app-main">
+    <div class="app-main <?= $isLoggedIn ? '' : 'no-sidebar' ?>">
 
         <!-- TOP HEADER -->
         <header class="app-header">
             <div class="header-container">
-                <!-- Mobile Toggle Button -->
-                <button class="btn btn-sm d-lg-none p-1 text-dark" onclick="toggleSidebar()" aria-label="Toggle Navigation">
-                    <i class="bi bi-list fs-4"></i>
-                </button>
-
-                <!-- Search Bar -->
-                <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search" role="search">
-                    <input type="hidden" name="action" value="search">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
-                    <span class="search-shortcut">⌘K</span>
-                </form>
-
-                <!-- Right Header Actions -->
-                <div class="header-actions">
-                    <!-- Dark Mode / Light Mode Toggle -->
-                    <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch Theme" aria-label="Toggle Dark Mode or Light Mode">
-                        <span class="theme-toggle-icon">🌙</span>
+                <?php if ($isLoggedIn): ?>
+                    <!-- Mobile Toggle Button -->
+                    <button class="btn btn-sm d-lg-none p-1 text-dark" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+                        <i class="bi bi-list fs-4"></i>
                     </button>
 
-                    <button class="header-icon-btn" title="Notifications" aria-label="Notifications">
-                        <i class="bi bi-bell"></i>
-                    </button>
-                    <button class="header-icon-btn" title="Messages" aria-label="Messages">
-                        <i class="bi bi-chat-text"></i>
-                    </button>
+                    <!-- Search Bar -->
+                    <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search" role="search">
+                        <input type="hidden" name="action" value="search">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
+                        <span class="search-shortcut">⌘K</span>
+                    </form>
 
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Right Header Actions -->
+                    <div class="header-actions">
+                        <!-- Dark Mode / Light Mode Toggle -->
+                        <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Switch to Dark Mode">
+                            <i class="theme-toggle-icon bi bi-moon-fill"></i>
+                        </button>
+
+                        <button class="header-icon-btn" title="Notifications" aria-label="Notifications">
+                            <i class="bi bi-bell"></i>
+                        </button>
+                        <button class="header-icon-btn" title="Messages" aria-label="Messages">
+                            <i class="bi bi-chat-text"></i>
+                        </button>
+
                         <!-- User Profile Dropdown -->
                         <div class="dropdown">
                             <a href="#" class="header-user-btn dropdown-toggle" id="headerUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -241,13 +213,30 @@ if (isset($_SESSION['user_id'])) {
                                 </li>
                             </ul>
                         </div>
-                    <?php else: ?>
-                        <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-outline-primary btn-sm px-3 rounded-pill">Log In</a>
-                        <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-accent btn-sm rounded-pill">Sign Up</a>
-                    <?php endif; ?>
-                </div>
+                    </div>
+                <?php else: ?>
+                    <!-- Public / Unauthenticated Header -->
+                    <div class="d-flex align-items-center">
+                        <a href="<?= BASE_URL ?>/" class="brand-link text-dark">
+                            <div class="brand-icon-box">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <span class="fs-5 font-navy ms-2">SMCC Connect</span>
+                        </a>
+                    </div>
+
+                    <div class="header-actions">
+                        <!-- Dark Mode / Light Mode Toggle -->
+                        <button class="header-icon-btn theme-toggle-btn me-2" type="button" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Switch to Dark Mode">
+                            <i class="theme-toggle-icon bi bi-moon-fill"></i>
+                        </button>
+
+                        <a href="<?= BASE_URL ?>/index.php?action=login" class="btn <?= ($currentAction === 'login') ? 'btn-navy' : 'btn-outline-navy' ?> btn-sm px-3 rounded-pill fw-semibold me-2">Log In</a>
+                        <a href="<?= BASE_URL ?>/index.php?action=register" class="btn <?= ($currentAction === 'register') ? 'btn-accent' : 'btn-outline-accent' ?> btn-sm rounded-pill px-3 fw-semibold">Sign Up</a>
+                    </div>
+                <?php endif; ?>
             </div>
         </header>
 
         <!-- PAGE CONTENT CONTAINER -->
-        <main class="p-3 p-md-4 flex-grow-1">
+        <main class="<?= $isLoggedIn ? 'p-3 p-md-4 flex-grow-1' : 'auth-main flex-grow-1 d-flex align-items-center justify-content-center p-3 p-md-4' ?>">

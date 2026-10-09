@@ -112,13 +112,13 @@ body {
     align-items: center;
     gap: 0.85rem;
     color: rgba(255, 255, 255, 0.75);
-    padding: 0.65rem 0.9rem;
+    padding: 0.7rem 0.9rem;
     border-radius: 8px;
     font-weight: 500;
     font-size: 0.92rem;
     transition: all 0.18s ease-in-out;
     position: relative;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
     text-decoration: none;
 }
 
@@ -180,6 +180,73 @@ body {
     flex-direction: column;
     min-width: 0; /* Prevents flex children from overflowing */
     min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.app-main.no-sidebar {
+    margin-left: 0 !important;
+}
+
+.auth-main {
+    min-height: calc(100vh - var(--header-height) - 52px);
+    background-color: var(--body-bg);
+}
+
+/* Navy & Accent Color Utilities */
+.text-navy {
+    color: #192f5d !important;
+}
+
+.font-navy {
+    color: #192f5d !important;
+    font-weight: 700;
+}
+
+.btn-navy {
+    background-color: #192f5d;
+    border-color: #192f5d;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.btn-navy:hover,
+.btn-navy:focus {
+    background-color: #112244;
+    border-color: #112244;
+    color: #ffffff;
+}
+
+.btn-outline-navy {
+    background-color: transparent;
+    border-color: #192f5d;
+    color: #192f5d;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-navy:hover,
+.btn-outline-navy:focus {
+    background-color: #192f5d;
+    border-color: #192f5d;
+    color: #ffffff;
+}
+
+.btn-outline-accent {
+    background-color: transparent;
+    border-color: var(--accent-yellow);
+    color: #192f5d;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-accent:hover,
+.btn-outline-accent:focus {
+    background-color: var(--accent-yellow);
+    border-color: var(--accent-yellow);
+    color: #192f5d;
+}
+
+.py-2-5 {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
 }
 
 /* ========================================================
@@ -284,6 +351,7 @@ body {
 }
 
 .theme-toggle-btn {
+    color: #192f5d;
     font-size: 1.25rem;
     line-height: 1;
     user-select: none;
@@ -291,6 +359,12 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    background-color: rgba(25, 47, 93, 0.08);
+    color: #192f5d;
 }
 
 .theme-toggle-icon {
@@ -1144,25 +1218,63 @@ body {
 }
 
 /* Form Controls & Inputs */
+.form-control,
+.form-select,
+textarea {
+    color: #192f5d;
+}
+
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder,
+.composer-input::placeholder {
+    color: #64748b;
+    opacity: 1;
+}
+
 [data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-    background-color: var(--input-bg);
-    border-color: var(--input-border);
-    color: var(--text-primary);
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] textarea {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder,
+[data-bs-theme="dark"] .form-select::placeholder,
+[data-bs-theme="dark"] textarea::placeholder,
+[data-bs-theme="dark"] .composer-input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
 }
 
 [data-bs-theme="dark"] .form-control:focus,
 [data-bs-theme="dark"] .form-select:focus {
-    background-color: #233148;
-    border-color: #64748b;
-    color: #ffffff;
-    box-shadow: 0 0 0 0.25rem rgba(241, 189, 39, 0.15);
+    background-color: #233148 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.25rem rgba(241, 189, 39, 0.15) !important;
 }
 
 [data-bs-theme="dark"] .input-group-text {
-    background-color: var(--input-bg);
-    border-color: var(--input-border);
-    color: #94a3b8;
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: #cbd5e1 !important;
+}
+
+/* Headings, Text & Labels in Dark Mode */
+[data-bs-theme="dark"] h1,
+[data-bs-theme="dark"] h2,
+[data-bs-theme="dark"] h3,
+[data-bs-theme="dark"] h4,
+[data-bs-theme="dark"] h5,
+[data-bs-theme="dark"] h6 {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] label,
+[data-bs-theme="dark"] .form-label {
+    color: #e2e8f0 !important;
 }
 
 /* Bootstrap Light / White Utility Overrides in Dark Mode */
@@ -1178,12 +1290,34 @@ body {
     color: #f8fafc !important;
 }
 
+[data-bs-theme="dark"] .text-navy,
+[data-bs-theme="dark"] .font-navy {
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] a.text-navy {
+    color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] a.text-navy:hover {
+    color: #ffffff !important;
+}
+
 [data-bs-theme="dark"] .text-secondary {
     color: #cbd5e1 !important;
 }
 
 [data-bs-theme="dark"] .text-muted {
     color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .theme-toggle-btn {
+    color: #f1bd27 !important;
+}
+
+[data-bs-theme="dark"] .theme-toggle-btn:hover {
+    background-color: rgba(241, 189, 39, 0.15) !important;
+    color: #f1bd27 !important;
 }
 
 [data-bs-theme="dark"] .border,
@@ -1212,9 +1346,46 @@ body {
 }
 
 /* Footer */
-[data-bs-theme="dark"] footer.bg-white {
+[data-bs-theme="dark"] footer.bg-white,
+[data-bs-theme="dark"] footer {
     background-color: #111a2e !important;
     border-top-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] footer a {
+    color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] footer a:hover {
+    color: #ffffff !important;
+}
+
+/* Navy & Outline Buttons in Dark Mode */
+[data-bs-theme="dark"] .btn-navy {
+    background-color: #1e3a8a !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-navy:hover,
+[data-bs-theme="dark"] .btn-navy:focus {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-navy {
+    background-color: transparent !important;
+    border-color: #3b82f6 !important;
+    color: #60a5fa !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-navy:hover,
+[data-bs-theme="dark"] .btn-outline-navy:focus {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
 }
 
 /* Outline Buttons */

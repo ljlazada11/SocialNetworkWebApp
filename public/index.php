@@ -123,6 +123,11 @@ switch ($action) {
     case 'events':
     case 'messages':
     case 'saved':
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error_message'] = 'You must be logged in to access that page.';
+            header('Location: ' . BASE_URL . '/index.php?action=login');
+            exit;
+        }
         $pageTitle = ucfirst($action);
         require_once __DIR__ . '/../app/views/layouts/header.php';
         ?>
@@ -154,6 +159,10 @@ switch ($action) {
 
     case 'home':
     default:
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/index.php?action=login');
+            exit;
+        }
         $pageTitle = 'Home';
         require_once __DIR__ . '/../app/models/PostModel.php';
         require_once __DIR__ . '/../app/models/UserModel.php';
@@ -161,20 +170,15 @@ switch ($action) {
         $postModel = new PostModel();
         $userModel = new UserModel();
 
-        $currentUserId = $_SESSION['user_id'] ?? null;
-        $posts = [];
-        $suggestedUsers = [];
+        $currentUserId = $_SESSION['user_id'];
+        $feedFilter = $_GET['filter'] ?? 'newest';
+        $posts = $postModel->getAllPosts($currentUserId, $feedFilter);
 
-        if ($currentUserId) {
-            $feedFilter = $_GET['filter'] ?? 'newest';
-            $posts = $postModel->getAllPosts($currentUserId, $feedFilter);
-
-            // Fetch suggested users (excluding current user if logged in)
-            $db = Database::connect();
-            $stmt = $db->prepare("SELECT id, username, full_name, profile_image FROM users WHERE id != :user_id LIMIT 3");
-            $stmt->execute([':user_id' => $currentUserId]);
-            $suggestedUsers = $stmt->fetchAll();
-        }
+        // Fetch suggested users (excluding current user)
+        $db = Database::connect();
+        $stmt = $db->prepare("SELECT id, username, full_name, profile_image FROM users WHERE id != :user_id LIMIT 3");
+        $stmt->execute([':user_id' => $currentUserId]);
+        $suggestedUsers = $stmt->fetchAll();
 
         require_once __DIR__ . '/../app/views/layouts/header.php';
         require_once __DIR__ . '/../app/views/home/feed.php';

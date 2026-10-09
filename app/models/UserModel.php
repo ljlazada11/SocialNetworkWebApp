@@ -122,10 +122,11 @@ class UserModel {
      */
     public function searchUsers($query) {
         $searchTerm = '%' . trim($query) . '%';
-        $sql = "SELECT id, username, full_name, bio, profile_image, created_at
-                FROM users 
-                WHERE username LIKE ? OR full_name LIKE ?
-                ORDER BY full_name ASC";
+        $sql = "SELECT u.id, u.username, u.full_name, u.bio, u.profile_image, u.created_at,
+                       (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.id) AS total_user_posts
+                FROM users u
+                WHERE u.username LIKE ? OR u.full_name LIKE ?
+                ORDER BY u.full_name ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$searchTerm, $searchTerm]);
         return $stmt->fetchAll();

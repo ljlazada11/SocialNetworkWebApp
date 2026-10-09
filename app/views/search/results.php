@@ -1,6 +1,6 @@
 <?php
 // app/views/search/results.php
-// Centered Modern Search View for SMCC Connect
+// Centered Modern Search, Filtering & Reports View for SMCC Connect (Step 11 & Step 12)
 
 $currentUserId = $_SESSION['user_id'] ?? null;
 $currentUserInitials = 'U';
@@ -14,6 +14,7 @@ if ($currentUserId) {
 
 $userCount = count($users ?? []);
 $postCount = count($posts ?? []);
+$authorId = $_GET['author_id'] ?? null;
 ?>
 
 <div class="search-view-container">
@@ -37,74 +38,191 @@ $postCount = count($posts ?? []);
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
 
-    <!-- 1. Search Title -->
+    <!-- 1. Search & Reports Header Hero -->
     <div class="search-hero">
-        <h3 class="search-hero-title">Search</h3>
-        <p class="search-hero-subtitle">Discover users and posts across SMCC Connect</p>
+        <div class="d-inline-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-primary text-white fw-bold px-3 py-1 rounded-pill">
+                <i class="bi bi-search me-1"></i> Search & Filtering (Step 11)
+            </span>
+            <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill">
+                <i class="bi bi-bar-chart-fill me-1"></i> Summary & Reports (Step 12)
+            </span>
+        </div>
+        <h3 class="search-hero-title">Search & Analytics Reports</h3>
+        <p class="search-hero-subtitle">Search users or posts, filter by author, sort results, and explore live engagement statistics</p>
     </div>
 
-    <!-- 2. Search Input Box (No Search Button, Enter submits) -->
-    <form action="<?= BASE_URL ?>/index.php" method="GET" class="search-box-centered" role="search">
+    <!-- 2. STEP 12 A: SUMMARY REPORTS KPI CARDS -->
+    <div class="row g-2 g-sm-3 mb-4">
+        <!-- Matching Posts -->
+        <div class="col-6 col-md-3">
+            <div class="card-modern p-3 text-center border-0 shadow-sm h-100" style="border-top: 3px solid #3b82f6 !important;">
+                <div class="text-muted small fw-semibold mb-1">
+                    <i class="bi bi-file-earmark-post text-primary me-1"></i> Matching Posts
+                </div>
+                <h4 class="fw-bold text-dark mb-0"><?= (int)($summaryStats['total_posts'] ?? 0); ?></h4>
+                <small class="text-muted micro-text">Filtered database records</small>
+            </div>
+        </div>
+
+        <!-- Distinct Authors -->
+        <div class="col-6 col-md-3">
+            <div class="card-modern p-3 text-center border-0 shadow-sm h-100" style="border-top: 3px solid #10b981 !important;">
+                <div class="text-muted small fw-semibold mb-1">
+                    <i class="bi bi-people text-success me-1"></i> Distinct Authors
+                </div>
+                <h4 class="fw-bold text-dark mb-0"><?= (int)($summaryStats['total_authors'] ?? 0); ?></h4>
+                <small class="text-muted micro-text">Unique content creators</small>
+            </div>
+        </div>
+
+        <!-- Total Comments -->
+        <div class="col-6 col-md-3">
+            <div class="card-modern p-3 text-center border-0 shadow-sm h-100" style="border-top: 3px solid #f59e0b !important;">
+                <div class="text-muted small fw-semibold mb-1">
+                    <i class="bi bi-chat-left-text text-warning me-1"></i> Total Comments
+                </div>
+                <h4 class="fw-bold text-dark mb-0"><?= (int)($summaryStats['total_comments'] ?? 0); ?></h4>
+                <small class="text-muted micro-text">On matching posts</small>
+            </div>
+        </div>
+
+        <!-- Total Likes -->
+        <div class="col-6 col-md-3">
+            <div class="card-modern p-3 text-center border-0 shadow-sm h-100" style="border-top: 3px solid #ef4444 !important;">
+                <div class="text-muted small fw-semibold mb-1">
+                    <i class="bi bi-heart text-danger me-1"></i> Total Likes
+                </div>
+                <h4 class="fw-bold text-dark mb-0"><?= (int)($summaryStats['total_likes'] ?? 0); ?></h4>
+                <small class="text-muted micro-text">Engagement interactions</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SEARCH BAR AND FILTERS FORM -->
+    <form action="<?= BASE_URL ?>/index.php" method="GET" class="mb-4" role="search">
         <input type="hidden" name="action" value="search">
         <input type="hidden" name="type" value="<?= htmlspecialchars($type); ?>">
         <input type="hidden" name="filter" value="<?= htmlspecialchars($filter); ?>">
-        <i class="bi bi-search search-icon"></i>
-        <input 
-            type="text" 
-            name="q" 
-            class="search-input-centered" 
-            placeholder="Search users or posts..." 
-            value="<?= htmlspecialchars($query ?? ''); ?>" 
-            autocomplete="off"
-        >
-        <?php if (!empty($query)): ?>
-            <a href="<?= BASE_URL ?>/index.php?action=search" class="search-clear-btn" title="Clear search">&times;</a>
-        <?php endif; ?>
-    </form>
 
-    <!-- 3. Filter Controls: [ All ] [ Users ] [ Posts ] & [ Newest ] [ Oldest ] -->
-    <div class="search-filter-group">
-        <div class="filter-pills-wrap">
-            <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=all&filter=<?= urlencode($filter); ?>" 
-               class="filter-pill <?= ($type === 'all') ? 'active' : ''; ?>">
-                All
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=users&filter=<?= urlencode($filter); ?>" 
-               class="filter-pill <?= ($type === 'users') ? 'active' : ''; ?>">
-                Users
-            </a>
-            <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=posts&filter=<?= urlencode($filter); ?>" 
-               class="filter-pill <?= ($type === 'posts') ? 'active' : ''; ?>">
-                Posts
-            </a>
+        <!-- Search Input Box -->
+        <div class="search-box-centered mb-3">
+            <i class="bi bi-search search-icon"></i>
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input-centered" 
+                placeholder="Search users or post content..." 
+                value="<?= htmlspecialchars($query ?? ''); ?>" 
+                autocomplete="off"
+            >
+            <?php if (!empty($query) || !empty($authorId)): ?>
+                <a href="<?= BASE_URL ?>/index.php?action=search" class="search-clear-btn" title="Reset Search & Filters">&times;</a>
+            <?php endif; ?>
         </div>
 
-        <?php if ($type !== 'users'): ?>
-            <div class="sort-pills-wrap">
-                <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=newest" 
-                   class="sort-pill <?= ($filter === 'newest') ? 'active' : ''; ?>">
-                    Newest
+        <!-- Author Filter Dropdown & Filter Controls -->
+        <div class="card-modern p-3 mb-3 border-0 shadow-sm">
+            <div class="row g-2 align-items-center">
+                <!-- Author Filter Dropdown -->
+                <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="author_id_select" class="form-label text-muted small fw-bold mb-0 text-nowrap">
+                            <i class="bi bi-funnel-fill text-primary me-1"></i> Author Filter:
+                        </label>
+                        <select name="author_id" id="author_id_select" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
+                            <option value="">All Authors</option>
+                            <?php if (!empty($allAuthors)): ?>
+                                <?php foreach ($allAuthors as $authorItem): ?>
+                                    <option value="<?= $authorItem['id']; ?>" <?= (!empty($authorId) && (int)$authorId === (int)$authorItem['id']) ? 'selected' : ''; ?>>
+                                        <?= htmlspecialchars($authorItem['full_name']); ?> (@<?= htmlspecialchars($authorItem['username']); ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit / Clear Buttons -->
+                <div class="col-12 col-md-6 text-md-end d-flex gap-2 justify-content-md-end">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-search me-1"></i> Apply Filter
+                    </button>
+                    <?php if (!empty($query) || !empty($authorId)): ?>
+                        <a href="<?= BASE_URL ?>/index.php?action=search" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                            <i class="bi bi-x-circle me-1"></i> Reset
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Pills & Sorting Options -->
+        <div class="search-filter-group">
+            <!-- Result Type Filter Pills -->
+            <div class="filter-pills-wrap">
+                <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=all&filter=<?= urlencode($filter); ?><?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                   class="filter-pill <?= ($type === 'all') ? 'active' : ''; ?>">
+                    All Results
                 </a>
-                <span class="text-muted" style="font-size: 0.7rem;">&bull;</span>
-                <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=oldest" 
-                   class="sort-pill <?= ($filter === 'oldest') ? 'active' : ''; ?>">
-                    Oldest
+                <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=users&filter=<?= urlencode($filter); ?><?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                   class="filter-pill <?= ($type === 'users') ? 'active' : ''; ?>">
+                    Users
+                </a>
+                <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=posts&filter=<?= urlencode($filter); ?><?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                   class="filter-pill <?= ($type === 'posts') ? 'active' : ''; ?>">
+                    Posts
                 </a>
             </div>
-        <?php endif; ?>
-    </div>
 
-    <!-- 4. Search Results Content -->
-    <?php if ($isEmptySearch): ?>
-        <!-- Empty Search Guidance -->
+            <!-- Sorting Order Pills (Step 11 & Step 12 B) -->
+            <?php if ($type !== 'users'): ?>
+                <div class="d-flex align-items-center flex-wrap justify-content-center gap-2 mt-2">
+                    <span class="text-muted small fw-semibold me-1"><i class="bi bi-sort-down text-primary me-1"></i>Sort Posts By:</span>
+                    
+                    <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=newest<?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                       class="btn btn-sm rounded-pill px-3 <?= ($filter === 'newest') ? 'btn-primary' : 'btn-outline-secondary'; ?>">
+                        <i class="bi bi-clock-history me-1"></i> Newest
+                    </a>
+                    
+                    <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=oldest<?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                       class="btn btn-sm rounded-pill px-3 <?= ($filter === 'oldest') ? 'btn-primary' : 'btn-outline-secondary'; ?>">
+                        <i class="bi bi-arrow-up-circle me-1"></i> Oldest
+                    </a>
+
+                    <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=most_liked<?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                       class="btn btn-sm rounded-pill px-3 <?= ($filter === 'most_liked') ? 'btn-danger text-white' : 'btn-outline-danger'; ?>">
+                        <i class="bi bi-heart-fill me-1"></i> Most Liked
+                    </a>
+
+                    <a href="<?= BASE_URL ?>/index.php?action=search&q=<?= urlencode($query); ?>&type=<?= urlencode($type); ?>&filter=most_commented<?= !empty($authorId) ? '&author_id=' . (int)$authorId : ''; ?>" 
+                       class="btn btn-sm rounded-pill px-3 <?= ($filter === 'most_commented') ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'; ?>">
+                        <i class="bi bi-chat-dots-fill me-1"></i> Most Commented
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </form>
+
+    <!-- 4. SEARCH & REPORT RESULTS CONTENT -->
+    <?php if ($isEmptySearch && empty($users) && empty($posts)): ?>
+        <!-- Initial Guidance State -->
         <div class="search-empty-state">
             <div class="search-empty-icon">
                 <i class="bi bi-search"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">Find Users and Posts</h5>
-            <p class="small text-muted mb-0 col-md-9 mx-auto">
-                Type a username, full name, or keywords from a post in the search box above and press <kbd class="px-2 py-1 bg-light text-dark border rounded">Enter</kbd>.
+            <h5 class="fw-bold text-dark mb-2">Search & Filter Social Content</h5>
+            <p class="small text-muted mb-3 col-md-9 mx-auto">
+                Type a username, full name, or post content keyword above, or filter posts by selecting a specific author from the dropdown list.
             </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="<?= BASE_URL ?>/index.php?action=search&type=posts&filter=newest" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                    <i class="bi bi-grid me-1"></i> Browse All Posts
+                </a>
+                <a href="<?= BASE_URL ?>/index.php?action=search&type=posts&filter=most_liked" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                    <i class="bi bi-heart me-1"></i> View Most Liked Posts
+                </a>
+            </div>
         </div>
 
     <?php elseif (($type === 'all' && empty($users) && empty($posts)) || ($type === 'users' && empty($users)) || ($type === 'posts' && empty($posts))): ?>
@@ -113,21 +231,26 @@ $postCount = count($posts ?? []);
             <div class="search-empty-icon">
                 <i class="bi bi-slash-circle"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">No results found</h5>
+            <h5 class="fw-bold text-dark mb-2">No matching results found</h5>
             <p class="small text-muted mb-0 col-md-9 mx-auto">
-                No matching results were found for "<strong><?= htmlspecialchars($query); ?></strong>".
-                <br>Try another search query or switch filters.
+                No matching results were found for your search query or filter criteria.
+                <br>Try adjusting keywords, selecting another author, or clearing filters.
             </p>
+            <div class="mt-3">
+                <a href="<?= BASE_URL ?>/index.php?action=search" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
+                    Clear Search Filters
+                </a>
+            </div>
         </div>
 
     <?php else: ?>
 
-        <!-- USERS SECTION -->
+        <!-- USERS SECTION (Step 11: Search Users & Profile Links) -->
         <?php if (($type === 'all' || $type === 'users') && !empty($users)): ?>
             <div class="mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-3 px-1">
                     <h6 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-people-fill text-primary me-2"></i>Users (<?= count($users); ?>)
+                        <i class="bi bi-people-fill text-primary me-2"></i>Matching Users (<?= count($users); ?>)
                     </h6>
                 </div>
 
@@ -163,7 +286,8 @@ $postCount = count($posts ?? []);
                                             <?= htmlspecialchars($user['full_name']); ?>
                                         </a>
                                         <div class="text-muted small text-truncate">
-                                            @<?= htmlspecialchars($user['username']); ?>
+                                            @<?= htmlspecialchars($user['username']); ?> &bull; 
+                                            <span class="badge bg-light text-secondary border"><?= (int)($user['total_user_posts'] ?? 0); ?> posts</span>
                                         </div>
                                         <?php if (!empty($user['bio'])): ?>
                                             <div class="text-muted small text-truncate mt-1" style="max-width: 380px;">
@@ -173,9 +297,14 @@ $postCount = count($posts ?? []);
                                     </div>
                                 </div>
 
-                                <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="btn btn-outline-primary btn-sm rounded-pill px-3 flex-shrink-0">
-                                    <i class="bi bi-person me-1"></i> Profile
-                                </a>
+                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                    <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $user['id']; ?>&type=posts" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Filter posts by this author">
+                                        <i class="bi bi-funnel me-1"></i> Posts
+                                    </a>
+                                    <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                        <i class="bi bi-person me-1"></i> Profile
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -183,13 +312,16 @@ $postCount = count($posts ?? []);
             </div>
         <?php endif; ?>
 
-        <!-- POSTS SECTION -->
+        <!-- POSTS SECTION (Step 11 & Step 12 B: Detailed Reports & Sorting) -->
         <?php if (($type === 'all' || $type === 'posts') && !empty($posts)): ?>
             <div>
                 <div class="d-flex align-items-center justify-content-between mb-3 px-1">
                     <h6 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-chat-square-text-fill text-warning me-2"></i>Posts (<?= count($posts); ?>)
+                        <i class="bi bi-chat-square-text-fill text-warning me-2"></i>Matching Posts (<?= count($posts); ?>)
                     </h6>
+                    <span class="badge bg-light text-dark border">
+                        Sorted by: <?= htmlspecialchars(ucwords(str_replace('_', ' ', $filter))); ?>
+                    </span>
                 </div>
 
                 <?php foreach ($posts as $post): ?>
@@ -201,9 +333,9 @@ $postCount = count($posts ?? []);
 
                     $postTime = date('M j, Y \a\t g:i a', strtotime($post['created_at']));
                     $diffHours = round((time() - strtotime($post['created_at'])) / 3600);
-                    $timeBadge = ($diffHours < 24 && $diffHours >= 1) ? $diffHours . 'h ago' : ($diffHours < 1 ? 'Just now' : date('M j', strtotime($post['created_at'])));
+                    $timeBadge = ($diffHours < 24 && $diffHours >= 1) ? $diffHours . 'h ago' : ($diffHours < 1 ? 'Just now' : date('M j, Y', strtotime($post['created_at'])));
                     ?>
-                    <article class="post-card" id="post-<?= $post['id'] ?>">
+                    <article class="post-card mb-3" id="post-<?= $post['id'] ?>">
                         <!-- Post Author Header -->
                         <div class="post-header">
                             <div class="post-author-box">
@@ -227,36 +359,43 @@ $postCount = count($posts ?? []);
                                         <?= htmlspecialchars($post['full_name']); ?>
                                     </a>
                                     <div class="post-meta">
-                                        @<?= htmlspecialchars($post['username']); ?> &bull; <?= htmlspecialchars($timeBadge); ?>
+                                        @<?= htmlspecialchars($post['username']); ?> &bull; 
+                                        <span title="<?= htmlspecialchars($postTime); ?>"><?= htmlspecialchars($timeBadge); ?></span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Post Menu Dropdown -->
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
-                                    <i class="bi bi-three-dots fs-5"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                    <?php if ($currentUserId && (int)$currentUserId === (int)$post['user_id']): ?>
+                            <!-- Post Menu & Author Filter Link -->
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $post['user_id']; ?>&type=posts" class="btn btn-sm btn-light text-secondary border-0 rounded-pill px-2 py-1 micro-text" title="View all posts by this author">
+                                    <i class="bi bi-funnel me-1"></i>Author Posts
+                                </a>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
+                                        <i class="bi bi-three-dots fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <?php if ($currentUserId && (int)$currentUserId === (int)$post['user_id']): ?>
+                                            <li>
+                                                <a class="dropdown-item small text-primary" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
+                                                    <i class="bi bi-pencil-square me-2"></i>Edit post
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item small text-danger" href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
+                                                    <i class="bi bi-trash me-2"></i>Delete post
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        <?php endif; ?>
                                         <li>
-                                            <a class="dropdown-item small text-primary" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
-                                                <i class="bi bi-pencil-square me-2"></i>Edit post
+                                            <a class="dropdown-item small" href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $post['user_id']; ?>">
+                                                <i class="bi bi-person me-2"></i>View author profile
                                             </a>
                                         </li>
-                                        <li>
-                                            <a class="dropdown-item small text-danger" href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
-                                                <i class="bi bi-trash me-2"></i>Delete post
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                    <?php endif; ?>
-                                    <li>
-                                        <a class="dropdown-item small" href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $post['user_id']; ?>">
-                                            <i class="bi bi-person me-2"></i>View author profile
-                                        </a>
-                                    </li>
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
@@ -277,6 +416,21 @@ $postCount = count($posts ?? []);
                                 </div>
                             <?php endif; ?>
                         <?php endif; ?>
+
+                        <!-- STEP 12 B: DETAILED REPORT ENGAGEMENT METRICS BADGES -->
+                        <div class="p-2 bg-light rounded-3 my-2 d-flex align-items-center justify-content-between border">
+                            <span class="small text-muted fw-semibold">
+                                <i class="bi bi-graph-up text-primary me-1"></i> Post Analytics:
+                            </span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle rounded-pill px-2.5 py-1">
+                                    <i class="bi bi-heart-fill me-1"></i> <?= (int)$post['likes_count']; ?> Likes
+                                </span>
+                                <span class="badge bg-warning bg-opacity-10 text-dark border border-warning-subtle rounded-pill px-2.5 py-1">
+                                    <i class="bi bi-chat-dots-fill me-1"></i> <?= (int)$post['comments_count']; ?> Comments
+                                </span>
+                            </div>
+                        </div>
 
                         <!-- Post Engagement Actions (Like / Comment / Edit / Delete) -->
                         <div class="post-footer-actions d-flex align-items-center justify-content-between">

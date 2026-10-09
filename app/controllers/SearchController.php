@@ -30,7 +30,7 @@ class SearchController {
     }
 
     /**
-     * Main search and filter handler.
+     * Main search, filter, and reporting handler.
      */
     public function index() {
         $this->requireAuth();
@@ -39,7 +39,8 @@ class SearchController {
         $rawQuery = $_GET['q'] ?? '';
         $query = trim($rawQuery);
         $type = trim($_GET['type'] ?? 'all'); // 'all', 'users', 'posts'
-        $filter = trim($_GET['filter'] ?? 'newest'); // 'newest', 'oldest'
+        $filter = trim($_GET['filter'] ?? 'newest'); // 'newest', 'oldest', 'most_liked', 'most_commented'
+        $authorId = isset($_GET['author_id']) && $_GET['author_id'] !== '' ? (int)$_GET['author_id'] : null;
 
         // Valid types
         $validTypes = ['all', 'users', 'posts'];
@@ -47,15 +48,23 @@ class SearchController {
             $type = 'all';
         }
 
-        // Valid post sorting filters
-        $validFilters = ['newest', 'oldest', 'all'];
+        // Valid post sorting filters (Step 11 & Step 12 requirements)
+        $validFilters = ['newest', 'oldest', 'most_liked', 'most_commented'];
         if (!in_array($filter, $validFilters, true)) {
             $filter = 'newest';
         }
 
         $users = [];
         $posts = [];
-        $isEmptySearch = ($query === '');
+        $summaryStats = [
+            'total_posts'   => 0,
+            'total_authors' => 0,
+            'total_comments'=> 0,
+            'total_likes'   => 0
+        ];
+        $allAuthors = $this->userModel->getAllUsers();
+
+        $isEmptySearch = ($query === '' && empty($authorId));
 
         if (!$isEmptySearch) {
             // Execute search queries inside models using prepared statements
@@ -64,11 +73,26 @@ class SearchController {
             }
 
             if ($type === 'all' || $type === 'posts') {
-                $posts = $this->postModel->searchPosts($query, $filter, $currentUserId);
+                $posts = $this->postModel->searchPosts($query, $filter, $currentUserId, $authorId);
+            }
+            // Always compute summary statistics based on current search query and author filter
+            $summaryStats = $this->postModel->getSearchSummaryStats($query, $authorId);
+        } else {
+            // Default summary stats for overall database dataset when landing on search page
+            $summaryStats = $this->postModel->getSearchSummaryStats('', null);
+        }
+
+        $selectedAuthorName = '';
+        if ($authorId) {
+            $authorObj = $this->userModel->findById($authorId);
+            if ($authorObj) {
+                $selectedAuthorName = $authorObj['full_name'];
             }
         }
 
-        $pageTitle = $isEmptySearch ? 'Search' : 'Search: ' . $query;
+        $pageTitle = $isEmptySearch 
+            ? 'Search & Reports' 
+            : 'Search: ' . ($query !== '' ? $query : ($selectedAuthorName ? 'Author: ' . $selectedAuthorName : 'Filtered Results'));
 
         // Render search view wrapped in header and footer
         require_once __DIR__ . '/../views/layouts/header.php';

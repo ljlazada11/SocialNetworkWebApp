@@ -212,35 +212,77 @@ class PostModel {
     }
 
     /**
-     * Search posts by content with optional filtering and ordering.
+     * Search posts by content with optional author filtering, sorting, and engagement metrics.
+     * Demonstrates SQL JOIN, Aggregate functions (COUNT), GROUP BY, ORDER BY, and Subqueries.
      *
      * @param string $query Search keyword
-     * @param string $filter Filter type: 'all', 'newest', 'oldest', or 'user'
+     * @param string $filter Sort order: 'newest', 'oldest', 'most_liked', 'most_commented'
      * @param int|null $currentUserId Currently logged-in user ID
-     * @param int|null $filterUserId Optional user ID to filter posts by author
+     * @param int|null $authorId Optional user ID to filter posts by author
      * @return array
      */
-    public function searchPosts($query, $filter = 'newest', $currentUserId = null) {
-        $searchTerm = '%' . trim($query) . '%';
-        $orderBy = ($filter === 'oldest') ? 'p.created_at ASC, p.id ASC' : 'p.created_at DESC, p.id DESC';
+    public function searchPosts($query = '', $filter = 'newest', $currentUserId = null, $authorId = null) {
+        $whereConditions = [];
+        $params = [];
 
+        if (!empty($currentUserId)) {
+            $params[':current_user_id'] = (int)$currentUserId;
+        } else {
+            $params[':current_user_id'] = 0;
+        }
+
+        if (trim($query) !== '') {
+            $whereConditions[] = "p.content LIKE :search_term";
+            $params[':search_term'] = '%' . trim($query) . '%';
+        }
+
+        if (!empty($authorId)) {
+            $whereConditions[] = "p.user_id = :author_id";
+            $params[':author_id'] = (int)$authorId;
+        }
+
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+
+        // Determine sorting order based on filter parameter (ORDER BY)
+        switch ($filter) {
+            case 'oldest':
+                $orderBy = 'p.created_at ASC, p.id ASC';
+                break;
+            case 'most_liked':
+                $orderBy = 'likes_count DESC, p.created_at DESC, p.id DESC';
+                break;
+            case 'most_commented':
+                $orderBy = 'comments_count DESC, p.created_at DESC, p.id DESC';
+                break;
+            case 'newest':
+            default:
+                $orderBy = 'p.created_at DESC, p.id DESC';
+                break;
+        }
+
+        // SQL Query demonstrating:
+        // 1. JOIN (JOIN users u ON p.user_id = u.id, LEFT JOIN likes l, LEFT JOIN comments c)
+        // 2. Aggregate functions (COUNT(DISTINCT l.id), COUNT(DISTINCT c.id))
+        // 3. Subquery for user like status (SELECT COUNT(*) FROM likes ...)
+        // 4. GROUP BY (GROUP BY p.id)
+        // 5. ORDER BY ($orderBy)
         $sql = "SELECT p.*, 
                        u.username, 
                        u.full_name, 
                        u.profile_image,
                        COUNT(DISTINCT l.id) AS likes_count,
                        COUNT(DISTINCT c.id) AS comments_count,
-                       MAX(CASE WHEN l.user_id = ? THEN 1 ELSE 0 END) AS is_liked
+                       (SELECT COUNT(*) FROM likes l_sub WHERE l_sub.post_id = p.id AND l_sub.user_id = :current_user_id) > 0 AS is_liked
                 FROM posts p
                 JOIN users u ON p.user_id = u.id
                 LEFT JOIN likes l ON p.id = l.post_id
                 LEFT JOIN comments c ON p.id = c.post_id
-                WHERE p.content LIKE ?
-                GROUP BY p.id
+                {$whereClause}
+                GROUP BY p.id, p.user_id, p.content, p.image, p.created_at, u.username, u.full_name, u.profile_image
                 ORDER BY {$orderBy}";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$currentUserId ?? 0, $searchTerm]);
+        $stmt->execute($params);
         $posts = $stmt->fetchAll();
 
         // Attach comments to each post
@@ -249,5 +291,54 @@ class PostModel {
         }
 
         return $posts;
+    }
+
+    /**
+     * Calculate summary statistics for matching posts and filters.
+     * Demonstrates SQL JOIN, Aggregate functions (COUNT DISTINCT), and Subqueries.
+     * Avoids double-counting comments and likes.
+     *
+     * @param string $query Search keyword
+     * @param int|null $authorId Optional user ID filter
+     * @return array
+     */
+    public function getSearchSummaryStats($query = '', $authorId = null) {
+        $whereConditions = [];
+        $params = [];
+
+        if (trim($query) !== '') {
+            $whereConditions[] = "p.content LIKE :search_term";
+            $params[':search_term'] = '%' . trim($query) . '%';
+        }
+
+        if (!empty($authorId)) {
+            $whereConditions[] = "p.user_id = :author_id";
+            $params[':author_id'] = (int)$authorId;
+        }
+
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+
+        // Query using JOIN and Aggregate functions with DISTINCT to prevent duplicate counting
+        $sql = "SELECT 
+                    COUNT(DISTINCT p.id) AS total_posts,
+                    COUNT(DISTINCT p.user_id) AS total_authors,
+                    COUNT(DISTINCT c.id) AS total_comments,
+                    COUNT(DISTINCT l.id) AS total_likes
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                LEFT JOIN comments c ON p.id = c.post_id
+                LEFT JOIN likes l ON p.id = l.post_id
+                {$whereClause}";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $stats = $stmt->fetch();
+
+        return [
+            'total_posts'   => (int)($stats['total_posts'] ?? 0),
+            'total_authors' => (int)($stats['total_authors'] ?? 0),
+            'total_comments'=> (int)($stats['total_comments'] ?? 0),
+            'total_likes'   => (int)($stats['total_likes'] ?? 0)
+        ];
     }
 }

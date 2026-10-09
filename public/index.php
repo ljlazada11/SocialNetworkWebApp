@@ -1,7 +1,4 @@
 <?php
-include 'header.php';
-?>
-<?php
 // public/index.php
 // Main entry point and front controller routing for SocialNetworkWebApp
 
@@ -120,37 +117,6 @@ switch ($action) {
         $reportController->index();
         break;
 
-    // Admin Dashboard Actions
-    case 'admin':
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $adminController = new AdminController();
-        $adminController->index();
-        break;
-
-    case 'admin_change_role':
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $adminController = new AdminController();
-        $adminController->changeRole();
-        break;
-
-    case 'admin_delete_user':
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $adminController = new AdminController();
-        $adminController->deleteUser();
-        break;
-
-    case 'admin_delete_post':
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $adminController = new AdminController();
-        $adminController->deletePost();
-        break;
-
-    case 'admin_delete_comment':
-        require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $adminController = new AdminController();
-        $adminController->deleteComment();
-        break;
-
     // Additional Navigation Pages
     case 'people':
     case 'groups':
@@ -215,8 +181,3 @@ switch ($action) {
         require_once __DIR__ . '/../app/views/layouts/footer.php';
         break;
 }
-?>
-
-<?php
-include 'footer.php';
-?>

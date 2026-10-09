@@ -14,7 +14,7 @@ if (!defined('BASE_URL')) {
 }
 
 // Action-based routing
-$action = $_GET['action'] ?? 'home';
+$action = $_GET['action'] ?? $_POST['action'] ?? 'home';
 
 switch ($action) {
     case 'register':
@@ -103,6 +103,51 @@ switch ($action) {
         $postController->delete();
         break;
 
+    // Search and Filtering action
+    case 'search':
+        require_once __DIR__ . '/../app/controllers/SearchController.php';
+        $searchController = new SearchController();
+        $searchController->index();
+        break;
+
+    // Reports and SQL Analytics action
+    case 'reports':
+        require_once __DIR__ . '/../app/controllers/ReportController.php';
+        $reportController = new ReportController();
+        $reportController->index();
+        break;
+
+    // Admin Dashboard Actions
+    case 'admin':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $adminController = new AdminController();
+        $adminController->index();
+        break;
+
+    case 'admin_change_role':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $adminController = new AdminController();
+        $adminController->changeRole();
+        break;
+
+    case 'admin_delete_user':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $adminController = new AdminController();
+        $adminController->deleteUser();
+        break;
+
+    case 'admin_delete_post':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $adminController = new AdminController();
+        $adminController->deletePost();
+        break;
+
+    case 'admin_delete_comment':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $adminController = new AdminController();
+        $adminController->deleteComment();
+        break;
+
     // Additional Navigation Pages
     case 'people':
     case 'groups':
@@ -148,17 +193,19 @@ switch ($action) {
         $userModel = new UserModel();
 
         $currentUserId = $_SESSION['user_id'] ?? null;
-        $posts = $postModel->getAllPosts($currentUserId);
+        $posts = [];
+        $suggestedUsers = [];
 
-        // Fetch suggested users (excluding current user if logged in)
-        $db = Database::connect();
         if ($currentUserId) {
+            $feedFilter = $_GET['filter'] ?? 'newest';
+            $posts = $postModel->getAllPosts($currentUserId, $feedFilter);
+
+            // Fetch suggested users (excluding current user if logged in)
+            $db = Database::connect();
             $stmt = $db->prepare("SELECT id, username, full_name, profile_image FROM users WHERE id != :user_id LIMIT 3");
             $stmt->execute([':user_id' => $currentUserId]);
-        } else {
-            $stmt = $db->query("SELECT id, username, full_name, profile_image FROM users LIMIT 3");
+            $suggestedUsers = $stmt->fetchAll();
         }
-        $suggestedUsers = $stmt->fetchAll();
 
         require_once __DIR__ . '/../app/views/layouts/header.php';
         require_once __DIR__ . '/../app/views/home/feed.php';

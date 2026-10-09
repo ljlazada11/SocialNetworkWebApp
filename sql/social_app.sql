@@ -19,6 +19,7 @@ CREATE TABLE `users` (
     `full_name` VARCHAR(100) NOT NULL,
     `bio` TEXT DEFAULT NULL,
     `profile_image` VARCHAR(255) DEFAULT NULL,
+    `role` VARCHAR(20) NOT NULL DEFAULT 'user',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -58,10 +59,10 @@ CREATE TABLE `likes` (
 -- alice_wonder: 'password123'
 -- bob_builder: 'secret456'
 -- charlie_brown: 'mypassword789')
-INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `bio`, `profile_image`, `created_at`) VALUES
-(1, 'alice_wonder', '$2y$10$PVswc38Z/JDrR05o5TymYOTATOAseMbDa6l4BhK6jznYj95Z4K1/.', 'Alice Wonderland', 'Web developer and open-source enthusiast.', 'alice.jpg', NOW()),
-(2, 'bob_builder', '$2y$10$c3DAdkBGY9YDj.vwnoSmw.RY0RQv7Ju3tONif.zln0gsM3lJ/wCuq', 'Bob Builder', 'Passionate about coding, architecture, and technology.', 'bob.png', NOW()),
-(3, 'charlie_brown', '$2y$10$OoRSTbniHwss1bKPGjiYyeB2nYKu84352zTded63nh63RK5/Wa3.y', 'Charlie Brown', 'Coffee lover and backend explorer.', NULL, NOW());
+INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `bio`, `profile_image`, `role`, `created_at`) VALUES
+(1, 'alice_wonder', '$2y$10$PVswc38Z/JDrR05o5TymYOTATOAseMbDa6l4BhK6jznYj95Z4K1/.', 'Alice Wonderland', 'Web developer and open-source enthusiast.', 'alice.jpg', 'admin', NOW()),
+(2, 'bob_builder', '$2y$10$c3DAdkBGY9YDj.vwnoSmw.RY0RQv7Ju3tONif.zln0gsM3lJ/wCuq', 'Bob Builder', 'Passionate about coding, architecture, and technology.', 'bob.png', 'user', NOW()),
+(3, 'charlie_brown', '$2y$10$OoRSTbniHwss1bKPGjiYyeB2nYKu84352zTded63nh63RK5/Wa3.y', 'Charlie Brown', 'Coffee lover and backend explorer.', NULL, 'user', NOW());
 
 -- Sample Posts
 INSERT INTO `posts` (`id`, `user_id`, `content`, `image`, `created_at`) VALUES

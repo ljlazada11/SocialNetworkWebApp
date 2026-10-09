@@ -3,15 +3,18 @@
 // Controller handling viewing and editing of the logged-in user profile
 
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../models/PostModel.php';
 
 class ProfileController {
     private $userModel;
+    private $postModel;
 
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $this->userModel = new UserModel();
+        $this->postModel = new PostModel();
     }
 
     /**
@@ -27,23 +30,37 @@ class ProfileController {
     }
 
     /**
-     * View the logged-in user's profile.
+     * View a user's profile and their posts.
+     * Defaults to the logged-in user or accepts user_id / id query parameter.
      */
     public function view() {
         $this->requireAuth();
 
-        $userId = (int)$_SESSION['user_id'];
+        $loggedInUserId = (int)$_SESSION['user_id'];
+        $requestedUserId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : $loggedInUserId);
+        $userId = ($requestedUserId > 0) ? $requestedUserId : $loggedInUserId;
+
         $user = $this->userModel->getProfileById($userId);
 
         if (!$user) {
-            // If session exists but user row was deleted or not found
-            unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['full_name']);
-            $_SESSION['error_message'] = 'User profile not found. Please log in again.';
-            header('Location: ' . BASE_URL . '/index.php?action=login');
-            exit;
+            if ($userId === $loggedInUserId) {
+                // If session exists but user row was deleted or not found
+                unset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['full_name']);
+                $_SESSION['error_message'] = 'User profile not found. Please log in again.';
+                header('Location: ' . BASE_URL . '/index.php?action=login');
+                exit;
+            } else {
+                $_SESSION['error_message'] = 'User profile not found.';
+                header('Location: ' . BASE_URL . '/index.php?action=profile');
+                exit;
+            }
         }
 
-        $pageTitle = 'My Profile';
+        // Retrieve only posts belonging to the profile user, ordered newest first
+        $posts = $this->postModel->getPostsByUserId($userId, $loggedInUserId);
+
+        $isOwnProfile = ($userId === $loggedInUserId);
+        $pageTitle = $isOwnProfile ? 'My Profile' : $user['full_name'] . "'s Profile";
         require __DIR__ . '/../views/profile/profile.php';
     }
 

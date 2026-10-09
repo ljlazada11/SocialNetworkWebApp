@@ -14,6 +14,11 @@ if (!defined('BASE_URL')) {
 
 $currentAction = $_GET['action'] ?? 'home';
 
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Get current user avatar if logged in
 $userInitials = 'U';
 $userAvatarPath = null;
@@ -84,6 +89,14 @@ if (isset($_SESSION['user_id'])) {
 
         <!-- Sidebar Navigation Menu -->
         <div class="sidebar-nav">
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <!-- ADMIN DASHBOARD LINK FOR AUTHORIZED ADMINS ONLY -->
+                <a href="<?= BASE_URL ?>/index.php?action=admin" class="nav-link <?= (strpos($currentAction, 'admin') === 0 || $currentAction === 'admin') ? 'active' : '' ?>">
+                    <i class="bi bi-shield-lock-fill text-warning"></i>
+                    <span>Admin Dashboard</span>
+                </a>
+            <?php endif; ?>
+
             <a href="<?= BASE_URL ?>/" class="nav-link <?= ($currentAction === 'home') ? 'active' : '' ?>">
                 <i class="bi bi-house-door-fill"></i>
                 <span>Home</span>
@@ -107,6 +120,10 @@ if (isset($_SESSION['user_id'])) {
             <a href="<?= BASE_URL ?>/index.php?action=saved" class="nav-link <?= ($currentAction === 'saved') ? 'active' : '' ?>">
                 <i class="bi bi-bookmark"></i>
                 <span>Saved</span>
+            </a>
+            <a href="<?= BASE_URL ?>/index.php?action=reports" class="nav-link <?= ($currentAction === 'reports') ? 'active' : '' ?>">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Reports</span>
             </a>
 
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -150,11 +167,12 @@ if (isset($_SESSION['user_id'])) {
                 </button>
 
                 <!-- Search Bar -->
-                <div class="header-search">
+                <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search" role="search">
+                    <input type="hidden" name="action" value="search">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" placeholder="Search posts, people, or topics..." aria-label="Search">
+                    <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
                     <span class="search-shortcut">⌘K</span>
-                </div>
+                </form>
 
                 <!-- Right Header Actions -->
                 <div class="header-actions">
@@ -178,14 +196,30 @@ if (isset($_SESSION['user_id'])) {
                                     <?= htmlspecialchars($userInitials); ?>
                                 </div>
                                 <span class="header-user-name d-none d-sm-inline"><?= htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User'); ?></span>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                    <span class="badge bg-warning text-dark ms-1">Admin</span>
+                                <?php endif; ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="headerUserDropdown">
                                 <li>
                                     <div class="px-3 py-2 border-bottom">
-                                        <p class="mb-0 fw-bold small text-dark"><?= htmlspecialchars($_SESSION['full_name'] ?? ''); ?></p>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <p class="mb-0 fw-bold small text-dark"><?= htmlspecialchars($_SESSION['full_name'] ?? ''); ?></p>
+                                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                                <span class="badge bg-warning text-dark micro-text">Admin</span>
+                                            <?php endif; ?>
+                                        </div>
                                         <p class="mb-0 text-muted small">@<?= htmlspecialchars($_SESSION['username'] ?? ''); ?></p>
                                     </div>
                                 </li>
+                                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2 py-2 fw-semibold text-warning" href="<?= BASE_URL ?>/index.php?action=admin">
+                                            <i class="bi bi-shield-lock-fill"></i>
+                                            <span>Admin Dashboard</span>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="<?= BASE_URL ?>/index.php?action=profile">
                                         <i class="bi bi-person text-muted"></i>

@@ -15,9 +15,11 @@ class PostModel {
      * Get all posts with author info, like counts, and comment counts.
      *
      * @param int|null $currentUserId To check if the current user liked each post
+     * @param string $order 'newest' or 'oldest'
      * @return array
      */
-    public function getAllPosts($currentUserId = null) {
+    public function getAllPosts($currentUserId = null, $order = 'newest') {
+        $orderBy = ($order === 'oldest') ? 'p.created_at ASC, p.id ASC' : 'p.created_at DESC, p.id DESC';
         $sql = "SELECT p.*, 
                        u.username, 
                        u.full_name, 
@@ -30,10 +32,48 @@ class PostModel {
                 LEFT JOIN likes l ON p.id = l.post_id
                 LEFT JOIN comments c ON p.id = c.post_id
                 GROUP BY p.id
-                ORDER BY p.id DESC";
+                ORDER BY {$orderBy}";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':current_user_id' => $currentUserId ?? 0]);
+        $posts = $stmt->fetchAll();
+
+        // Attach comments to each post
+        foreach ($posts as &$post) {
+            $post['comments'] = $this->getCommentsByPostId($post['id']);
+        }
+
+        return $posts;
+    }
+
+    /**
+     * Get all posts created by a specific user with author info, like counts, and comment counts.
+     *
+     * @param int $userId Profile user ID whose posts to retrieve
+     * @param int|null $currentUserId Currently logged-in user ID (to check if they liked the post)
+     * @return array
+     */
+    public function getPostsByUserId($userId, $currentUserId = null) {
+        $sql = "SELECT p.*, 
+                       u.username, 
+                       u.full_name, 
+                       u.profile_image,
+                       COUNT(DISTINCT l.id) AS likes_count,
+                       COUNT(DISTINCT c.id) AS comments_count,
+                       MAX(CASE WHEN l.user_id = :current_user_id THEN 1 ELSE 0 END) AS is_liked
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                LEFT JOIN likes l ON p.id = l.post_id
+                LEFT JOIN comments c ON p.id = c.post_id
+                WHERE p.user_id = :user_id
+                GROUP BY p.id
+                ORDER BY p.created_at DESC, p.id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':user_id'         => $userId,
+            ':current_user_id' => $currentUserId ?? 0
+        ]);
         $posts = $stmt->fetchAll();
 
         // Attach comments to each post
@@ -169,5 +209,45 @@ class PostModel {
             ':post_id' => $postId,
             ':user_id' => $userId
         ]);
+    }
+
+    /**
+     * Search posts by content with optional filtering and ordering.
+     *
+     * @param string $query Search keyword
+     * @param string $filter Filter type: 'all', 'newest', 'oldest', or 'user'
+     * @param int|null $currentUserId Currently logged-in user ID
+     * @param int|null $filterUserId Optional user ID to filter posts by author
+     * @return array
+     */
+    public function searchPosts($query, $filter = 'newest', $currentUserId = null) {
+        $searchTerm = '%' . trim($query) . '%';
+        $orderBy = ($filter === 'oldest') ? 'p.created_at ASC, p.id ASC' : 'p.created_at DESC, p.id DESC';
+
+        $sql = "SELECT p.*, 
+                       u.username, 
+                       u.full_name, 
+                       u.profile_image,
+                       COUNT(DISTINCT l.id) AS likes_count,
+                       COUNT(DISTINCT c.id) AS comments_count,
+                       MAX(CASE WHEN l.user_id = ? THEN 1 ELSE 0 END) AS is_liked
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                LEFT JOIN likes l ON p.id = l.post_id
+                LEFT JOIN comments c ON p.id = c.post_id
+                WHERE p.content LIKE ?
+                GROUP BY p.id
+                ORDER BY {$orderBy}";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$currentUserId ?? 0, $searchTerm]);
+        $posts = $stmt->fetchAll();
+
+        // Attach comments to each post
+        foreach ($posts as &$post) {
+            $post['comments'] = $this->getCommentsByPostId($post['id']);
+        }
+
+        return $posts;
     }
 }

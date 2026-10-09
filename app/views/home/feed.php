@@ -32,9 +32,56 @@ $currentUserId = $_SESSION['user_id'] ?? null;
              ============================================== -->
         <div class="col-lg-8 col-xl-8">
 
-            <!-- 1. Post Creation Card -->
-            <div class="composer-card">
-                <?php if (isset($_SESSION['user_id'])): ?>
+            <?php if (!$currentUserId): ?>
+                <!-- Guest Landing Home Page (No social posts exposed to guests) -->
+                <div class="card-modern p-5 text-center mb-4">
+                    <div class="mb-3">
+                        <div class="brand-icon-box mx-auto" style="width: 58px; height: 58px; font-size: 1.8rem; border-radius: 14px;">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-2">Welcome to SMCC Connect</h2>
+                    <p class="text-muted fs-6 mb-4 col-md-10 mx-auto">
+                        The campus social networking platform for SMCC. Sign in or create an account to view campus posts, connect with fellow students, comment, and engage with the community.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-medium">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
+                        <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-accent px-4 py-2 rounded-pill fw-medium">
+                            <i class="bi bi-person-plus-fill me-1"></i> Create Account
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Campus Highlights Cards for Guests -->
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="card-modern p-4 text-center h-100">
+                            <i class="bi bi-chat-heart text-primary fs-2 mb-2 d-block"></i>
+                            <h6 class="fw-bold text-dark">Social Newsfeed</h6>
+                            <p class="small text-muted mb-0">Share your thoughts, photos, and updates with fellow students.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-modern p-4 text-center h-100">
+                            <i class="bi bi-search text-warning fs-2 mb-2 d-block"></i>
+                            <h6 class="fw-bold text-dark">Search & Discover</h6>
+                            <p class="small text-muted mb-0">Easily find peers, professors, and discussions across campus.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-modern p-4 text-center h-100">
+                            <i class="bi bi-shield-check text-success fs-2 mb-2 d-block"></i>
+                            <h6 class="fw-bold text-dark">Protected Community</h6>
+                            <p class="small text-muted mb-0">Private to verified members of the SMCC collegiate network.</p>
+                        </div>
+                    </div>
+                </div>
+
+            <?php else: ?>
+                <!-- 1. Post Creation Card -->
+                <div class="composer-card">
                     <form action="<?= BASE_URL ?>/index.php?action=create_post" method="POST" enctype="multipart/form-data">
                         <div class="composer-input-row">
                             <div class="user-avatar-sm" style="width: 40px; height: 40px; font-size: 0.9rem;">
@@ -71,22 +118,26 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                             </button>
                         </div>
                     </form>
-                <?php else: ?>
-                    <div class="composer-input-row align-items-center">
-                        <div class="user-avatar-sm" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <input type="text" class="composer-input" placeholder="Sign in to share what's happening on campus..." onclick="window.location.href='<?= BASE_URL ?>/index.php?action=login'" readonly style="cursor: pointer;">
-                        <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-accent btn-sm px-4">
-                            Sign In
+                </div>
+
+                <!-- Feed Header and Filter Bar -->
+                <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-rss-fill text-warning me-2"></i>Campus Feed
+                    </h6>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Feed Filter">
+                        <a href="<?= BASE_URL ?>/index.php?filter=newest" class="btn <?= (!isset($_GET['filter']) || $_GET['filter'] === 'newest') ? 'btn-primary' : 'btn-outline-secondary'; ?>">
+                            Newest
+                        </a>
+                        <a href="<?= BASE_URL ?>/index.php?filter=oldest" class="btn <?= (isset($_GET['filter']) && $_GET['filter'] === 'oldest') ? 'btn-primary' : 'btn-outline-secondary'; ?>">
+                            Oldest
                         </a>
                     </div>
-                <?php endif; ?>
-            </div>
+                </div>
 
-            <!-- 2. Social Posts Feed -->
-            <?php if (!empty($posts)): ?>
-                <?php foreach ($posts as $post): ?>
+                <!-- 2. Social Posts Feed -->
+                <?php if (!empty($posts)): ?>
+                    <?php foreach ($posts as $post): ?>
                     <?php
                     // Compute author initials
                     $authorParts = explode(' ', trim($post['full_name']));
@@ -301,6 +352,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                     <p class="small mb-0">Be the first to share an update on SMCC Connect!</p>
                 </div>
             <?php endif; ?>
+            <?php endif; // End if (!$currentUserId) ?>
         </div>
 
         <!-- ==============================================

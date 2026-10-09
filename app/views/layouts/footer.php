@@ -39,6 +39,18 @@ function toggleSidebar() {
         backdrop.classList.toggle('show');
     }
 }
+
+// Global keyboard shortcut to focus header search input (Cmd+K / Ctrl+K)
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        const searchInput = document.querySelector('.header-search input[name="q"]');
+        if (searchInput) {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+});
 </script>
 
 </body>

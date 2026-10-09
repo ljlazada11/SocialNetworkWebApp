@@ -62,7 +62,7 @@ class UserModel {
      * @return array|false
      */
     public function findById($id) {
-        $sql = "SELECT id, username, full_name, bio, profile_image, created_at FROM users WHERE id = :id LIMIT 1";
+        $sql = "SELECT id, username, full_name, bio, profile_image, role, created_at FROM users WHERE id = :id LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
@@ -111,6 +111,35 @@ class UserModel {
             ':profile_image' => $profileImage,
             ':id'            => $id
         ]);
+    }
+
+    /**
+     * Search users by username or full name (case-insensitive partial matching).
+     *
+     * @param string $query
+     * @param int $limit
+     * @return array
+     */
+    public function searchUsers($query) {
+        $searchTerm = '%' . trim($query) . '%';
+        $sql = "SELECT id, username, full_name, bio, profile_image, created_at
+                FROM users 
+                WHERE username LIKE ? OR full_name LIKE ?
+                ORDER BY full_name ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$searchTerm, $searchTerm]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get all users for filtering purposes.
+     *
+     * @return array
+     */
+    public function getAllUsers() {
+        $sql = "SELECT id, username, full_name FROM users ORDER BY full_name ASC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
     }
 }
 

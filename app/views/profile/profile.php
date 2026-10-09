@@ -123,9 +123,11 @@ if (!empty($user['full_name'])) {
 
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-center gap-2">
-                    <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-accent px-4">
-                        <i class="bi bi-pencil-square me-1"></i> Edit Profile
-                    </a>
+                    <?php if (!empty($isOwnProfile)): ?>
+                        <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-accent px-4">
+                            <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                        </a>
+                    <?php endif; ?>
                     <a href="<?= BASE_URL ?>/" class="btn btn-outline-secondary px-4 rounded-3">
                         <i class="bi bi-arrow-left me-1"></i> Back to Feed
                     </a>
@@ -133,8 +135,252 @@ if (!empty($user['full_name'])) {
             </div>
         </div>
 
+        <!-- ==============================================
+             USER'S POSTS SECTION
+             ============================================== -->
+        <div class="user-posts-section mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-post text-primary"></i>
+                    <span><?= !empty($isOwnProfile) ? 'My Posts' : 'Posts'; ?></span>
+                    <span class="badge rounded-pill bg-light text-secondary border fs-6 fw-semibold">
+                        <?= !empty($posts) ? count($posts) : 0; ?>
+                    </span>
+                </h4>
+            </div>
+
+            <?php if (!empty($posts)): ?>
+                <?php foreach ($posts as $post): ?>
+                    <?php
+                    // Compute author initials
+                    $authorParts = explode(' ', trim($post['full_name']));
+                    $authorInitials = count($authorParts) >= 2
+                        ? strtoupper(mb_substr($authorParts[0], 0, 1) . mb_substr($authorParts[count($authorParts)-1], 0, 1))
+                        : strtoupper(mb_substr($post['full_name'], 0, 2));
+
+                    // Time formatting
+                    $postTime = date('M j, Y \a\t g:i a', strtotime($post['created_at']));
+                    $diffHours = round((time() - strtotime($post['created_at'])) / 3600);
+                    $timeBadge = ($diffHours < 24 && $diffHours >= 1) ? $diffHours . 'h ago' : ($diffHours < 1 ? 'Just now' : date('M j, Y', strtotime($post['created_at'])));
+                    ?>
+                    <article class="post-card" id="post-<?= $post['id'] ?>">
+                        <!-- Post Author Header -->
+                        <div class="post-header">
+                            <div class="post-author-box">
+                                <?php if (!empty($post['profile_image'])): ?>
+                                    <img 
+                                        src="<?= BASE_URL ?>/public/uploads/avatars/<?= htmlspecialchars(basename($post['profile_image'])) ?>" 
+                                        alt="<?= htmlspecialchars($post['full_name']); ?>" 
+                                        class="post-avatar"
+                                        onerror="this.onerror=null; this.outerHTML='<div class=\'post-avatar\'><?= htmlspecialchars($authorInitials) ?></div>';"
+                                    >
+                                <?php else: ?>
+                                    <div class="post-avatar">
+                                        <?= htmlspecialchars($authorInitials) ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div>
+                                    <span class="post-author-name"><?= htmlspecialchars($post['full_name']); ?></span>
+                                    <div class="post-meta">
+                                        @<?= htmlspecialchars($post['username']); ?> &bull; <?= htmlspecialchars($timeBadge); ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Post Menu Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
+                                    <i class="bi bi-three-dots fs-5"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <?php if (!empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] === (int)$post['user_id']): ?>
+                                        <li>
+                                            <a class="dropdown-item small text-primary" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
+                                                <i class="bi bi-pencil-square me-2"></i>Edit post
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item small text-danger" href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
+                                                <i class="bi bi-trash me-2"></i>Delete post
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    <?php endif; ?>
+                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-bookmark me-2"></i>Save post</a></li>
+                                    <li><a class="dropdown-item small" href="#"><i class="bi bi-link-45deg me-2"></i>Copy link</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Post Text Content -->
+                        <div class="post-content">
+                            <?= nl2br(htmlspecialchars($post['content'])); ?>
+                        </div>
+
+                        <!-- Optional Post Image -->
+                        <?php if (!empty($post['image'])): ?>
+                            <?php
+                            $postImgFile = __DIR__ . '/../../../public/uploads/posts/' . basename($post['image']);
+                            $hasRealImage = file_exists($postImgFile);
+                            ?>
+                            <?php if ($hasRealImage): ?>
+                                <div class="post-image-container">
+                                    <img src="<?= BASE_URL ?>/public/uploads/posts/<?= htmlspecialchars(basename($post['image'])) ?>" alt="Post attachment">
+                                </div>
+                            <?php else: ?>
+                                <div class="post-image-placeholder">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <!-- Post Engagement Actions (Like / Comment / Edit / Delete) -->
+                        <div class="post-footer-actions d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <form action="<?= BASE_URL ?>/index.php?action=like_post" method="POST" class="d-inline">
+                                    <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                                    <button type="submit" class="post-action-btn <?= !empty($post['is_liked']) ? 'liked' : '' ?>" title="Like">
+                                        <i class="bi <?= !empty($post['is_liked']) ? 'bi-heart-fill' : 'bi-heart' ?>"></i>
+                                        <span><?= (int)$post['likes_count']; ?></span>
+                                    </button>
+                                </form>
+
+                                <button type="button" class="post-action-btn" onclick="toggleComments(<?= $post['id'] ?>)" title="Comments">
+                                    <i class="bi bi-chat"></i>
+                                    <span><?= (int)$post['comments_count']; ?></span>
+                                </button>
+                            </div>
+
+                            <?php if (!empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] === (int)$post['user_id']): ?>
+                                <div class="d-flex align-items-center gap-1">
+                                    <a href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>" class="btn btn-sm btn-light text-primary border-0 rounded-pill px-2 py-1 small" title="Edit your post">
+                                        <i class="bi bi-pencil-square me-1"></i>Edit
+                                    </a>
+                                    <a href="<?= BASE_URL ?>/index.php?action=delete_post&post_id=<?= $post['id'] ?>" class="btn btn-sm btn-light text-danger border-0 rounded-pill px-2 py-1 small" onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.');" title="Delete your post">
+                                        <i class="bi bi-trash me-1"></i>Delete
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="comments-container d-none" id="comments-box-<?= $post['id'] ?>">
+                            <?php if (!empty($post['comments'])): ?>
+                                <?php foreach ($post['comments'] as $comment): ?>
+                                    <?php
+                                    $cParts = explode(' ', trim($comment['full_name'] ?? 'User'));
+                                    $cInitials = count($cParts) >= 2
+                                        ? strtoupper(mb_substr($cParts[0], 0, 1) . mb_substr($cParts[count($cParts)-1], 0, 1))
+                                        : strtoupper(mb_substr($comment['full_name'] ?? 'U', 0, 2));
+
+                                    $cTimeDiff = time() - strtotime($comment['created_at']);
+                                    if ($cTimeDiff < 60) {
+                                        $cTimeBadge = 'Just now';
+                                    } elseif ($cTimeDiff < 3600) {
+                                        $cTimeBadge = floor($cTimeDiff / 60) . 'm ago';
+                                    } elseif ($cTimeDiff < 86400) {
+                                        $cTimeBadge = floor($cTimeDiff / 3600) . 'h ago';
+                                    } else {
+                                        $cTimeBadge = date('M j, Y', strtotime($comment['created_at']));
+                                    }
+                                    $cFullTime = date('M j, Y \a\t g:i a', strtotime($comment['created_at']));
+                                    ?>
+                                    <div class="comment-bubble" id="comment-<?= $comment['id'] ?>">
+                                        <?php if (!empty($comment['profile_image'])): ?>
+                                            <img 
+                                                src="<?= BASE_URL ?>/public/uploads/avatars/<?= htmlspecialchars(basename($comment['profile_image'])) ?>" 
+                                                alt="<?= htmlspecialchars($comment['full_name']); ?>" 
+                                                class="comment-avatar"
+                                                onerror="this.onerror=null; this.outerHTML='<div class=\'comment-avatar\'><?= htmlspecialchars($cInitials) ?></div>';"
+                                            >
+                                        <?php else: ?>
+                                            <div class="comment-avatar">
+                                                <?= htmlspecialchars($cInitials) ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div class="comment-content-box">
+                                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                                                <div>
+                                                    <span class="comment-author"><?= htmlspecialchars($comment['full_name']); ?></span>
+                                                    <span class="text-muted small">@<?= htmlspecialchars($comment['username']); ?></span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <small class="text-muted" title="<?= htmlspecialchars($cFullTime); ?>">
+                                                        <?= htmlspecialchars($cTimeBadge); ?>
+                                                    </small>
+
+                                                    <?php if (!empty($_SESSION['user_id']) && (int)$_SESSION['user_id'] === (int)$comment['user_id']): ?>
+                                                        <a href="<?= BASE_URL ?>/index.php?action=edit_comment&comment_id=<?= $comment['id'] ?>" class="comment-btn-action text-primary" title="Edit comment">
+                                                            <i class="bi bi-pencil-square"></i> Edit
+                                                        </a>
+                                                        <form action="<?= BASE_URL ?>/index.php?action=delete_comment" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this comment? This action cannot be undone.');">
+                                                            <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
+                                                            <button type="submit" class="comment-btn-action text-danger" title="Delete comment">
+                                                                <i class="bi bi-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                            <div class="comment-text">
+                                                <?= nl2br(htmlspecialchars($comment['content'])); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                            <!-- Add Comment Form -->
+                            <?php if (!empty($_SESSION['user_id'])): ?>
+                                <form action="<?= BASE_URL ?>/index.php?action=create_comment" method="POST" class="comment-input-row">
+                                    <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                                    <input 
+                                        type="text" 
+                                        name="content" 
+                                        class="form-control" 
+                                        placeholder="Write a comment..." 
+                                        maxlength="1000"
+                                        required
+                                    >
+                                    <button type="submit" class="btn btn-sm btn-accent rounded-pill px-3" title="Post comment">
+                                        <i class="bi bi-send-fill"></i>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <div class="text-center py-2">
+                                    <a href="<?= BASE_URL ?>/index.php?action=login" class="text-muted small text-decoration-none">
+                                        Sign in to comment
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Empty State -->
+                <div class="card-modern p-5 text-center text-muted">
+                    <i class="bi bi-chat-square-text fs-1 mb-3 text-secondary"></i>
+                    <h5 class="fw-semibold text-dark">No posts yet.</h5>
+                    <p class="small mb-0 text-muted">
+                        <?= !empty($isOwnProfile) ? "You haven't published any posts yet. Head over to the feed to share what's happening!" : "This user hasn't shared any posts yet."; ?>
+                    </p>
+                </div>
+            <?php endif; ?>
+        </div>
+
     </div>
 </div>
+
+<script>
+function toggleComments(postId) {
+    const box = document.getElementById('comments-box-' + postId);
+    if (box) {
+        box.classList.toggle('d-none');
+    }
+}
+</script>
 
 <?php
 require_once __DIR__ . '/../layouts/footer.php';

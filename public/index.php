@@ -1,4 +1,7 @@
 <?php
+include 'header.php';
+?>
+<?php
 // public/index.php
 // Main entry point and front controller routing for SocialNetworkWebApp
 
@@ -212,3 +215,8 @@ switch ($action) {
         require_once __DIR__ . '/../app/views/layouts/footer.php';
         break;
 }
+?>
+
+<?php
+include 'footer.php';
+?>

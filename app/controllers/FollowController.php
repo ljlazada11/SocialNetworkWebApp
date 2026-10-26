@@ -1,6 +1,6 @@
 <?php
 // app/controllers/FollowController.php
-// Handles following, unfollowing, and the Friends/Followers management page for Nexus
+// Handles following, unfollowing, and the Friends/Followers management page for CLIQ
 
 require_once __DIR__ . '/../models/FollowModel.php';
 require_once __DIR__ . '/../models/UserModel.php';

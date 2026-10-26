@@ -1,6 +1,6 @@
 <?php
 // app/controllers/InsightsController.php
-// Controller handling Community Search (Users and Posts) for Nexus
+// Controller handling Community Search (Users and Posts) for CLIQ
 
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../models/PostModel.php';

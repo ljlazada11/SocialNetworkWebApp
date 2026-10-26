@@ -1,21 +1,23 @@
 <?php
 // app/views/notifications/index.php
-// Dedicated Notifications View for Nexus
+// Dedicated Notifications View for CLIQ
 
 $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 ?>
 
 <div class="notifications-page-container mx-auto py-4" style="max-width: 780px;">
 
-    <!-- Notifications Header Card -->
-    <div class="card-modern p-4 mb-4 border-0 shadow-sm">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <!-- Unified Single Notifications Card -->
+    <div class="card-modern border-0 shadow-sm overflow-hidden p-0" id="notificationsListCard">
+        <!-- Card Header -->
+        <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="notif-header-icon-box">
-                    <i class="bi bi-bell-fill"></i>
+                <div class="d-flex align-items-center justify-content-center rounded-3 text-white"
+                     style="width: 40px; height: 40px; background: linear-gradient(135deg, #07193d, #1e3a8a); flex-shrink: 0;">
+                    <i class="bi bi-bell-fill fs-5"></i>
                 </div>
                 <div>
-                    <h4 class="fw-bold text-navy mb-0">Notifications</h4>
+                    <h5 class="fw-bold text-themed mb-0">Notifications</h5>
                     <p class="text-muted small mb-0">Stay updated on who followed you, liked, or commented on your posts.</p>
                 </div>
             </div>
@@ -32,114 +34,111 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                 <?php endif; ?>
             </div>
         </div>
-    </div>
 
-    <!-- Notifications List -->
-    <div class="notifications-list-wrapper">
+        <!-- Notifications List -->
         <?php if (!empty($notifications)): ?>
-            <div class="card-modern border-0 shadow-sm overflow-hidden p-0" id="notificationsListCard">
-                <div class="list-group list-group-flush" id="notificationsList">
-                    <?php foreach ($notifications as $n): ?>
-                        <?php
-                        $isUnread = !(bool)$n['is_read'];
-                        $actorName = $n['actor_full_name'] ?? 'User';
-                        $actorUsername = $n['actor_username'] ?? '';
-                        $actorAvatar = $n['actor_profile_image'] ?? null;
-                        
-                        $avatarPath = null;
-                        if (!empty($actorAvatar)) {
-                            $checkPath = __DIR__ . '/../../../public/uploads/avatars/' . basename($actorAvatar);
-                            if (file_exists($checkPath)) {
-                                $avatarPath = BASE_URL . '/public/uploads/avatars/' . htmlspecialchars(basename($actorAvatar));
-                            }
+            <div class="list-group list-group-flush" id="notificationsList">
+                <?php foreach ($notifications as $n): ?>
+                    <?php
+                    $isUnread = !(bool)$n['is_read'];
+                    $actorName = $n['actor_full_name'] ?? 'User';
+                    $actorUsername = $n['actor_username'] ?? '';
+                    $actorAvatar = $n['actor_profile_image'] ?? null;
+                    
+                    $avatarPath = null;
+                    if (!empty($actorAvatar)) {
+                        $checkPath = __DIR__ . '/../../../public/uploads/avatars/' . basename($actorAvatar);
+                        if (file_exists($checkPath)) {
+                            $avatarPath = BASE_URL . '/public/uploads/avatars/' . htmlspecialchars(basename($actorAvatar));
                         }
+                    }
 
-                        $parts = explode(' ', trim($actorName));
-                        $initials = count($parts) >= 2
-                            ? strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[count($parts)-1], 0, 1))
-                            : strtoupper(mb_substr($actorName, 0, 2));
+                    $parts = explode(' ', trim($actorName));
+                    $initials = count($parts) >= 2
+                        ? strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[count($parts)-1], 0, 1))
+                        : strtoupper(mb_substr($actorName, 0, 2));
 
-                        // Determine destination
-                        $destUrl = BASE_URL . '/index.php?action=open_notification&id=' . (int)$n['id'];
+                    // Determine destination
+                    $destUrl = BASE_URL . '/index.php?action=open_notification&id=' . (int)$n['id'];
 
-                        // Determine icon & badge color by notification type
-                        $typeIcon = 'bi-bell-fill';
+                    // Determine icon & badge color by notification type
+                    $typeIcon = 'bi-bell-fill';
+                    $typeBadgeClass = 'bg-primary text-white';
+                    if ($n['type'] === 'follow') {
+                        $typeIcon = 'bi-person-plus-fill';
                         $typeBadgeClass = 'bg-primary text-white';
-                        if ($n['type'] === 'follow') {
-                            $typeIcon = 'bi-person-plus-fill';
-                            $typeBadgeClass = 'bg-primary text-white';
-                        } elseif ($n['type'] === 'like') {
-                            $typeIcon = 'bi-heart-fill';
-                            $typeBadgeClass = 'bg-danger text-white';
-                        } elseif ($n['type'] === 'comment') {
-                            $typeIcon = 'bi-chat-dots-fill';
-                            $typeBadgeClass = 'bg-success text-white';
-                        }
-                        ?>
-                        <div class="list-group-item list-group-item-action p-3 notification-item <?= $isUnread ? 'notification-unread' : '' ?>" id="notif-item-<?= (int)$n['id'] ?>">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                
-                                <a href="<?= $destUrl ?>" class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1 min-w-0">
-                                    <!-- Actor Avatar with Type Badge -->
-                                    <div class="position-relative flex-shrink-0">
-                                        <?php if (!empty($avatarPath)): ?>
-                                            <img src="<?= $avatarPath ?>" alt="<?= htmlspecialchars($actorName); ?>" class="notif-avatar" onerror="this.onerror=null; this.outerHTML='<div class=\'notif-avatar-initials\'><?= htmlspecialchars($initials); ?></div>';">
-                                        <?php else: ?>
-                                            <div class="notif-avatar-initials">
-                                                <?= htmlspecialchars($initials); ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <span class="position-absolute bottom-0 end-0 rounded-circle d-inline-flex align-items-center justify-content-center notif-type-bubble <?= $typeBadgeClass ?>">
-                                            <i class="bi <?= $typeIcon ?>" style="font-size: 0.65rem;"></i>
-                                        </span>
-                                    </div>
-
-                                    <!-- Content -->
-                                    <div class="flex-grow-1 min-w-0">
-                                        <div class="notif-text mb-1 text-truncate-2">
-                                            <strong class="text-navy"><?= htmlspecialchars($actorName); ?></strong>
-                                            <span class="text-secondary"><?= htmlspecialchars($n['message']); ?></span>
+                    } elseif ($n['type'] === 'like') {
+                        $typeIcon = 'bi-heart-fill';
+                        $typeBadgeClass = 'bg-danger text-white';
+                    } elseif ($n['type'] === 'comment') {
+                        $typeIcon = 'bi-chat-dots-fill';
+                        $typeBadgeClass = 'bg-success text-white';
+                    }
+                    ?>
+                    <div class="list-group-item list-group-item-action p-3 notification-item <?= $isUnread ? 'notification-unread' : '' ?>" id="notif-item-<?= (int)$n['id'] ?>">
+                        <div class="d-flex align-items-center justify-content-between gap-3">
+                            
+                            <a href="<?= $destUrl ?>" class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1 min-w-0">
+                                <!-- Actor Avatar with Type Badge -->
+                                <div class="position-relative flex-shrink-0">
+                                    <?php if (!empty($avatarPath)): ?>
+                                        <img src="<?= $avatarPath ?>" alt="<?= htmlspecialchars($actorName); ?>" class="notif-avatar" onerror="this.onerror=null; this.outerHTML='<div class=\'notif-avatar-initials\'>' . htmlspecialchars($initials) . '</div>';">
+                                    <?php else: ?>
+                                        <div class="notif-avatar-initials">
+                                            <?= htmlspecialchars($initials); ?>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2 micro-text text-muted">
-                                            <span><?= NotificationController::formatTimeAgo($n['created_at']); ?></span>
-                                            <?php if ($n['type'] !== 'follow' && empty($n['post_exists'])): ?>
-                                                <span>&bull;</span>
-                                                <span class="text-warning"><i class="bi bi-info-circle me-1"></i>Post removed</span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Action Buttons: Unread Dot / Mark as Read -->
-                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                                    <?php if ($isUnread): ?>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-icon-subtle mark-read-single-btn" 
-                                                data-id="<?= (int)$n['id'] ?>" 
-                                                title="Mark as read"
-                                                aria-label="Mark as read">
-                                            <span class="notif-unread-dot"></span>
-                                        </button>
                                     <?php endif; ?>
+                                    <span class="position-absolute bottom-0 end-0 rounded-circle d-inline-flex align-items-center justify-content-center notif-type-bubble <?= $typeBadgeClass ?>">
+                                        <i class="bi <?= $typeIcon ?>" style="font-size: 0.65rem;"></i>
+                                    </span>
                                 </div>
+
+                                <!-- Content -->
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="notif-text mb-1 text-truncate-2">
+                                        <strong class="text-themed"><?= htmlspecialchars($actorName); ?></strong>
+                                        <span class="text-secondary"><?= htmlspecialchars($n['message']); ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 micro-text text-muted">
+                                        <span><?= NotificationController::formatTimeAgo($n['created_at']); ?></span>
+                                        <?php if ($n['type'] !== 'follow' && empty($n['post_exists'])): ?>
+                                            <span>&bull;</span>
+                                            <span class="text-warning"><i class="bi bi-info-circle me-1"></i>Post removed</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Action Buttons: Unread Dot / Mark as Read -->
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <?php if ($isUnread): ?>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-icon-subtle mark-read-single-btn" 
+                                            data-id="<?= (int)$n['id'] ?>" 
+                                            title="Mark as read"
+                                            aria-label="Mark as read">
+                                        <span class="notif-unread-dot"></span>
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <!-- Empty State -->
-            <div class="card-modern p-5 text-center border-0 shadow-sm">
+            <!-- Empty State inside card -->
+            <div class="p-5 text-center">
                 <div class="notif-empty-icon mx-auto mb-3">
                     <i class="bi bi-bell-slash"></i>
                 </div>
-                <h5 class="fw-bold text-navy mb-2">You're all caught up!</h5>
+                <h5 class="fw-bold text-themed mb-2">You're all caught up!</h5>
                 <p class="text-muted small mx-auto mb-0" style="max-width: 420px;">
                     When someone follows you, likes, or comments on your posts, you'll receive notifications here.
                 </p>
             </div>
         <?php endif; ?>
     </div>
+
 </div>
 
 <script>

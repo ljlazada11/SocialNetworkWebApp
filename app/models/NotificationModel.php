@@ -1,6 +1,6 @@
 <?php
 // app/models/NotificationModel.php
-// Handles creating, fetching, counting, and marking notifications as read for Nexus
+// Handles creating, fetching, counting, and marking notifications as read for CLIQ
 
 require_once __DIR__ . '/../../config/database.php';
 

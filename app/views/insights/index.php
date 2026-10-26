@@ -1,6 +1,6 @@
 <?php
 // app/views/insights/index.php
-// Redesigned Community Search View for Nexus — The SMCC Community Hub
+// Redesigned Community Search View for CLIQ — The SMCC Community Hub
 
 $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 $type = $type ?? 'users';
@@ -47,7 +47,7 @@ $totalCount = (int)($totalCount ?? 0);
 
             <!-- Search Form -->
             <form action="<?= BASE_URL ?>/index.php" method="GET" id="communitySearchForm">
-                <input type="hidden" name="action" value="search">
+                <input type="hidden" name="action" value="insights">
                 <input type="hidden" name="type" id="searchTypeInput" value="<?= htmlspecialchars($type); ?>">
                 <input type="hidden" name="filter" id="searchFilterInput" value="<?= htmlspecialchars($filter); ?>">
 
@@ -73,7 +73,7 @@ $totalCount = (int)($totalCount ?? 0);
                     </div>
 
                     <?php if ($hasSearched): ?>
-                        <a href="<?= BASE_URL ?>/index.php?action=search&type=<?= urlencode($type); ?>" class="btn btn-sm btn-link text-muted text-decoration-none py-0">
+                        <a href="<?= BASE_URL ?>/index.php?action=insights&type=<?= urlencode($type); ?>" class="btn btn-sm btn-link text-muted text-decoration-none py-0">
                             <i class="bi bi-x-circle me-1"></i> Clear search
                         </a>
                     <?php endif; ?>

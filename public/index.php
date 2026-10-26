@@ -157,12 +157,18 @@ switch ($action) {
         $postController->delete();
         break;
 
-    // Community Insights (Search and Filtering)
+    // Community Insights - quick user/post search with filter pills
     case 'insights':
-    case 'search':
         require_once __DIR__ . '/../app/controllers/InsightsController.php';
         $insightsController = new InsightsController();
         $insightsController->index();
+        break;
+
+    // Full Search - keyword, author, sort filter, advanced results
+    case 'search':
+        require_once __DIR__ . '/../app/controllers/SearchController.php';
+        $searchController = new SearchController();
+        $searchController->index();
         break;
 
     case 'reports':
@@ -214,10 +220,40 @@ switch ($action) {
         $followController->toggle();
         break;
 
+    // Private Messaging System
+    case 'messages':
+        require_once __DIR__ . '/../app/controllers/MessageController.php';
+        (new MessageController())->inbox();
+        break;
+
+    case 'conversation':
+        require_once __DIR__ . '/../app/controllers/MessageController.php';
+        (new MessageController())->conversation();
+        break;
+
+    case 'send_message':
+        require_once __DIR__ . '/../app/controllers/MessageController.php';
+        (new MessageController())->send();
+        break;
+
+    case 'delete_message':
+        require_once __DIR__ . '/../app/controllers/MessageController.php';
+        (new MessageController())->deleteMessage();
+        break;
+
+    case 'messages_unread_count':
+        require_once __DIR__ . '/../app/controllers/MessageController.php';
+        (new MessageController())->getUnreadCount();
+        break;
+
     // Additional Navigation Pages
+    case 'events':
+        require_once __DIR__ . '/../app/controllers/EventController.php';
+        (new EventController())->index();
+        break;
+
     case 'people':
     case 'groups':
-    case 'events':
     case 'saved':
         if (!isset($_SESSION['user_id'])) {
             $_SESSION['error_message'] = 'You must be logged in to access that page.';
@@ -281,6 +317,6 @@ switch ($action) {
 
     default:
         // Return friendly 404 Not Found for unrecognized action routes
-        ErrorHandler::renderErrorPage(404, 'Page Not Found', 'The page or action you requested ("' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '") does not exist on Nexus.');
+        ErrorHandler::renderErrorPage(404, 'Page Not Found', 'The page or action you requested ("' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '") does not exist on CLIQ.');
         break;
 }

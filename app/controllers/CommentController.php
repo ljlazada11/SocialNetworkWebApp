@@ -297,21 +297,37 @@ class CommentController {
         }
     }
 
-    /**
+        /**
      * Delete an existing comment owned by the logged-in user.
      */
     public function delete() {
         $this->requireAuth();
 
+        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || isset($_POST['ajax']) || isset($_GET['ajax'])
+            || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $_SESSION['error_message'] = 'Invalid request method for deleting a comment.';
+            $errMsg = 'Invalid request method for deleting a comment.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
             header('Location: ' . BASE_URL . '/index.php');
             exit;
         }
 
         // CSRF Token Validation
         if (!validate_csrf_token()) {
-            $_SESSION['error_message'] = 'Security Error: Invalid or expired CSRF token.';
+            $errMsg = 'Security Error: Invalid or expired CSRF token.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
             header('Location: ' . BASE_URL . '/index.php');
             exit;
         }
@@ -320,33 +336,73 @@ class CommentController {
         $userId    = (int)$_SESSION['user_id'];
 
         if ($commentId <= 0) {
-            $_SESSION['error_message'] = 'Invalid comment ID.';
+            $errMsg = 'Invalid comment ID.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
             header('Location: ' . BASE_URL . '/index.php');
             exit;
         }
 
         $comment = $this->commentModel->getCommentById($commentId);
         if (!$comment) {
-            $_SESSION['error_message'] = 'Comment not found or has already been deleted.';
+            $errMsg = 'Comment not found or has already been deleted.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
             header('Location: ' . BASE_URL . '/index.php');
             exit;
         }
 
         // Strict Server-Side Ownership Check
         if ((int)$comment['user_id'] !== $userId) {
-            $_SESSION['error_message'] = 'Unauthorized: You can only delete your own comments.';
+            $errMsg = 'Unauthorized: You can only delete your own comments.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
             header('Location: ' . BASE_URL . '/index.php');
             exit;
         }
 
+        $postId = (int)$comment['post_id'];
         $deleted = $this->commentModel->deleteComment($commentId, $userId);
         if ($deleted) {
+            $remainingComments = $this->commentModel->getCommentsByPost($postId);
+            $remainingCount = count($remainingComments);
+
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Comment deleted successfully!',
+                    'comment_id' => $commentId,
+                    'post_id' => $postId,
+                    'comments_count' => $remainingCount
+                ]);
+                exit;
+            }
+
             $_SESSION['success_message'] = 'Comment deleted successfully!';
         } else {
-            $_SESSION['error_message'] = 'Failed to delete comment.';
+            $errMsg = 'Failed to delete comment.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => $errMsg]);
+                exit;
+            }
+            $_SESSION['error_message'] = $errMsg;
         }
 
-        header('Location: ' . BASE_URL . '/index.php#post-' . $comment['post_id']);
+        header('Location: ' . BASE_URL . '/index.php#post-' . $postId);
         exit;
     }
 }

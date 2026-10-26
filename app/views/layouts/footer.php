@@ -6,8 +6,12 @@
         </main>
 
         <!-- Modern Footer -->
-        <footer class="bg-white border-top py-3 px-4 text-muted small text-start">
-            &copy; <?= date('Y'); ?> <strong>Nexus</strong>. All rights reserved.
+        <footer class="bg-white border-top py-3 px-4 text-muted small text-center w-100">
+            <div class="d-flex align-items-center justify-content-center gap-2 text-center mx-auto flex-wrap">
+                <img src="<?= BASE_URL ?>/public/assets/images/cliq-icon-light.png" alt="CLIQ" class="cliq-logo-icon cliq-logo-footer cliq-logo-light">
+                <img src="<?= BASE_URL ?>/public/assets/images/cliq-icon-dark.png" alt="CLIQ" class="cliq-logo-icon cliq-logo-footer cliq-logo-dark">
+                <span>&copy; <?= date('Y'); ?> <strong>CLIQ</strong> &bull; Saint Michael College of Caraga</span>
+            </div>
         </footer>
 
     <!-- Closing Main Content Area Wrapper -->

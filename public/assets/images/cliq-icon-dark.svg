@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109 109" width="109" height="109" fill="none">
+    <!-- Center of main ring at (49, 49), radius 34, stroke-width 15.5 -->
+    <!-- Arc 1: Top-Left (Sky Blue) from 105 deg to 220 deg approx -->
+    <path d="M 23 26 A 34 34 0 0 1 49 15" stroke="#4891FF" stroke-width="15.5" stroke-linecap="round"/>
+    <!-- Arc 2: Top-Right (White) from 230 deg to 350 deg approx -->
+    <path d="M 59 16.5 A 34 34 0 0 1 82 52" stroke="#FFFFFF" stroke-width="15.5" stroke-linecap="round"/>
+    <!-- Arc 3: Bottom-Left (Yellow) from 355 deg to 100 deg approx -->
+    <path d="M 76 68 A 34 34 0 0 1 18 43" stroke="#F7B82F" stroke-width="15.5" stroke-linecap="round"/>
+    <!-- Dot: Bottom-Right (Yellow) -->
+    <circle cx="89" cy="94" r="12" fill="#F4B837"/>
+</svg>

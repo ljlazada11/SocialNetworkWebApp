@@ -1,5 +1,5 @@
 /**
- * Nexus - AJAX Interactions (Post creation, Commenting, Liking)
+ * CLIQ - AJAX Interactions (Post creation, Commenting, Liking)
  * Prevents full page reloads for seamless user experience.
  */
 
@@ -355,13 +355,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${escapeHtml(comment.time_badge)}
                             </small>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Comment options" style="line-height: 1;">
+                                <button type="button" class="btn comment-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Comment options" title="Comment options">
                                     <i class="bi bi-three-dots"></i>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-1" style="min-width: 120px; font-size: 0.85rem;">
+                                <ul class="dropdown-menu dropdown-menu-end post-dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item py-1 text-secondary d-flex align-items-center gap-2" href="${baseUrl}/index.php?action=edit_comment&comment_id=${comment.id}">
-                                            <i class="bi bi-pencil-square text-muted"></i>
+                                        <a class="dropdown-item action-item-edit" href="${baseUrl}/index.php?action=edit_comment&comment_id=${comment.id}">
+                                            <i class="bi bi-pencil-square"></i>
                                             <span>Edit</span>
                                         </a>
                                     </li>
@@ -369,8 +369,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <form action="${baseUrl}/index.php?action=delete_comment" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this comment? This action cannot be undone.');">
                                             <input type="hidden" name="csrf_token" value="${escapeHtml(document.querySelector('meta[name=\'csrf-token\']')?.getAttribute('content') || '')}">
                                             <input type="hidden" name="comment_id" value="${comment.id}">
-                                            <button type="submit" class="dropdown-item py-1 text-secondary d-flex align-items-center gap-2 border-0 bg-transparent w-100 text-start">
-                                                <i class="bi bi-trash text-muted"></i>
+                                            <button type="submit" class="dropdown-item action-item-delete">
+                                                <i class="bi bi-trash"></i>
                                                 <span>Delete</span>
                                             </button>
                                         </form>
@@ -405,6 +405,85 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // =========================================================================
+    
+    // =========================================================================
+    // 2B. AJAX COMMENT DELETION
+    // =========================================================================
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (!form || !form.action || !form.action.includes('action=delete_comment')) {
+            return;
+        }
+
+        e.preventDefault();
+
+        // If form does not have an inline onsubmit confirm, confirm here
+        if (!form.getAttribute('onsubmit') && !confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+            return;
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        formData.append('ajax', '1');
+
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+        if (csrfToken && !formData.has('csrf_token')) {
+            formData.append('csrf_token', csrfToken);
+        }
+
+        const commentId = formData.get('comment_id');
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (submitBtn) submitBtn.disabled = false;
+            if (data && data.success) {
+                const targetComment = document.getElementById('comment-' + (data.comment_id || commentId));
+                if (targetComment) {
+                    targetComment.style.transition = 'all 0.25s ease-out';
+                    targetComment.style.opacity = '0';
+                    targetComment.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        targetComment.remove();
+                    }, 250);
+                }
+
+                // Update comment counter across the UI for this post
+                const postCard = document.getElementById('post-' + data.post_id);
+                if (postCard) {
+                    const commentCountSpan = postCard.querySelector('.post-action-btn[onclick*="toggleComments"] span');
+                    if (commentCountSpan && typeof data.comments_count !== 'undefined') {
+                        commentCountSpan.textContent = data.comments_count;
+                    }
+                }
+                const commentsContainer = document.getElementById('comments-box-' + data.post_id);
+                if (commentsContainer) {
+                    const headerSpan = commentsContainer.querySelector('h6 span');
+                    if (headerSpan && typeof data.comments_count !== 'undefined') {
+                        headerSpan.textContent = 'Comments (' + data.comments_count + ')';
+                    }
+                }
+            } else if (data && data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(err => {
+            if (submitBtn) submitBtn.disabled = false;
+            console.error('Error deleting comment:', err);
+        });
+    });
+
     // 3. AJAX POST CREATION
     // =========================================================================
     const composerForm = document.querySelector('.composer-card form');
@@ -579,21 +658,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
-                            <i class="bi bi-three-dots fs-5"></i>
+                        <button type="button" class="btn post-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions" title="Post actions">
+                            <i class="bi bi-three-dots"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                        <ul class="dropdown-menu dropdown-menu-end post-dropdown-menu">
                             <li>
-                                <a class="dropdown-item small text-secondary" href="${baseUrl}/index.php?action=edit_post&post_id=${post.id}">
-                                    <i class="bi bi-pencil-square me-2 text-muted"></i>Edit post
+                                <a class="dropdown-item action-item-edit" href="${baseUrl}/index.php?action=edit_post&post_id=${post.id}">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>Edit post</span>
                                 </a>
                             </li>
                             <li>
                                 <form action="${baseUrl}/index.php?action=delete_post" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
                                     <input type="hidden" name="csrf_token" value="${escapeHtml(document.querySelector('meta[name=\'csrf-token\']')?.getAttribute('content') || '')}">
                                     <input type="hidden" name="post_id" value="${post.id}">
-                                    <button type="submit" class="dropdown-item small text-secondary border-0 bg-transparent w-100 text-start">
-                                        <i class="bi bi-trash me-2 text-muted"></i>Delete post
+                                    <button type="submit" class="dropdown-item action-item-delete">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Delete post</span>
                                     </button>
                                 </form>
                             </li>

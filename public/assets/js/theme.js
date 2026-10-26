@@ -1,5 +1,5 @@
 /**
- * theme.js - Complete Dark Mode & Light Mode Controller with Persistence for Nexus
+ * theme.js - Complete Dark Mode & Light Mode Controller with Persistence for CLIQ
  * Handles:
  *  - Immediate theme application on documentElement to prevent flash
  *  - Theme toggle functionality (window.toggleTheme)
@@ -9,8 +9,9 @@
 (function() {
     'use strict';
 
-    var THEME_STORAGE_KEY = 'nexus_theme_preference';
-    var LEGACY_STORAGE_KEY = 'smcc_theme_preference';
+    var THEME_STORAGE_KEY = 'cliq_theme_preference';
+    var LEGACY_STORAGE_KEY = 'nexus_theme_preference';
+    var OLD_STORAGE_KEY = 'smcc_theme_preference';
     var THEME_DARK = 'dark';
     var THEME_LIGHT = 'light';
 
@@ -19,7 +20,7 @@
      */
     function getStoredTheme() {
         try {
-            var stored = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+            var stored = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
             if (stored === THEME_DARK || stored === THEME_LIGHT) {
                 return stored;
             }
@@ -51,11 +52,21 @@
         }
 
         updateToggleButtons(theme);
+        updateFavicon(theme);
     }
 
     /**
      * Synchronize all theme toggle buttons across the UI
      */
+    /**
+     * Update browser tab favicon dynamically to match active theme
+     */
+    function updateFavicon(theme) {
+        var favicon = document.querySelector('link[rel="icon"][sizes="32x32"]');
+        if (favicon && window.BASE_URL) {
+            favicon.href = window.BASE_URL + '/public/assets/images/' + (theme === THEME_DARK ? 'cliq-icon-dark.png' : 'favicon-32x32.png');
+        }
+    }
     function updateToggleButtons(activeTheme) {
         var current = activeTheme || (document.documentElement.getAttribute('data-bs-theme') === THEME_DARK ? THEME_DARK : THEME_LIGHT);
         var buttons = document.querySelectorAll('.theme-toggle-btn');

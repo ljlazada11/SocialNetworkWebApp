@@ -1,6 +1,6 @@
 <?php
 // app/views/auth/register.php
-// User Registration View - Modernized Design matching Nexus branding
+// User Registration View - Modernized Design matching CLIQ branding
 
 require_once __DIR__ . '/../layouts/header.php';
 ?>
@@ -8,11 +8,14 @@ require_once __DIR__ . '/../layouts/header.php';
 <div class="auth-card-wrapper w-100" style="max-width: 480px;">
     <div class="card-modern shadow-lg border-0 p-4 p-md-5 my-auto">
         <div class="text-center mb-4">
-            <div class="brand-icon-box mx-auto mb-3" style="width: 52px; height: 52px; font-size: 1.6rem; background-color: var(--sidebar-bg); color: var(--accent-yellow);">
-                <i class="bi bi-person-plus-fill"></i>
+            <div class="mb-3">
+                <a href="<?= BASE_URL ?>/" title="CLIQ Home" class="d-inline-block">
+                    <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-light.png" alt="CLIQ" class="cliq-logo-full cliq-logo-auth cliq-logo-light">
+                    <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-dark.png" alt="CLIQ" class="cliq-logo-full cliq-logo-auth cliq-logo-dark">
+                </a>
             </div>
             <h3 class="fw-bold text-navy mb-1">Create an Account</h3>
-            <p class="text-muted small">Join Nexus and connect with the SMCC campus community.</p>
+            <p class="text-muted small">Join CLIQ and connect with the SMCC campus community.</p>
         </div>
 
         <?php if (!empty($errors)): ?>
@@ -79,7 +82,7 @@ require_once __DIR__ . '/../layouts/header.php';
                         autocomplete="new-password"
                         aria-describedby="passwordRequirements"
                     >
-                    <button type="button" class="btn btn-light border border-start-0 text-muted toggle-password-btn" data-target="password" tabindex="-1" title="Toggle password visibility" aria-label="Toggle password visibility">
+                    <button type="button" class="btn toggle-password-btn border border-start-0" data-target="password" tabindex="-1" title="Toggle password visibility" aria-label="Toggle password visibility">
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>
@@ -130,7 +133,7 @@ require_once __DIR__ . '/../layouts/header.php';
                         autocomplete="new-password"
                         aria-describedby="confirmFeedback"
                     >
-                    <button type="button" class="btn btn-light border border-start-0 text-muted toggle-password-btn" data-target="confirm_password" tabindex="-1" title="Toggle password visibility" aria-label="Toggle password visibility">
+                    <button type="button" class="btn toggle-password-btn border border-start-0" data-target="confirm_password" tabindex="-1" title="Toggle password visibility" aria-label="Toggle password visibility">
                         <i class="bi bi-eye"></i>
                     </button>
                 </div>

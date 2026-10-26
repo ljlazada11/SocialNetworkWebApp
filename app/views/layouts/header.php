@@ -62,7 +62,12 @@ if ($isLoggedIn) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-    <title><?= isset($pageTitle) ? (strpos($pageTitle, 'Nexus') !== false ? htmlspecialchars($pageTitle) : htmlspecialchars($pageTitle) . ' - Nexus') : 'Nexus - The SMCC Community Hub'; ?></title>
+    <title><?= isset($pageTitle) ? (strpos($pageTitle, 'CLIQ') !== false ? htmlspecialchars($pageTitle) : htmlspecialchars($pageTitle) . ' - CLIQ') : 'CLIQ - The SMCC Community Hub'; ?></title>
+
+    <!-- CLIQ Official Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= BASE_URL ?>/public/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/public/favicon.png">
+    <link rel="apple-touch-icon" href="<?= BASE_URL ?>/public/assets/images/cliq-icon-light.png">
 
     <!-- Bootstrap 5.3 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -91,13 +96,11 @@ if ($isLoggedIn) {
         <header class="app-header">
             <div class="header-container">
                 <?php if ($isLoggedIn): ?>
-                    <!-- Header Left: Nexus Brand Logo and Name -->
+                    <!-- Header Left: CLIQ Brand Logo and Name -->
                     <div class="header-brand-group d-flex align-items-center me-3">
-                        <a href="<?= BASE_URL ?>/" class="brand-link align-items-center gap-2" id="headerLogoBtn" title="Nexus Home">
-                            <div class="brand-icon-box flex-shrink-0">
-                                <i class="bi bi-people-fill"></i>
-                            </div>
-                            <span class="fs-5 brand-title fw-bold d-none d-sm-inline">Nexus</span>
+                        <a href="<?= BASE_URL ?>/" class="brand-link d-inline-flex align-items-center" id="headerLogoBtn" title="CLIQ Home">
+                            <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-light.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-light">
+                            <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-dark.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-dark">
                         </a>
                     </div>
 
@@ -111,6 +114,22 @@ if ($isLoggedIn) {
 
                     <!-- Right Header Actions -->
                     <div class="header-actions">
+                        <!-- Messages Icon -->
+                        <?php if ($isLoggedIn): ?>
+                        <div class="position-relative">
+                            <a href="<?= BASE_URL ?>/index.php?action=messages" class="header-icon-btn" title="Messages" aria-label="Messages" id="headerMsgBtn">
+                                <i class="bi bi-chat-dots-fill"></i>
+                                <?php
+                                require_once __DIR__ . '/../../models/MessageModel.php';
+                                $headerMsgModel = new MessageModel();
+                                $headerMsgUnread = $headerMsgModel->getUnreadCount((int)$_SESSION['user_id']);
+                                if ($headerMsgUnread > 0): ?>
+                                    <span class="notif-badge-count" id="headerMsgBadge"><?= $headerMsgUnread > 99 ? '99+' : $headerMsgUnread ?></span>
+                                <?php endif; ?>
+                            </a>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Notifications Bell -->
                         <?php if ($isLoggedIn): ?>
                         <div class="position-relative">
@@ -224,19 +243,29 @@ if ($isLoggedIn) {
                 <?php else: ?>
                     <!-- Public / Unauthenticated Header -->
                     <div class="d-flex align-items-center">
-                        <a href="<?= BASE_URL ?>/" class="brand-link text-dark" title="Nexus">
-                            <div class="brand-icon-box">
-                                <i class="bi bi-people-fill"></i>
-                            </div>
-                            <span class="fs-5 font-navy ms-2">Nexus</span>
+                        <a href="<?= BASE_URL ?>/" class="brand-link d-inline-flex align-items-center" title="CLIQ - The SMCC Community Hub">
+                            <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-light.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-light">
+                            <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-dark.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-dark">
                         </a>
                     </div>
 
-                    <div class="header-actions">
+                    <div class="header-actions d-flex align-items-center gap-2">
                         <!-- Dark Mode / Light Mode Toggle -->
-                        <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Switch to Dark Mode">
+                        <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch Theme" aria-label="Switch Theme">
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
+
+                        <?php if ($currentAction !== 'login'): ?>
+                            <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Log In
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if ($currentAction !== 'register'): ?>
+                            <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-sm btn-navy rounded-pill px-3 fw-semibold d-none d-sm-inline-flex align-items-center">
+                                <i class="bi bi-person-plus-fill me-1"></i> Register
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -246,7 +275,7 @@ if ($isLoggedIn) {
         <main class="<?= $isLoggedIn ? 'p-3 p-md-4 flex-grow-1' : 'auth-main flex-grow-1 d-flex align-items-center justify-content-center p-3 p-md-4' ?>">
 
             <!-- Global Flash Messages -->
-            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
+            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
                 <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['error_message']); ?>
@@ -255,7 +284,7 @@ if ($isLoggedIn) {
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
+            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['success_message']); ?>

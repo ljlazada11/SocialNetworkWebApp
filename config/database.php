@@ -1,6 +1,6 @@
 <?php
 // config/database.php
-// Database configuration and PDO connection for Nexus
+// Database configuration and PDO connection for CLIQ
 
 class Database {
     private static $host = '127.0.0.1';

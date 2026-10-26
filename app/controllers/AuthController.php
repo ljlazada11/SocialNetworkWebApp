@@ -24,7 +24,7 @@ class AuthController {
             exit;
         }
 
-        $pageTitle = 'Nexus - The SMCC Community Hub';
+        $pageTitle = 'CLIQ - The SMCC Community Hub';
         require __DIR__ . '/../views/auth/welcome.php';
     }
 

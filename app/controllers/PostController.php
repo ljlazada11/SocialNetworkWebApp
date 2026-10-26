@@ -258,7 +258,7 @@ class PostController {
         $post = $this->postModel->getPostWithDetails($postId, $currentUserId);
 
         if (!$post) {
-            require_once __DIR__ . '/../core/ErrorHandler.php';
+            require_once __DIR__ . '/../helpers/ErrorHandler.php';
             ErrorHandler::renderErrorPage(404, 'Post Not Found', 'The requested post does not exist or may have been removed.');
             exit;
         }

@@ -1,6 +1,6 @@
 <?php
 // app/controllers/NotificationController.php
-// Controller handling user notifications, unread counting, and mark-as-read actions for Nexus
+// Controller handling user notifications, unread counting, and mark-as-read actions for CLIQ
 
 require_once __DIR__ . '/../models/NotificationModel.php';
 require_once __DIR__ . '/../models/UserModel.php';

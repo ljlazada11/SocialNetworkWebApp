@@ -158,7 +158,7 @@ require_once __DIR__ . '/../layouts/header.php';
                                     placeholder="Enter current password"
                                     autocomplete="current-password"
                                 >
-                                <button type="button" class="btn btn-light border border-start-0 text-muted toggle-pwd-btn" data-target="current_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
+                                <button type="button" class="btn toggle-pwd-btn border border-start-0" data-target="current_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>
@@ -181,13 +181,13 @@ require_once __DIR__ . '/../layouts/header.php';
                                     placeholder="Enter new password (min. 8 characters)"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="btn btn-light border border-start-0 text-muted toggle-pwd-btn" data-target="new_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
+                                <button type="button" class="btn toggle-pwd-btn border border-start-0" data-target="new_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>
 
                             <!-- Real-Time Password Checklist -->
-                            <div class="card bg-light border p-3 mt-2 rounded-3" id="passwordChecklist">
+                            <div class="card p-3 mt-2 rounded-3 event-info-card border" id="passwordChecklist">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="small fw-semibold text-secondary">Password Requirements:</span>
                                     <span class="badge bg-secondary-subtle text-secondary micro-text" id="requirementsStatus">Incomplete</span>
@@ -229,7 +229,7 @@ require_once __DIR__ . '/../layouts/header.php';
                                     placeholder="Re-enter new password"
                                     autocomplete="new-password"
                                 >
-                                <button type="button" class="btn btn-light border border-start-0 text-muted toggle-pwd-btn" data-target="confirm_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
+                                <button type="button" class="btn toggle-pwd-btn border border-start-0" data-target="confirm_password" tabindex="-1" title="Toggle visibility" aria-label="Toggle password visibility">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>

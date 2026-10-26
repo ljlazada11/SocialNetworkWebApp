@@ -72,7 +72,7 @@ class SearchController {
         if (!$isEmptySearch) {
             // Execute search queries inside models using prepared statements
             if ($type === 'all' || $type === 'users') {
-                $users = $this->userModel->searchUsers($query);
+                $users = $this->userModel->searchUsers($query, $currentUserId);
                 if (!empty($users) && $currentUserId) {
                     foreach ($users as &$u) {
                         $uId = (int)$u['id'];

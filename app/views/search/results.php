@@ -1,6 +1,6 @@
 <?php
 // app/views/search/results.php
-// Centered Modern Search, Filtering & Reports View for Nexus (Step 11 & Step 12)
+// Centered Modern Search, Filtering & Reports View for CLIQ (Step 11 & Step 12)
 
 $currentUserId = $_SESSION['user_id'] ?? null;
 $currentUserInitials = 'U';
@@ -17,11 +17,11 @@ $postCount = count($posts ?? []);
 $authorId = $_GET['author_id'] ?? null;
 ?>
 
-<div class="search-view-container">
+<div class="search-view-container mx-auto">
 
     <!-- Flash Notifications -->
     <?php if (!empty($_SESSION['success_message'])): ?>
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-3" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
             <?= htmlspecialchars($_SESSION['success_message']); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -30,7 +30,7 @@ $authorId = $_GET['author_id'] ?? null;
     <?php endif; ?>
 
     <?php if (!empty($_SESSION['error_message'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-3" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <?= htmlspecialchars($_SESSION['error_message']); ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -38,19 +38,43 @@ $authorId = $_GET['author_id'] ?? null;
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
 
-    <!-- Search Header -->
-    <div class="search-header-clean mb-4 text-center">
-        <h3 class="fw-bold text-dark mb-1">Search</h3>
-        <p class="text-muted small mb-0">Find students, faculty, posts, and topics across Nexus</p>
+    <!-- Navigation Back to Feed Bar -->
+    <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+        <a href="<?= BASE_URL ?>/" class="btn btn-sm btn-outline-secondary rounded-pill px-3 d-inline-flex align-items-center gap-1 shadow-sm" title="Return to Feed">
+            <i class="bi bi-arrow-left"></i>
+            <span class="fw-semibold">Back to Feed</span>
+        </a>
+        <span class="badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill small">
+            <i class="bi bi-search me-1 text-primary"></i> Search Community
+        </span>
     </div>
 
-    <!-- Main Search Bar -->
-    <form action="<?= BASE_URL ?>/index.php" method="GET" class="mb-4" role="search" id="searchMainForm">
+    <!-- Compact Search Card -->
+    <div class="card-modern">
+
+        <!-- Card Header with title and subtitle -->
+        <div class="search-card-header border-bottom px-3 py-2.5 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <div class="search-card-icon-sm">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-themed mb-0" style="font-size: 0.95rem;">Search CLIQ</h6>
+                    <small class="text-muted d-block" style="font-size: 0.74rem;">Find students, faculty, posts, and topics</small>
+                </div>
+            </div>
+            <span class="text-muted small d-none d-sm-inline" style="font-size: 0.75rem;">Community Hub</span>
+        </div>
+
+        <!-- Search Form inside card -->
+        <div class="p-3 pb-2">
+        <!-- Main Search Bar -->
+        <form action="<?= BASE_URL ?>/index.php" method="GET" class="mb-2" role="search" id="searchMainForm">
         <input type="hidden" name="action" value="search">
         <input type="hidden" name="type" value="<?= htmlspecialchars($type); ?>" id="searchTypeInput">
         <input type="hidden" name="filter" value="<?= htmlspecialchars($filter); ?>" id="searchFilterInput">
 
-        <div class="search-input-wrapper mb-3">
+        <div class="search-input-wrapper mb-2">
             <i class="bi bi-search search-icon-lead"></i>
             <input 
                 type="text" 
@@ -71,7 +95,7 @@ $authorId = $_GET['author_id'] ?? null;
         </div>
 
         <!-- Filter & Tab Navigation Bar -->
-        <div class="search-nav-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2 p-2 rounded-3">
+        <div class="search-nav-toolbar d-flex flex-wrap align-items-center justify-content-between gap-2 pt-1">
             <!-- Type Tabs -->
             <ul class="nav nav-pills search-tabs-pills" role="tablist">
                 <li class="nav-item">
@@ -95,7 +119,7 @@ $authorId = $_GET['author_id'] ?? null;
             </ul>
 
             <!-- Refine Dropdowns: Author & Sort -->
-            <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-flex align-items-center gap-1.5 flex-wrap ms-auto">
                 <!-- Author Filter -->
                 <div class="dropdown">
                     <select name="author_id" id="author_id_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Filter by author">
@@ -121,13 +145,20 @@ $authorId = $_GET['author_id'] ?? null;
                 <?php endif; ?>
             </div>
         </div>
-    </form>
+        </form>
+        </div><!-- /p-3 pb-2 (form area) -->
 
-    <!-- Results Overview Ribbon (When searching or filtered) -->
+        <!-- Divider -->
+        <hr class="my-0" style="opacity: 0.1;">
+
+        <!-- Results area with padding -->
+        <div class="p-3">
+
+        <!-- Results Overview Ribbon (When searching or filtered) -->
     <?php if (!$isEmptySearch || !empty($users) || !empty($posts)): ?>
         <div class="d-flex align-items-center justify-content-between px-1 mb-3">
             <span class="text-muted small">
-                Showing results for <strong class="text-dark">"<?= htmlspecialchars($query ?: ($selectedAuthorName ? 'Author: ' . $selectedAuthorName : 'All')); ?>"</strong>
+                Showing results for <strong class="text-themed">"<?= htmlspecialchars($query ?: ($selectedAuthorName ? 'Author: ' . $selectedAuthorName : 'All')); ?>"</strong>
                 <?php if (!empty($authorId) && !empty($selectedAuthorName)): ?>
                     <span class="badge bg-light text-secondary border ms-1">By <?= htmlspecialchars($selectedAuthorName); ?></span>
                 <?php endif; ?>
@@ -145,7 +176,7 @@ $authorId = $_GET['author_id'] ?? null;
             <div class="search-empty-icon">
                 <i class="bi bi-search"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">Search & Filter Social Content</h5>
+            <h5 class="fw-bold text-themed mb-2">Search & Filter Social Content</h5>
             <p class="small text-muted mb-3 col-md-9 mx-auto">
                 Type a username, full name, or post content keyword above, or filter posts by selecting a specific author from the dropdown list.
             </p>
@@ -165,7 +196,7 @@ $authorId = $_GET['author_id'] ?? null;
             <div class="search-empty-icon">
                 <i class="bi bi-slash-circle"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">No matching results found</h5>
+            <h5 class="fw-bold text-themed mb-2">No matching results found</h5>
             <p class="small text-muted mb-0 col-md-9 mx-auto">
                 No matching results were found for your search query or filter criteria.
                 <br>Try adjusting keywords, selecting another author, or clearing filters.
@@ -183,7 +214,7 @@ $authorId = $_GET['author_id'] ?? null;
         <?php if (($type === 'all' || $type === 'users') && !empty($users)): ?>
             <div class="mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-3 px-1">
-                    <h6 class="fw-bold text-dark mb-0">
+                    <h6 class="fw-bold text-themed mb-0">
                         <i class="bi bi-people-fill text-primary me-2"></i>Matching Users (<?= count($users); ?>)
                     </h6>
                 </div>
@@ -205,18 +236,18 @@ $authorId = $_GET['author_id'] ?? null;
                                                 src="<?= BASE_URL ?>/public/uploads/avatars/<?= htmlspecialchars(basename($user['profile_image'])) ?>" 
                                                 alt="<?= htmlspecialchars($user['full_name']); ?>" 
                                                 class="post-avatar"
-                                                style="width: 44px; height: 44px; object-fit: cover;"
+                                                style="width: 40px; height: 40px; object-fit: cover;"
                                                 onerror="this.onerror=null; this.outerHTML='<div class=\'post-avatar\' style=\'width: 44px; height: 44px; font-size: 1rem;\'><?= htmlspecialchars($uInitials) ?></div>';"
                                             >
                                         <?php else: ?>
-                                            <div class="post-avatar" style="width: 44px; height: 44px; font-size: 1rem;">
+                                            <div class="post-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">
                                                 <?= htmlspecialchars($uInitials) ?>
                                             </div>
                                         <?php endif; ?>
                                     </a>
 
                                     <div class="min-w-0">
-                                        <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="fw-bold text-dark text-decoration-none d-block text-truncate">
+                                        <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="fw-bold text-themed text-decoration-none d-block text-truncate">
                                             <?= htmlspecialchars($user['full_name']); ?>
                                             <?php if (!empty($user['is_followed_by'])): ?>
                                                 <span class="badge bg-secondary-subtle text-secondary border ms-1" style="font-size: 0.68rem;">Follows you</span>
@@ -224,7 +255,7 @@ $authorId = $_GET['author_id'] ?? null;
                                         </a>
                                         <div class="text-muted small text-truncate">
                                             @<?= htmlspecialchars($user['username']); ?> &bull; 
-                                            <span class="badge bg-light text-secondary border"><?= (int)($user['total_user_posts'] ?? 0); ?> posts</span>
+                                            <span class="badge bg-light text-secondary border"><?= (int)($user['posts_count'] ?? $user['total_user_posts'] ?? 0); ?> posts</span>
                                         </div>
                                         <?php if (!empty($user['bio'])): ?>
                                             <div class="text-muted small text-truncate mt-1" style="max-width: 380px;">
@@ -263,10 +294,10 @@ $authorId = $_GET['author_id'] ?? null;
         <?php if (($type === 'all' || $type === 'posts') && !empty($posts)): ?>
             <div>
                 <div class="d-flex align-items-center justify-content-between mb-3 px-1">
-                    <h6 class="fw-bold text-dark mb-0">
+                    <h6 class="fw-bold text-themed mb-0">
                         <i class="bi bi-chat-square-text-fill text-warning me-2"></i>Matching Posts (<?= count($posts); ?>)
                     </h6>
-                    <span class="badge bg-light text-dark border">
+                    <span class="badge bg-secondary-subtle text-secondary border">
                         Sorted by: <?= htmlspecialchars(ucwords(str_replace('_', ' ', $filter))); ?>
                     </span>
                 </div>
@@ -313,36 +344,39 @@ $authorId = $_GET['author_id'] ?? null;
                             </div>
 
                             <!-- Post Menu & Author Filter Link -->
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="post-actions-header">
                                 <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $post['user_id']; ?>&type=posts" class="btn btn-sm btn-light text-secondary border-0 rounded-pill px-2 py-1 micro-text" title="View all posts by this author">
                                     <i class="bi bi-funnel me-1"></i>Author Posts
                                 </a>
 
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
-                                        <i class="bi bi-three-dots fs-5"></i>
+                                    <button type="button" class="btn post-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions" title="Post actions">
+                                        <i class="bi bi-three-dots"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <ul class="dropdown-menu dropdown-menu-end post-dropdown-menu">
                                         <?php if ($currentUserId && (int)$currentUserId === (int)$post['user_id']): ?>
                                             <li>
-                                                <a class="dropdown-item small text-secondary" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
-                                                    <i class="bi bi-pencil-square me-2 text-muted"></i>Edit post
+                                                <a class="dropdown-item action-item-edit" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                    <span>Edit post</span>
                                                 </a>
                                             </li>
                                             <li>
                                                 <form action="<?= BASE_URL ?>/index.php?action=delete_post" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
                                                     <?= csrf_field(); ?>
                                                     <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-                                                    <button type="submit" class="dropdown-item small text-secondary border-0 bg-transparent w-100 text-start">
-                                                        <i class="bi bi-trash me-2 text-muted"></i>Delete post
+                                                    <button type="submit" class="dropdown-item action-item-delete">
+                                                        <i class="bi bi-trash"></i>
+                                                        <span>Delete post</span>
                                                     </button>
                                                 </form>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                         <?php endif; ?>
                                         <li>
-                                            <a class="dropdown-item small" href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $post['user_id']; ?>">
-                                                <i class="bi bi-person me-2"></i>View author profile
+                                            <a class="dropdown-item" href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $post['user_id']; ?>">
+                                                <i class="bi bi-person"></i>
+                                                <span>View author profile</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -452,19 +486,33 @@ $authorId = $_GET['author_id'] ?? null;
                                                     <span class="comment-author"><?= htmlspecialchars($comment['full_name']); ?></span>
                                                     <span class="text-muted small">@<?= htmlspecialchars($comment['username']); ?></span>
                                                 </div>
-                                                <div class="d-flex align-items-center gap-2">
+                                                <div class="d-flex align-items-center gap-1.5">
                                                     <small class="text-muted"><?= htmlspecialchars($cTimeBadge); ?></small>
 
                                                     <?php if ($currentUserId && (int)$currentUserId === (int)$comment['user_id']): ?>
-                                                        <a href="<?= BASE_URL ?>/index.php?action=edit_comment&comment_id=<?= $comment['id'] ?>" class="comment-btn-action text-primary" title="Edit comment">
-                                                            <i class="bi bi-pencil-square"></i> Edit
-                                                        </a>
-                                                        <form action="<?= BASE_URL ?>/index.php?action=delete_comment" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this comment? This action cannot be undone.');">
-                                                            <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
-                                                            <button type="submit" class="comment-btn-action text-danger" title="Delete comment">
-                                                                <i class="bi bi-trash"></i> Delete
+                                                        <div class="dropdown">
+                                                            <button type="button" class="btn comment-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Comment options" title="Comment options">
+                                                                <i class="bi bi-three-dots"></i>
                                                             </button>
-                                                        </form>
+                                                            <ul class="dropdown-menu dropdown-menu-end post-dropdown-menu">
+                                                                <li>
+                                                                    <a class="dropdown-item action-item-edit" href="<?= BASE_URL ?>/index.php?action=edit_comment&comment_id=<?= $comment['id'] ?>">
+                                                                        <i class="bi bi-pencil-square"></i>
+                                                                        <span>Edit</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <form action="<?= BASE_URL ?>/index.php?action=delete_comment" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this comment? This action cannot be undone.');">
+                                                                        <?= csrf_field(); ?>
+                                                                        <input type="hidden" name="comment_id" value="<?= $comment['id'] ?>">
+                                                                        <button type="submit" class="dropdown-item action-item-delete">
+                                                                            <i class="bi bi-trash"></i>
+                                                                            <span>Delete</span>
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -479,6 +527,7 @@ $authorId = $_GET['author_id'] ?? null;
                             <!-- Add Comment Form -->
                             <?php if ($currentUserId): ?>
                                 <form action="<?= BASE_URL ?>/index.php?action=create_comment" method="POST" class="comment-input-row">
+                                    <?= csrf_field(); ?>
                                     <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
                                     <input 
                                         type="text" 
@@ -499,7 +548,10 @@ $authorId = $_GET['author_id'] ?? null;
             </div>
         <?php endif; ?>
 
-    <?php endif; ?>
+        <?php endif; ?>
+
+        </div><!-- /results area -->
+    </div><!-- /card-modern -->
 
 </div>
 

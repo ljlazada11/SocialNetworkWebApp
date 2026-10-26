@@ -1,6 +1,6 @@
 <?php
 // app/helpers/Security.php
-// Centralized Security & Validation Helper functions for Nexus
+// Centralized Security & Validation Helper functions for CLIQ
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

@@ -1,6 +1,6 @@
 <?php
 // app/helpers/ErrorHandler.php
-// Centralized Error and Exception Handling for Nexus
+// Centralized Error and Exception Handling for CLIQ
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -32,7 +32,7 @@ class ErrorHandler {
         $entry = "[{$timestamp}] [{$level}] {$sanitizedMessage}{$contextStr}" . PHP_EOL;
 
         // Write to PHP/Apache error log
-        error_log("[Nexus {$level}] {$sanitizedMessage}");
+        error_log("[CLIQ {$level}] {$sanitizedMessage}");
 
         // Also write to dedicated app log file if directory exists
         // File logging disabled (logs folder removed)
@@ -120,7 +120,7 @@ class ErrorHandler {
             $backUrl = $baseUrl . '/';
         }
 
-        $pageTitle = $title . ' - Nexus';
+        $pageTitle = $title . ' - CLIQ';
 
         // Check if header exists to render themed page
         $headerPath = __DIR__ . '/../views/layouts/header.php';

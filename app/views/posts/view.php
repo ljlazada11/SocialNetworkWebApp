@@ -84,21 +84,23 @@ $highlightCommentId = (int)($highlightCommentId ?? ($_GET['comment_id'] ?? 0));
                     <!-- Post Menu Dropdown -->
                     <?php if ($currentUserId && (int)$currentUserId === (int)$post['user_id']): ?>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions">
-                            <i class="bi bi-three-dots fs-5"></i>
+                        <button type="button" class="btn post-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions" title="Post actions">
+                            <i class="bi bi-three-dots"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                        <ul class="dropdown-menu dropdown-menu-end post-dropdown-menu">
                             <li>
-                                <a class="dropdown-item small action-item-edit" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
-                                     <i class="bi bi-pencil-square me-2"></i>Edit post
+                                <a class="dropdown-item action-item-edit" href="<?= BASE_URL ?>/index.php?action=edit_post&post_id=<?= $post['id'] ?>">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>Edit post</span>
                                 </a>
                             </li>
                             <li>
                                 <form action="<?= BASE_URL ?>/index.php?action=delete_post" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this post? This action cannot be undone.');">
                                     <?= csrf_field(); ?>
                                     <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-                                    <button type="submit" class="dropdown-item small action-item-delete border-0 bg-transparent w-100 text-start">
-                                        <i class="bi bi-trash me-2"></i>Delete post
+                                    <button type="submit" class="dropdown-item action-item-delete">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Delete post</span>
                                     </button>
                                 </form>
                             </li>

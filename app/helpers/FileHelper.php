@@ -1,6 +1,6 @@
 <?php
 // app/helpers/FileHelper.php
-// Centralized and secure file management helper for Nexus
+// Centralized and secure file management helper for CLIQ
 // Handles safe deletion, path traversal prevention, reference checks, and orphaned file cleanup.
 
 require_once __DIR__ . '/../../config/database.php';
@@ -132,6 +132,60 @@ class FileHelper {
         }
 
         return $realPath;
+    }
+
+    /**
+     * Get valid avatar URL if the file exists on disk, otherwise return null.
+     *
+     * @param string|null $filename
+     * @return string|null
+     */
+    public static function getAvatarUrl(?string $filename): ?string {
+        if (empty($filename)) {
+            return null;
+        }
+        $safePath = self::resolveSafePath('avatars', $filename);
+        if ($safePath !== false) {
+            $base = defined('BASE_URL') ? BASE_URL : '';
+            return $base . '/public/uploads/avatars/' . rawurlencode(basename($safePath));
+        }
+        return null;
+    }
+
+    /**
+     * Get valid cover photo URL if the file exists on disk, otherwise return null.
+     *
+     * @param string|null $filename
+     * @return string|null
+     */
+    public static function getCoverUrl(?string $filename): ?string {
+        if (empty($filename)) {
+            return null;
+        }
+        $safePath = self::resolveSafePath('covers', $filename);
+        if ($safePath !== false) {
+            $base = defined('BASE_URL') ? BASE_URL : '';
+            return $base . '/public/uploads/covers/' . rawurlencode(basename($safePath));
+        }
+        return null;
+    }
+
+    /**
+     * Get valid post image URL if the file exists on disk, otherwise return null.
+     *
+     * @param string|null $filename
+     * @return string|null
+     */
+    public static function getPostImageUrl(?string $filename): ?string {
+        if (empty($filename)) {
+            return null;
+        }
+        $safePath = self::resolveSafePath('posts', $filename);
+        if ($safePath !== false) {
+            $base = defined('BASE_URL') ? BASE_URL : '';
+            return $base . '/public/uploads/posts/' . rawurlencode(basename($safePath));
+        }
+        return null;
     }
 
     /**

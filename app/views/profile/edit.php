@@ -10,9 +10,8 @@ if (!empty($user['profile_image'])) {
     $uploadedPath = __DIR__ . '/../../../public/uploads/avatars/' . basename($user['profile_image']);
     if (file_exists($uploadedPath)) {
         $avatarUrl = BASE_URL . '/public/uploads/avatars/' . htmlspecialchars(basename($user['profile_image']));
-    } else {
-        $avatarUrl = BASE_URL . '/public/uploads/avatars/' . htmlspecialchars($user['profile_image']);
     }
+    // If file does not exist on disk, leave $avatarUrl = null → initials fallback will show
 }
 
 // Prepare cover photo URL or fallback
@@ -21,9 +20,8 @@ if (!empty($user['cover_photo'])) {
     $uploadedCoverPath = __DIR__ . '/../../../public/uploads/covers/' . basename($user['cover_photo']);
     if (file_exists($uploadedCoverPath)) {
         $coverUrl = BASE_URL . '/public/uploads/covers/' . htmlspecialchars(basename($user['cover_photo']));
-    } else {
-        $coverUrl = BASE_URL . '/public/uploads/covers/' . htmlspecialchars($user['cover_photo']);
     }
+    // If file does not exist on disk, leave $coverUrl = null → gradient background fallback
 }
 
 $userInitials = 'U';
@@ -37,8 +35,7 @@ if (!empty($user['full_name'])) {
 }
 ?>
 
-<!-- Cropper.js Stylesheet -->
-<link rel="stylesheet" href="<?= BASE_URL ?>/public/assets/css/cropper.min.css">
+<!-- Note: Cropper.js CSS is loaded via CDN in header.php -->
 
 <div class="row justify-content-center">
     <div class="col-lg-8 col-xl-7">
@@ -165,7 +162,7 @@ if (!empty($user['full_name'])) {
                     
                     <div class="rounded-3 overflow-hidden position-relative mb-3 border" style="height: 140px; <?= $coverUrl ? "background: url('" . $coverUrl . "') center center / cover no-repeat;" : "background: linear-gradient(135deg, #07193d 0%, #1e3a8a 100%);" ?>" id="coverPreviewContainer">
                         <div class="position-absolute bottom-0 end-0 m-2">
-                            <label for="cover_photo" class="btn btn-sm btn-light shadow-sm fw-semibold mb-0 cursor-pointer">
+                            <label for="cover_photo" class="btn btn-sm btn-cover-photo-action shadow-sm fw-semibold mb-0 cursor-pointer">
                                 <i class="bi bi-camera me-1"></i> Change Cover Photo
                             </label>
                             <input 

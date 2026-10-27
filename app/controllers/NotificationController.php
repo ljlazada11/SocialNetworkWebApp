@@ -225,24 +225,9 @@ class NotificationController {
 
     /**
      * Helper to format relative time ago.
+     * Consolidates with centralized format_time_ago() in Security.php.
      */
     public static function formatTimeAgo(string $datetime): string {
-        $time = strtotime($datetime);
-        $diff = time() - $time;
-
-        if ($diff < 60) {
-            return 'Just now';
-        } elseif ($diff < 3600) {
-            $m = (int)($diff / 60);
-            return $m . ($m === 1 ? ' min ago' : ' mins ago');
-        } elseif ($diff < 86400) {
-            $h = (int)($diff / 3600);
-            return $h . ($h === 1 ? ' hr ago' : ' hrs ago');
-        } elseif ($diff < 604800) {
-            $d = (int)($diff / 86400);
-            return $d . ($d === 1 ? ' day ago' : ' days ago');
-        } else {
-            return date('M j, Y', $time);
-        }
+        return format_time_ago($datetime);
     }
 }

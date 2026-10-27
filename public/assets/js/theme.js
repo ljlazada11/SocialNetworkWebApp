@@ -55,10 +55,7 @@
         updateFavicon(theme);
     }
 
-    /**
-     * Synchronize all theme toggle buttons across the UI
-     */
-    /**
+/**
      * Update browser tab favicon dynamically to match active theme
      */
     function updateFavicon(theme) {

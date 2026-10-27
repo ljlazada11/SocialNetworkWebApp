@@ -4577,10 +4577,10 @@ html.dark-theme img.cliq-logo-dark {
 }
 
 .card-modern .search-tabs-pills .nav-link {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 500;
-    padding: 0.22rem 0.6rem;
-    border-radius: 6px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 50rem;
     color: var(--text-muted);
     transition: all 0.15s ease;
 }
@@ -4608,23 +4608,95 @@ html.dark-theme img.cliq-logo-dark {
     color: #ffffff !important;
 }
 
-/* Compact Filter Selects */
+/* Modern Search Filter Pill Containers */
+.search-filter-pill-box {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--card-border, #e2e8f0);
+    border-radius: 50rem;
+    padding: 0 0.5rem 0 0.75rem;
+    height: 33px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: all 0.15s ease;
+}
+
+.search-filter-pill-box:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.search-filter-pill-box:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.search-filter-pill-box .search-filter-icon {
+    font-size: 0.82rem;
+    color: var(--text-muted, #64748b);
+    margin-right: 0.35rem;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
 .card-modern .search-select-pill {
-    border-radius: 6px;
-    font-size: 0.75rem;
-    padding: 0.2rem 1.6rem 0.2rem 0.5rem;
-    height: 27px;
-    min-width: 90px;
-    background-color: var(--body-bg, #f8fafc);
-    border-color: var(--card-border, #e2e8f0);
-    color: var(--text-secondary);
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    padding: 0 1.5rem 0 0.1rem !important;
+    height: 31px !important;
+    line-height: 31px !important;
+    min-width: 85px;
+    color: var(--text-primary, #1e293b) !important;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.15rem center !important;
+    background-size: 11px 11px !important;
+}
+
+.card-modern .search-select-pill:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+[data-bs-theme="dark"] .search-filter-pill-box,
+.dark-theme .search-filter-pill-box {
+    background-color: #0b1a38 !important;
+    border-color: #1e3a78 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .search-filter-pill-box:hover,
+.dark-theme .search-filter-pill-box:hover {
+    border-color: #2e59a8 !important;
+}
+
+[data-bs-theme="dark"] .search-filter-pill-box:focus-within,
+.dark-theme .search-filter-pill-box:focus-within {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .search-filter-pill-box .search-filter-icon,
+.dark-theme .search-filter-pill-box .search-filter-icon {
+    color: #93c5fd !important;
 }
 
 [data-bs-theme="dark"] .card-modern .search-select-pill,
 .dark-theme .card-modern .search-select-pill {
-    background-color: #0b1a38;
-    border-color: #1b356d;
-    color: #e2e8f0;
+    color: #f0f6ff !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2393c5fd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+}
+
+[data-bs-theme="dark"] .card-modern .search-select-pill option,
+.dark-theme .card-modern .search-select-pill option {
+    background-color: #0d1e44 !important;
+    color: #f0f6ff !important;
 }
 
 /* Compact User Card */
@@ -5304,4 +5376,24 @@ html.dark-theme img.cliq-logo-dark {
     background-color: rgba(255, 255, 255, 0.1) !important;
     color: #93c5fd !important;
     border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+
+/* ---- Inbox Conversation Item ---- */
+.inbox-conv-item {
+    transition: background-color 0.15s ease;
+    border-left: 3px solid transparent;
+}
+.inbox-conv-item:hover {
+    background-color: var(--bg-hover, rgba(0, 0, 0, 0.04));
+}
+.inbox-unread {
+    border-left-color: var(--bs-primary, #0d6efd);
+    background-color: var(--bg-hover, rgba(37, 99, 235, 0.04));
+}
+[data-bs-theme="dark"] .inbox-conv-item:hover,
+[data-bs-theme="dark"] .inbox-unread,
+.dark-theme .inbox-conv-item:hover,
+.dark-theme .inbox-unread {
+    background-color: rgba(37, 99, 235, 0.08);
 }

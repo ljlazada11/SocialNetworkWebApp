@@ -119,9 +119,10 @@ $authorId = $_GET['author_id'] ?? null;
             </ul>
 
             <!-- Refine Dropdowns: Author & Sort -->
-            <div class="d-flex align-items-center gap-1.5 flex-wrap ms-auto">
+            <div class="d-flex align-items-center gap-2 flex-wrap ms-auto search-filters-group">
                 <!-- Author Filter -->
-                <div class="dropdown">
+                <div class="search-filter-pill-box">
+                    <i class="bi bi-person-fill search-filter-icon"></i>
                     <select name="author_id" id="author_id_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Filter by author">
                         <option value="">All Authors</option>
                         <?php if (!empty($allAuthors)): ?>
@@ -136,12 +137,15 @@ $authorId = $_GET['author_id'] ?? null;
 
                 <!-- Sort Order (When posts are shown) -->
                 <?php if ($type !== 'users'): ?>
-                    <select name="filter" id="filter_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Sort results">
-                        <option value="newest" <?= ($filter === 'newest') ? 'selected' : ''; ?>>Newest</option>
-                        <option value="oldest" <?= ($filter === 'oldest') ? 'selected' : ''; ?>>Oldest</option>
-                        <option value="most_liked" <?= ($filter === 'most_liked') ? 'selected' : ''; ?>>Most Liked</option>
-                        <option value="most_commented" <?= ($filter === 'most_commented') ? 'selected' : ''; ?>>Most Commented</option>
-                    </select>
+                    <div class="search-filter-pill-box">
+                        <i class="bi bi-arrow-down-up search-filter-icon"></i>
+                        <select name="filter" id="filter_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Sort results">
+                            <option value="newest" <?= ($filter === 'newest') ? 'selected' : ''; ?>>Newest</option>
+                            <option value="oldest" <?= ($filter === 'oldest') ? 'selected' : ''; ?>>Oldest</option>
+                            <option value="most_liked" <?= ($filter === 'most_liked') ? 'selected' : ''; ?>>Most Liked</option>
+                            <option value="most_commented" <?= ($filter === 'most_commented') ? 'selected' : ''; ?>>Most Commented</option>
+                        </select>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

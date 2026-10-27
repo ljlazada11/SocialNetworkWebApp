@@ -107,22 +107,3 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
     </div>
 
 </div>
-
-<style>
-/* ---- Inbox Conversation Item ---- */
-.inbox-conv-item {
-    transition: background-color 0.15s ease;
-    border-left: 3px solid transparent;
-}
-.inbox-conv-item:hover {
-    background-color: var(--bg-hover, rgba(0,0,0,0.04));
-}
-.inbox-unread {
-    border-left-color: var(--bs-primary, #0d6efd);
-    background-color: var(--bg-hover, rgba(37, 99, 235, 0.04));
-}
-[data-bs-theme="dark"] .inbox-conv-item:hover,
-[data-bs-theme="dark"] .inbox-unread {
-    background-color: rgba(37, 99, 235, 0.08);
-}
-</style>

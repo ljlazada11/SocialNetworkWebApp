@@ -70,17 +70,20 @@
 
         buttons.forEach(function(btn) {
             var icon = btn.querySelector('.theme-toggle-icon');
+            var label = btn.querySelector('.fb-theme-label');
             if (current === THEME_DARK) {
                 if (icon) {
                     icon.className = 'theme-toggle-icon bi bi-sun-fill';
                 }
                 btn.setAttribute('title', 'Switch to Light Mode');
+                if (label) { label.textContent = 'Light Mode'; }
                 btn.setAttribute('aria-label', 'Switch to Light Mode');
             } else {
                 if (icon) {
                     icon.className = 'theme-toggle-icon bi bi-moon-fill';
                 }
                 btn.setAttribute('title', 'Switch to Dark Mode');
+                if (label) { label.textContent = 'Dark Mode'; }
                 btn.setAttribute('aria-label', 'Switch to Dark Mode');
             }
         });

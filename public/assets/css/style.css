@@ -657,6 +657,41 @@ body {
     color: #f87171;
 }
 
+.fb-icon-theme {
+    background-color: #fef9c3;
+    color: #ca8a04;
+}
+
+[data-bs-theme="dark"] .fb-icon-theme,
+.dark-theme .fb-icon-theme {
+    background-color: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+
+/* Dropdown dark mode toggle button — reset native button styles */
+button.fb-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.55rem 1rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+button.fb-menu-item:hover,
+button.fb-menu-item:focus {
+    background-color: var(--hover-bg, rgba(0, 0, 0, 0.05));
+    outline: none;
+}
+
+[data-bs-theme="dark"] button.fb-menu-item:hover,
+.dark-theme button.fb-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 .fb-item-label {
     font-size: 0.9rem;
     font-weight: 500;
@@ -5396,4 +5431,49 @@ html.dark-theme img.cliq-logo-dark {
 .dark-theme .inbox-conv-item:hover,
 .dark-theme .inbox-unread {
     background-color: rgba(37, 99, 235, 0.08);
+}
+
+
+/* ---- Search Results: Author Posts button & badges in light and dark mode ---- */
+.search-author-btn {
+    background-color: #f1f5f9;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.72rem !important;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.search-author-btn:hover {
+    background-color: #e2e8f0;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .search-author-btn,
+.dark-theme .search-author-btn,
+[data-bs-theme="dark"] .post-actions-header .btn-light,
+.dark-theme .post-actions-header .btn-light {
+    background-color: #122654 !important;
+    color: #93c5fd !important;
+    border: 1px solid #1e3a8a !important;
+}
+
+[data-bs-theme="dark"] .search-author-btn:hover,
+.dark-theme .search-author-btn:hover,
+[data-bs-theme="dark"] .post-actions-header .btn-light:hover,
+.dark-theme .post-actions-header .btn-light:hover {
+    background-color: #1b356d !important;
+    color: #bfdbfe !important;
+    border-color: #2563eb !important;
+}
+
+[data-bs-theme="dark"] .badge.bg-light.text-secondary,
+.dark-theme .badge.bg-light.text-secondary {
+    background-color: #122654 !important;
+    color: #93c5fd !important;
+    border-color: #1b356d !important;
 }

@@ -98,14 +98,17 @@ if (!empty($user['full_name'])) {
                     <?php endif; ?>
                 </div>
 
-                <!-- User Names -->
+                <!-- User Names & Follow Status -->
                 <h2 class="fw-bold mb-1 text-themed"><?= htmlspecialchars($user['full_name']); ?></h2>
-                <p class="text-muted fw-medium mb-3">
-                    @<?= htmlspecialchars($user['username']); ?>
+                <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mb-3">
+                    <span class="text-muted fw-medium">@<?= htmlspecialchars($user['username']); ?></span>
                     <?php if (!empty($isFollowedBy)): ?>
-                        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1 ms-1" style="font-size: 0.72rem;">Follows you</span>
+                        <span class="badge bg-secondary-subtle text-secondary border px-2.5 py-1 rounded-pill d-inline-flex align-items-center gap-1" style="font-size: 0.72rem; font-weight: 500;">
+                            <i class="bi bi-arrow-repeat text-primary" style="font-size: 0.75rem;"></i>
+                            <span>Follows you</span>
+                        </span>
                     <?php endif; ?>
-                </p>
+                </div>
 
                 <!-- Follower / Following Stats Badges -->
                 <div class="d-flex justify-content-center align-items-center gap-4 mb-3">
@@ -170,21 +173,10 @@ if (!empty($user['full_name'])) {
                 <hr class="my-4" style="opacity: 0.1;">
 
                 <!-- Profile Meta Information -->
-                <div class="row g-3 justify-content-center text-start mb-2">
-                    <div class="col-sm-6 col-md-5">
+                <div class="row justify-content-center text-start mb-2">
+                    <div class="col-sm-8 col-md-6 col-lg-5">
                         <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
-                            <div class="rounded-circle p-2 fs-4 d-flex align-items-center justify-content-center" style="background-color: var(--accent-yellow-light); color: var(--accent-yellow-hover); width: 42px; height: 42px;">
-                                <i class="bi bi-person"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Username</small>
-                                <span class="fw-bold text-themed">@<?= htmlspecialchars($user['username']); ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-5">
-                        <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
-                            <div class="rounded-circle p-2 fs-4 d-flex align-items-center justify-content-center" style="background-color: #e0f2fe; color: #0284c7; width: 42px; height: 42px;">
+                            <div class="rounded-circle p-2 fs-4 d-flex align-items-center justify-content-center flex-shrink-0" style="background-color: #e0f2fe; color: #0284c7; width: 42px; height: 42px;">
                                 <i class="bi bi-calendar-event"></i>
                             </div>
                             <div>

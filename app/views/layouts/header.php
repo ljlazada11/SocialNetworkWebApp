@@ -14,6 +14,7 @@ if (!defined('BASE_URL')) {
 
 $currentAction = $_GET['action'] ?? 'home';
 $isLoggedIn = isset($_SESSION['user_id']);
+$isLandingPage = !$isLoggedIn && ($currentAction === 'welcome' || $currentAction === 'home' || empty($_GET['action']));
 
 // Generate CSRF token if not set
 if (empty($_SESSION['csrf_token'])) {
@@ -147,7 +148,7 @@ if ($isLoggedIn) {
                         <?php endif; ?>
 
                         <!-- Dark Mode / Light Mode Toggle -->
-                        <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch to Dark Mode" aria-label="Switch to Dark Mode">
+                        <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch Theme" aria-label="Switch Theme">
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
 
@@ -157,7 +158,7 @@ if ($isLoggedIn) {
                                     type="button" 
                                     id="headerUserDropdown" 
                                     data-bs-toggle="dropdown" 
-                                    data-bs-auto-close="true"
+                                    data-bs-auto-close="outside"
                                     aria-expanded="false" 
                                     title="Account Menu" 
                                     aria-label="Account Menu">
@@ -225,6 +226,8 @@ if ($isLoggedIn) {
                                     <i class="bi bi-chevron-right fb-arrow-right"></i>
                                 </a>
 
+                                
+
                                 <div class="fb-menu-divider"></div>
 
                                 <!-- Option 3: Sign Out -->
@@ -255,13 +258,13 @@ if ($isLoggedIn) {
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
 
-                        <?php if ($currentAction !== 'login'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'login'): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> Log In
                             </a>
                         <?php endif; ?>
 
-                        <?php if ($currentAction !== 'register'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'register'): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-sm btn-navy rounded-pill px-3 fw-semibold d-none d-sm-inline-flex align-items-center">
                                 <i class="bi bi-person-plus-fill me-1"></i> Register
                             </a>

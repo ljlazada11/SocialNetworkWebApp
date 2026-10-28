@@ -349,7 +349,7 @@ $authorId = $_GET['author_id'] ?? null;
 
                             <!-- Post Menu & Author Filter Link -->
                             <div class="post-actions-header">
-                                <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $post['user_id']; ?>&type=posts" class="btn btn-sm btn-light text-secondary border-0 rounded-pill px-2 py-1 micro-text" title="View all posts by this author">
+                                <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $post['user_id']; ?>&type=posts" class="btn btn-sm search-author-btn rounded-pill px-2 py-1 micro-text" title="View all posts by this author">
                                     <i class="bi bi-funnel me-1"></i>Author Posts
                                 </a>
 

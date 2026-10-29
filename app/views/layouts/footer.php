@@ -6,7 +6,7 @@
         </main>
 
         <!-- Modern Footer -->
-        <footer class="bg-white border-top py-3 px-4 text-muted small text-center w-100">
+        <footer class="bg-white border-top py-3 px-4 text-muted small text-center w-100 app-footer">
             <div class="d-flex align-items-center justify-content-center gap-2 text-center mx-auto flex-wrap">
                 <img src="<?= BASE_URL ?>/public/assets/images/cliq-icon-light.png" alt="CLIQ" class="cliq-logo-icon cliq-logo-footer cliq-logo-light">
                 <img src="<?= BASE_URL ?>/public/assets/images/cliq-icon-dark.png" alt="CLIQ" class="cliq-logo-icon cliq-logo-footer cliq-logo-dark">
@@ -42,6 +42,63 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
+// Mobile Search Toggle Handler
+(function() {
+    function initMobileSearch() {
+        var btn = document.getElementById('mobileSearchBtn');
+        var form = document.getElementById('headerSearchForm') || document.querySelector('.header-search');
+        var icon = document.getElementById('mobileSearchIcon');
+        var input = document.getElementById('headerSearchInput') || (form ? form.querySelector('input[name="q"]') : null);
+
+        if (!btn || !form) return;
+
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.toggle('mobile-active');
+            var isActive = form.classList.contains('mobile-active');
+            if (icon) {
+                if (isActive) {
+                    icon.className = 'bi bi-x-lg';
+                    if (input) {
+                        setTimeout(function() { input.focus(); }, 120);
+                    }
+                } else {
+                    icon.className = 'bi bi-search';
+                }
+            }
+        });
+
+        // Close search dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (form.classList.contains('mobile-active')) {
+                if (!form.contains(e.target) && !btn.contains(e.target)) {
+                    form.classList.remove('mobile-active');
+                    if (icon) {
+                        icon.className = 'bi bi-search';
+                    }
+                }
+            }
+        });
+
+        // Close search dropdown on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && form.classList.contains('mobile-active')) {
+                form.classList.remove('mobile-active');
+                if (icon) {
+                    icon.className = 'bi bi-search';
+                }
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileSearch);
+    } else {
+        initMobileSearch();
+    }
+})();
 </script>
 
 <!-- Image Crop/Adjust Modal -->
@@ -255,5 +312,197 @@ window.updateHeaderNotificationBadge = function(count) {
     }
 };
 </script>
+
+<?php if (isset($_SESSION['user_id'])): ?>
+    <?php
+    $mobileNavAction = $_GET['action'] ?? 'home';
+    $mobileNavUserId = (int)$_SESSION['user_id'];
+    $isHomeActive = ($mobileNavAction === 'home' || empty($_GET['action']) || $mobileNavAction === 'welcome');
+    $isSearchActive = ($mobileNavAction === 'search');
+    $isMessagesActive = ($mobileNavAction === 'messages' || $mobileNavAction === 'conversation');
+    $isProfileActive = ($mobileNavAction === 'profile' && (empty($_GET['user_id']) || (int)$_GET['user_id'] === $mobileNavUserId));
+    $isMenuActive = ($mobileNavAction === 'settings');
+
+    // Get unread message count if not already set
+    if (!isset($headerMsgUnread)) {
+        require_once __DIR__ . '/../../models/MessageModel.php';
+        $mobileMsgModel = new MessageModel();
+        $headerMsgUnread = $mobileMsgModel->getUnreadCount($mobileNavUserId);
+    }
+
+    $mobileUserName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User';
+    $mobileUserParts = explode(' ', trim($mobileUserName));
+    $mobileUserInitials = count($mobileUserParts) >= 2
+        ? strtoupper(mb_substr($mobileUserParts[0], 0, 1) . mb_substr($mobileUserParts[count($mobileUserParts)-1], 0, 1))
+        : strtoupper(mb_substr($mobileUserName, 0, 2));
+
+    $mobileUserAvatar = !empty($_SESSION['profile_image']) 
+        ? BASE_URL . '/public/uploads/avatars/' . htmlspecialchars(basename($_SESSION['profile_image'])) 
+        : null;
+    ?>
+    <!-- ========================================================
+         MOBILE FIXED BOTTOM NAVIGATION BAR
+         Order: HOME | SEARCH | MESSAGES | PROFILE | MENU
+         ======================================================== -->
+    <nav class="mobile-bottom-nav d-md-none" id="mobileBottomNav" aria-label="Mobile Navigation">
+        <div class="mobile-nav-container">
+            <!-- 1. HOME -->
+            <a href="<?= BASE_URL ?>/index.php?action=home" 
+               class="mobile-nav-item <?= $isHomeActive ? 'active' : '' ?>" 
+               title="Home" 
+               aria-label="Home"
+               <?= $isHomeActive ? 'aria-current="page"' : '' ?>>
+                <div class="mobile-nav-icon-wrap">
+                    <i class="bi <?= $isHomeActive ? 'bi-house-door-fill' : 'bi-house-door' ?>"></i>
+                </div>
+                <span class="mobile-nav-label">Home</span>
+            </a>
+
+            <!-- 2. SEARCH -->
+            <a href="<?= BASE_URL ?>/index.php?action=search" 
+               class="mobile-nav-item <?= $isSearchActive ? 'active' : '' ?>" 
+               title="Search" 
+               aria-label="Search"
+               <?= $isSearchActive ? 'aria-current="page"' : '' ?>>
+                <div class="mobile-nav-icon-wrap">
+                    <i class="bi bi-search"></i>
+                </div>
+                <span class="mobile-nav-label">Search</span>
+            </a>
+
+            <!-- 3. MESSAGES -->
+            <a href="<?= BASE_URL ?>/index.php?action=messages" 
+               class="mobile-nav-item <?= $isMessagesActive ? 'active' : '' ?>" 
+               title="Messages" 
+               aria-label="Messages"
+               <?= $isMessagesActive ? 'aria-current="page"' : '' ?>>
+                <div class="mobile-nav-icon-wrap position-relative">
+                    <i class="bi <?= $isMessagesActive ? 'bi-chat-dots-fill' : 'bi-chat-dots' ?>"></i>
+                    <?php if (!empty($headerMsgUnread) && $headerMsgUnread > 0): ?>
+                        <span class="mobile-nav-badge" id="mobileMsgBadge"><?= $headerMsgUnread > 99 ? '99+' : $headerMsgUnread ?></span>
+                    <?php endif; ?>
+                </div>
+                <span class="mobile-nav-label">Messages</span>
+            </a>
+
+            <!-- 4. PROFILE -->
+            <a href="<?= BASE_URL ?>/index.php?action=profile" 
+               class="mobile-nav-item <?= $isProfileActive ? 'active' : '' ?>" 
+               title="Profile" 
+               aria-label="Profile"
+               <?= $isProfileActive ? 'aria-current="page"' : '' ?>>
+                <div class="mobile-nav-icon-wrap">
+                    <i class="bi <?= $isProfileActive ? 'bi-person-fill' : 'bi-person' ?>"></i>
+                </div>
+                <span class="mobile-nav-label">Profile</span>
+            </a>
+
+            <!-- 5. MENU -->
+            <button type="button" 
+                    class="mobile-nav-item mobile-nav-btn <?= $isMenuActive ? 'active' : '' ?>" 
+                    id="mobileMenuTrigger" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#mobileMenuOffcanvas" 
+                    aria-controls="mobileMenuOffcanvas" 
+                    title="Menu" 
+                    aria-label="Open secondary menu">
+                <div class="mobile-nav-icon-wrap">
+                    <i class="bi bi-grid-fill"></i>
+                </div>
+                <span class="mobile-nav-label">Menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========================================================
+         MOBILE MENU DRAWER / BOTTOM SHEET
+         Contains ONLY: Account Settings and Sign Out
+         ======================================================== -->
+    <div class="offcanvas offcanvas-bottom mobile-menu-offcanvas d-md-none" 
+         tabindex="-1" 
+         id="mobileMenuOffcanvas" 
+         aria-labelledby="mobileMenuOffcanvasLabel">
+        <div class="mobile-sheet-drag-handle" aria-hidden="true"></div>
+        <div class="offcanvas-header pb-2 pt-2 px-3 border-bottom">
+            <div class="d-flex align-items-center gap-2 min-w-0">
+                <?php if ($mobileUserAvatar): ?>
+                    <img src="<?= $mobileUserAvatar ?>" 
+                         alt="<?= htmlspecialchars($mobileUserName); ?>" 
+                         class="rounded-circle flex-shrink-0" 
+                         style="width: 38px; height: 38px; object-fit: cover;"
+                         onerror="this.onerror=null; this.outerHTML='<div class=\'rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0\' style=\'width: 38px; height: 38px; font-size: 0.95rem;\'><?= htmlspecialchars($mobileUserInitials) ?></div>';">
+                <?php else: ?>
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0" style="width: 38px; height: 38px; font-size: 0.95rem;">
+                        <?= htmlspecialchars($mobileUserInitials) ?>
+                    </div>
+                <?php endif; ?>
+                <div class="d-flex flex-column min-w-0">
+                    <span class="fw-bold text-truncate mobile-menu-user-name" id="mobileMenuOffcanvasLabel" style="font-size: 0.95rem;">
+                        <?= htmlspecialchars($mobileUserName); ?>
+                    </span>
+                    <span class="text-muted small text-truncate">@<?= htmlspecialchars($_SESSION['username'] ?? 'user'); ?></span>
+                </div>
+            </div>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <div class="mobile-menu-grid">
+                <!-- 1. Friends -->
+                <a href="<?= BASE_URL ?>/index.php?action=friends" class="mobile-menu-card text-decoration-none">
+                    <div class="mobile-menu-card-icon bg-success-subtle text-success">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="mobile-menu-card-text">
+                        <span class="mobile-menu-card-title">Friends</span>
+                        <span class="mobile-menu-card-desc">Followers, following & requests</span>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted ms-auto"></i>
+                </a>
+
+                <!-- 2. Account Settings -->
+                <a href="<?= BASE_URL ?>/index.php?action=settings" class="mobile-menu-card text-decoration-none">
+                    <div class="mobile-menu-card-icon bg-primary-subtle text-primary">
+                        <i class="bi bi-gear-fill"></i>
+                    </div>
+                    <div class="mobile-menu-card-text">
+                        <span class="mobile-menu-card-title">Account Settings</span>
+                        <span class="mobile-menu-card-desc">Password, privacy & profile info</span>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted ms-auto"></i>
+                </a>
+
+                <!-- 3. Sign Out -->
+                <a href="<?= BASE_URL ?>/index.php?action=logout" class="mobile-menu-card mobile-menu-card-danger text-decoration-none">
+                    <div class="mobile-menu-card-icon bg-danger-subtle text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+                    <div class="mobile-menu-card-text">
+                        <span class="mobile-menu-card-title text-danger">Sign Out</span>
+                        <span class="mobile-menu-card-desc text-danger-emphasis">Log out of your account</span>
+                    </div>
+                    <i class="bi bi-chevron-right text-danger ms-auto"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Auto-close mobile menu sheet when a link is clicked
+    document.addEventListener('DOMContentLoaded', function() {
+        var menuSheet = document.getElementById('mobileMenuOffcanvas');
+        if (menuSheet) {
+            var links = menuSheet.querySelectorAll('a');
+            links.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    var bsOffcanvas = bootstrap.Offcanvas.getInstance(menuSheet);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                });
+            });
+        }
+    });
+    </script>
+<?php endif; ?>
 </body>
 </html>

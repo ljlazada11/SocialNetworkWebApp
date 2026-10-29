@@ -224,6 +224,87 @@ class NotificationController {
     }
 
     /**
+     * Delete / Clear all notifications for the user (POST / AJAX).
+     */
+    public function clearAll() {
+        $this->requireAuth();
+        $userId = (int)$_SESSION['user_id'];
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
+            exit;
+        }
+
+        if (!validate_csrf_token()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Security Error: Invalid CSRF token.']);
+            exit;
+        }
+
+        $success = $this->notificationModel->deleteAllByUserId($userId);
+
+        if ($this->isAjax()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'      => $success,
+                'unread_count' => 0
+            ]);
+            exit;
+        }
+
+        $_SESSION['success_message'] = 'All notifications cleared.';
+        header('Location: ' . BASE_URL . '/index.php?action=notifications');
+        exit;
+    }
+
+    /**
+     * Delete a single notification (POST / AJAX).
+     */
+    public function delete() {
+        $this->requireAuth();
+        $userId = (int)$_SESSION['user_id'];
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Method not allowed.']);
+            exit;
+        }
+
+        if (!validate_csrf_token()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Security Error: Invalid CSRF token.']);
+            exit;
+        }
+
+        $notifId = (int)($_POST['id'] ?? 0);
+        if ($notifId <= 0) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => 'Invalid notification ID.']);
+            exit;
+        }
+
+        $success = $this->notificationModel->deleteNotification($notifId, $userId);
+        $newUnread = $this->notificationModel->getUnreadCount($userId);
+
+        if ($this->isAjax()) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'      => $success,
+                'unread_count' => $newUnread
+            ]);
+            exit;
+        }
+
+        header('Location: ' . BASE_URL . '/index.php?action=notifications');
+        exit;
+    }
+
+    /**
      * Helper to format relative time ago.
      * Consolidates with centralized format_time_ago() in Security.php.
      */

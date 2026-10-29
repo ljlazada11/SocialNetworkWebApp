@@ -54,16 +54,11 @@ if (!empty($user['full_name'])) {
         <?php endif; ?>
 
         <!-- Navigation Back Bar -->
-        <div class="d-flex align-items-center justify-content-between mb-3 px-1 profile-nav-bar">
+        <div class="d-flex align-items-center mb-3 px-1 profile-nav-bar">
             <a href="<?= BASE_URL ?>/" class="btn btn-sm btn-outline-secondary rounded-pill px-3 d-inline-flex align-items-center gap-1 shadow-sm" title="Return to Feed">
                 <i class="bi bi-arrow-left"></i>
                 <span class="fw-semibold">Back to Feed</span>
             </a>
-            <?php if (empty($isOwnProfile)): ?>
-                <span class="badge bg-secondary-subtle text-secondary border px-3 py-1.5 rounded-pill small">
-                    <i class="bi bi-person-badge me-1 text-primary"></i> Member Profile
-                </span>
-            <?php endif; ?>
         </div>
 
         <!-- Profile Card -->
@@ -71,9 +66,14 @@ if (!empty($user['full_name'])) {
             <!-- Header Banner / Cover Photo -->
             <div style="<?= $coverUrl ? "background: url('" . $coverUrl . "') center center / cover no-repeat;" : "background: linear-gradient(135deg, #07193d 0%, #1e3a8a 100%);" ?> height: 200px;" class="position-relative">
                 <?php if (!empty($isOwnProfile)): ?>
-                    <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-sm btn-cover-photo-action shadow position-absolute" style="bottom: 12px; right: 12px; z-index: 5;" title="Edit Cover Photo">
-                        <i class="bi bi-camera-fill me-1"></i> Edit Cover Photo
-                    </a>
+                    <div class="profile-cover-actions">
+                        <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-sm btn-cover-photo-action shadow" title="Edit Cover Photo">
+                            <i class="bi bi-camera-fill me-1"></i> Edit Cover Photo
+                        </a>
+                        <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-sm btn-cover-photo-action shadow" title="Edit Profile">
+                            <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                        </a>
+                    </div>
                 <?php endif; ?>
             </div>
 
@@ -98,71 +98,56 @@ if (!empty($user['full_name'])) {
                     <?php endif; ?>
                 </div>
 
-                <!-- User Names & Follow Status -->
+                <!-- User Names -->
                 <h2 class="fw-bold mb-1 text-themed"><?= htmlspecialchars($user['full_name']); ?></h2>
-                <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mb-3">
-                    <span class="text-muted fw-medium">@<?= htmlspecialchars($user['username']); ?></span>
-                    <?php if (!empty($isFollowedBy)): ?>
-                        <span class="badge bg-secondary-subtle text-secondary border px-2.5 py-1 rounded-pill d-inline-flex align-items-center gap-1" style="font-size: 0.72rem; font-weight: 500;">
-                            <i class="bi bi-arrow-repeat text-primary" style="font-size: 0.75rem;"></i>
-                            <span>Follows you</span>
-                        </span>
-                    <?php endif; ?>
-                </div>
+                <p class="text-muted fw-medium mb-3">@<?= htmlspecialchars($user['username']); ?></p>
 
                 <!-- Follower / Following Stats Badges -->
                 <div class="d-flex justify-content-center align-items-center gap-4 mb-3">
-                    <button type="button" class="btn p-0 border-0 bg-transparent text-center follow-stat-btn" onclick="openFollowListModal('followers', <?= (int)$user['id'] ?>)" title="Click to view Followers" style="cursor: pointer; text-decoration: none;">
+                    <button type="button" class="btn p-0 border-0 bg-transparent text-center follow-stat-btn" onclick="openFollowListModal('followers', <?= (int)$user['id'] ?>)" title="Click to view Followers" style="cursor: pointer; min-width: 75px; text-decoration: none;">
                         <div class="fs-5 fw-bold text-themed follow-stat-num" id="profileFollowersCount"><?= (int)($followersCount ?? 0) ?></div>
                         <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Followers</small>
                     </button>
                     <div class="border-end" style="height: 24px;"></div>
-                    <button type="button" class="btn p-0 border-0 bg-transparent text-center follow-stat-btn" onclick="openFollowListModal('following', <?= (int)$user['id'] ?>)" title="Click to view Following" style="cursor: pointer; text-decoration: none;">
+                    <button type="button" class="btn p-0 border-0 bg-transparent text-center follow-stat-btn" onclick="openFollowListModal('following', <?= (int)$user['id'] ?>)" title="Click to view Following" style="cursor: pointer; min-width: 75px; text-decoration: none;">
                         <div class="fs-5 fw-bold text-themed follow-stat-num" id="profileFollowingCount"><?= (int)($followingCount ?? 0) ?></div>
                         <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Following</small>
                     </button>
                     <div class="border-end" style="height: 24px;"></div>
-                    <div class="text-center">
+                    <div class="text-center" style="min-width: 75px;">
                         <div class="fs-5 fw-bold text-themed"><?= !empty($posts) ? count($posts) : 0; ?></div>
                         <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem;">Posts</small>
                     </div>
                 </div>
 
-                <!-- Profile Action Buttons: Follow & Message (or Edit Profile) -->
+                <!-- Profile Action Buttons: Follow & Message (other users only) -->
+                <?php if (empty($isOwnProfile)): ?>
                 <div class="profile-actions-group mb-4">
-                    <?php if (!empty($isOwnProfile)): ?>
-                        <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-accent rounded-pill fw-semibold profile-action-btn">
-                            <i class="bi bi-pencil-square me-1.5"></i> Edit Profile
-                        </a>
-                    <?php else: ?>
                         <!-- Follow / Unfollow AJAX Button -->
                         <form action="<?= BASE_URL ?>/index.php?action=follow_user" method="POST" id="profileFollowForm">
                             <?= csrf_field(); ?>
                             <input type="hidden" name="user_id" value="<?= (int)$user['id']; ?>">
                             <button type="submit" id="btnProfileFollow" class="btn <?= !empty($isFollowing) ? 'btn-outline-secondary' : (!empty($isFollowedBy) ? 'btn-primary' : 'btn-navy') ?> fw-semibold rounded-pill profile-action-btn" data-is-followed-by="<?= !empty($isFollowedBy) ? '1' : '0' ?>">
-                                <i class="bi <?= !empty($isFollowing) ? 'bi-person-check-fill' : (!empty($isFollowedBy) ? 'bi-arrow-repeat' : 'bi-person-plus-fill') ?> me-1.5"></i>
+                                <i class="bi <?= !empty($isFollowing) ? 'bi-person-check-fill' : (!empty($isFollowedBy) ? 'bi-arrow-repeat' : 'bi-person-plus-fill') ?> me-2"></i>
                                 <span><?= !empty($isFollowing) ? 'Following' : (!empty($isFollowedBy) ? 'Follow Back' : 'Follow') ?></span>
                             </button>
                         </form>
 
-                        <?php if (empty($isOwnProfile)): ?>
                         <!-- Message Button: opens conversation with this profile owner -->
                         <a href="<?= BASE_URL ?>/index.php?action=conversation&user_id=<?= (int)$user['id']; ?>"
                            class="btn btn-outline-primary rounded-pill fw-semibold profile-action-btn"
                            title="Send a message to <?= htmlspecialchars($user['full_name']); ?>">
-                            <i class="bi bi-chat-dots-fill me-1.5"></i> Message
+                            <i class="bi bi-chat-dots-fill me-2"></i> <span>Message</span>
                         </a>
-                        <?php endif; ?>
-                    <?php endif; ?>
                 </div>
+                <?php endif; ?>
 
                 <!-- Bio -->
-                <div class="col-md-9 mx-auto mb-4">
+                <div class="col-md-9 col-lg-8 mx-auto mb-4 text-center">
                     <?php if (!empty($user['bio'])): ?>
-                        <div class="p-3 bg-light rounded-3 text-start border border-light-subtle">
-                            <i class="bi bi-quote text-warning me-1 fs-5 align-middle"></i>
-                            <span class="text-secondary"><?= nl2br(htmlspecialchars($user['bio'])); ?></span>
-                        </div>
+                        <p class="text-secondary mb-0" style="line-height: 1.6; font-size: 0.95rem;">
+                            <?= nl2br(htmlspecialchars($user['bio'])); ?>
+                        </p>
                     <?php else: ?>
                         <p class="text-muted fst-italic mb-0 small">
                             <?= !empty($isOwnProfile) ? 'No bio provided yet. Tell others about yourself by updating your profile!' : 'No bio provided.'; ?>
@@ -170,29 +155,78 @@ if (!empty($user['full_name'])) {
                     <?php endif; ?>
                 </div>
 
-                <hr class="my-4" style="opacity: 0.1;">
-
-                <!-- Profile Meta Information -->
-                <div class="row justify-content-center text-start mb-2">
-                    <div class="col-sm-8 col-md-6 col-lg-5">
-                        <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
-                            <div class="rounded-circle p-2 fs-4 d-flex align-items-center justify-content-center flex-shrink-0" style="background-color: #e0f2fe; color: #0284c7; width: 42px; height: 42px;">
-                                <i class="bi bi-calendar-event"></i>
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Member Since</small>
-                                <span class="fw-bold text-themed"><?= $formattedDate; ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- ==============================================
-             USER'S POSTS SECTION
-             ============================================== -->
-        <div class="user-posts-section mb-5">
+        <?php
+        // Extract all photos from the profile posts
+        $allProfilePhotos = [];
+        if (!empty($posts)) {
+            foreach ($posts as $p) {
+                $pImgs = !empty($p['images']) ? $p['images'] : PostModel::parseImages($p['image'] ?? null);
+                if (!empty($pImgs)) {
+                    foreach ($pImgs as $imgIdx => $imgName) {
+                        $allProfilePhotos[] = [
+                            'image' => $imgName,
+                            'post_id' => (int)$p['id'],
+                            'post_content' => $p['content'],
+                            'created_at' => $p['created_at'],
+                            'likes_count' => (int)($p['likes_count'] ?? 0),
+                            'comments_count' => (int)($p['comments_count'] ?? 0),
+                            'index_in_post' => $imgIdx + 1
+                        ];
+                    }
+                }
+            }
+        }
+        $totalPhotosCount = count($allProfilePhotos);
+        ?>
+
+        <!-- Profile Navigation Tabs: All Posts & Photos -->
+        <div class="card-modern p-2 mb-4 profile-tabs-card">
+            <ul class="nav nav-pills nav-fill profile-nav-tabs" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2 py-2" 
+                            id="tab-posts-btn" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#tab-posts-pane" 
+                            type="button" 
+                            role="tab" 
+                            aria-controls="tab-posts-pane" 
+                            aria-selected="true">
+                        <i class="bi bi-file-earmark-post"></i>
+                        <span>All Posts</span>
+                        <span class="badge rounded-pill bg-light text-secondary border small px-2 py-0.5">
+                            <?= !empty($posts) ? count($posts) : 0; ?>
+                        </span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2 py-2" 
+                            id="tab-photos-btn" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#tab-photos-pane" 
+                            type="button" 
+                            role="tab" 
+                            aria-controls="tab-photos-pane" 
+                            aria-selected="false">
+                        <i class="bi bi-images"></i>
+                        <span>Photos</span>
+                        <span class="badge rounded-pill bg-light text-secondary border small px-2 py-0.5">
+                            <?= $totalPhotosCount ?>
+                        </span>
+                    </button>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="tab-content" id="profileTabsContent">
+            <!-- ==============================================
+                 PANE 1: USER'S POSTS SECTION
+                 ============================================== -->
+            <div class="tab-pane fade show active" id="tab-posts-pane" role="tabpanel" aria-labelledby="tab-posts-btn">
+                <div class="user-posts-section mb-5">
             <div class="d-flex align-items-center justify-content-between mb-3 px-1">
                 <h4 class="fw-bold mb-0 text-themed d-flex align-items-center gap-2">
                     <i class="bi bi-file-earmark-post text-primary"></i>
@@ -301,6 +335,11 @@ if (!empty($user['full_name'])) {
                                 </div>
                             <?php endif; ?>
                         <?php elseif ($totalPostImages > 1): ?>
+                            <div class="d-flex align-items-center gap-2 mb-2 px-1">
+                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-2.5 py-1 small d-inline-flex align-items-center gap-1.5 fw-semibold">
+                                    <i class="bi bi-images text-primary"></i> Album &bull; <?= $totalPostImages ?> photos
+                                </span>
+                            </div>
                             <div class="post-gallery post-gallery-<?= min($totalPostImages, 4) ?> mb-3" data-post-id="<?= (int)$post['id'] ?>">
                                 <?php foreach (array_slice($postImages, 0, 4) as $idx => $imgFile): ?>
                                     <?php
@@ -443,7 +482,56 @@ if (!empty($user['full_name'])) {
                     </p>
                 </div>
             <?php endif; ?>
-        </div>
+                </div>
+            </div> <!-- End tab-posts-pane -->
+
+            <!-- ==============================================
+                 PANE 2: USER'S PHOTOS SECTION
+                 ============================================== -->
+            <div class="tab-pane fade" id="tab-photos-pane" role="tabpanel" aria-labelledby="tab-photos-btn">
+                <div class="card-modern p-4 mb-5">
+                    <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom flex-wrap gap-2">
+                        <div>
+                            <h5 class="fw-bold text-themed mb-1 d-flex align-items-center gap-2">
+                                <i class="bi bi-images text-primary"></i>
+                                <span><?= !empty($isOwnProfile) ? 'Photos' : htmlspecialchars($user['full_name']) . "'s Photos"; ?></span>
+                            </h5>
+                            <p class="text-muted small mb-0"><?= !empty($isOwnProfile) ? 'All photos you have shared in your posts' : 'All photos shared by ' . htmlspecialchars($user['full_name']); ?></p>
+                        </div>
+                        <div>
+                            <span class="badge rounded-pill bg-secondary-subtle text-secondary border px-3 py-1.5 small fw-semibold">
+                                <?= $totalPhotosCount ?> <?= $totalPhotosCount === 1 ? 'Photo' : 'Photos' ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <?php if ($totalPhotosCount > 0): ?>
+                        <div class="album-photos-grid">
+                            <?php foreach ($allProfilePhotos as $photo): ?>
+                                <a href="<?= BASE_URL ?>/public/uploads/posts/<?= htmlspecialchars(basename($photo['image'])) ?>" 
+                                   class="album-photo-tile post-lightbox-trigger text-decoration-none" 
+                                   data-gallery="profile-photos" 
+                                   title="<?= htmlspecialchars(mb_substr($photo['post_content'], 0, 60)) ?>">
+                                    <img src="<?= BASE_URL ?>/public/uploads/posts/<?= htmlspecialchars(basename($photo['image'])) ?>" alt="Photo" loading="lazy">
+                                    <div class="album-photo-overlay">
+                                        <span><i class="bi bi-heart-fill me-1 text-danger"></i> <?= $photo['likes_count'] ?></span>
+                                        <span><i class="bi bi-chat-fill me-1 text-white"></i> <?= $photo['comments_count'] ?></span>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="p-5 bg-light rounded-3 text-center border text-muted">
+                            <i class="bi bi-image fs-1 mb-2 d-block opacity-50"></i>
+                            <h6 class="fw-semibold text-themed mb-1">No photos yet</h6>
+                            <span class="small"><?= !empty($isOwnProfile) ? 'Photos you share in your posts will appear here.' : 'This user has not shared any photos yet.'; ?></span>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div> <!-- End tab-photos-pane -->
+
+
+        </div> <!-- End tab-content -->
 
         </div>
     </div>
@@ -463,25 +551,214 @@ if (!empty($user['full_name'])) {
 }
 </style>
 
+
+
 <!-- Followers & Following Modal -->
 <div class="modal fade" id="followListModal" tabindex="-1" aria-labelledby="followListModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content shadow border-0 rounded-4">
+        <div class="modal-content shadow border-0 rounded-4 overflow-hidden">
             <div class="modal-header border-bottom py-3 px-4">
-                <h5 class="modal-title fw-bold fs-6 d-flex align-items-center gap-2 mb-0" id="followListModalTitle">
-                    <i class="bi bi-people-fill text-primary" id="followListModalIcon"></i>
-                    <span id="followListModalHeading">Followers</span>
-                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 34px; height: 34px;">
+                        <i class="bi bi-people-fill" id="followListModalIcon"></i>
+                    </div>
+                    <div>
+                        <h6 class="modal-title fw-bold text-themed mb-0" id="followListModalTitle">Followers</h6>
+                        <small class="text-muted" id="followListModalSubtitle"></small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-0" id="followListModalBody" style="min-height: 200px; max-height: 420px; overflow-y: auto;">
-                <!-- Content loaded dynamically via openFollowListModal() -->
+            <div class="modal-body p-0" id="followListModalBody" style="max-height: 420px; min-height: 160px;">
+                <!-- Dynamically loaded users -->
             </div>
         </div>
     </div>
 </div>
 
 <script>
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function openFollowListModal(type, userId) {
+    const modalEl = document.getElementById('followListModal');
+    if (!modalEl) return;
+
+    const modalTitle = document.getElementById('followListModalTitle');
+    const modalSubtitle = document.getElementById('followListModalSubtitle');
+    const modalIcon = document.getElementById('followListModalIcon');
+    const modalBody = document.getElementById('followListModalBody');
+
+    const isFollowing = (type === 'following');
+    if (modalTitle) modalTitle.textContent = isFollowing ? 'Following' : 'Followers';
+    if (modalSubtitle) modalSubtitle.textContent = isFollowing ? 'People followed by this user' : 'People following this user';
+    if (modalIcon) modalIcon.className = isFollowing ? 'bi bi-person-check-fill' : 'bi bi-people-fill';
+
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <div class="p-5 text-center text-muted">
+                <div class="spinner-border text-primary spinner-border-sm mb-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="small">Loading ${isFollowing ? 'following' : 'followers'}...</div>
+            </div>
+        `;
+    }
+
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modalInstance.show();
+
+    fetch(window.BASE_URL + '/index.php?action=get_follow_list&user_id=' + encodeURIComponent(userId) + '&type=' + encodeURIComponent(type), {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!modalBody) return;
+
+        if (data.is_private) {
+            modalBody.innerHTML = `
+                <div class="p-5 text-center text-muted">
+                    <i class="bi bi-lock-fill fs-1 text-warning mb-2 d-block"></i>
+                    <h6 class="fw-bold text-themed mb-1">Private List</h6>
+                    <p class="small text-muted mb-0">${escapeHtml(data.message || 'This account has made their follower and following list private.')}</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (!data.success) {
+            modalBody.innerHTML = `
+                <div class="p-5 text-center text-danger">
+                    <i class="bi bi-exclamation-triangle fs-1 mb-2 d-block"></i>
+                    <h6 class="fw-bold mb-1">Could not load list</h6>
+                    <p class="small mb-0">${escapeHtml(data.error || 'Please try again later.')}</p>
+                </div>
+            `;
+            return;
+        }
+
+        const users = data.users || [];
+        if (users.length === 0) {
+            modalBody.innerHTML = `
+                <div class="p-5 text-center text-muted">
+                    <i class="bi bi-people fs-1 opacity-50 mb-2 d-block"></i>
+                    <h6 class="fw-bold text-themed mb-1">No ${isFollowing ? 'following' : 'followers'} yet</h6>
+                    <p class="small text-muted mb-0">${isFollowing ? 'Not following anyone yet.' : 'No one is following this user yet.'}</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush">';
+        users.forEach(u => {
+            const profileUrl = window.BASE_URL + '/index.php?action=profile&user_id=' + encodeURIComponent(u.id);
+            const avatarHtml = u.profile_image
+                ? `<img src="${window.BASE_URL}/public/uploads/avatars/${encodeURIComponent(u.profile_image.split('/').pop())}" alt="${escapeHtml(u.full_name)}" class="rounded-circle" style="width: 44px; height: 44px; object-fit: cover;" onerror="this.onerror=null; this.outerHTML='<div class=\\'rounded-circle d-flex align-items-center justify-content-center text-white fw-bold\\' style=\\'width: 44px; height: 44px; background-color: #07193d; font-size: 0.9rem;\\'>${escapeHtml(u.initials)}</div>';">`
+                : `<div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 44px; height: 44px; background-color: #07193d; font-size: 0.9rem;">${escapeHtml(u.initials)}</div>`;
+
+            html += `
+                <div class="list-group-item list-group-item-action p-3 d-flex align-items-center justify-content-between gap-3">
+                    <a href="${profileUrl}" class="d-flex align-items-center gap-3 text-decoration-none text-reset flex-grow-1 min-w-0" title="View ${escapeHtml(u.full_name)}'s profile">
+                        <div class="flex-shrink-0">
+                            ${avatarHtml}
+                        </div>
+                        <div class="min-w-0">
+                            <h6 class="fw-semibold text-themed mb-0 text-truncate">${escapeHtml(u.full_name)}</h6>
+                            <span class="text-muted small text-truncate d-block">@${escapeHtml(u.username)}</span>
+                        </div>
+                    </a>
+                    ${!u.is_self ? `
+                        <form action="${window.BASE_URL}/index.php?action=follow_user" method="POST" class="m-0 d-inline flex-shrink-0" onsubmit="handleFollowInModal(event, this)">
+                            <input type="hidden" name="user_id" value="${u.id}">
+                            <button type="submit" class="btn btn-sm ${u.is_following ? 'btn-outline-secondary' : (u.is_followed_by ? 'btn-primary' : 'btn-navy')} rounded-pill px-3 fw-semibold" style="font-size: 0.78rem;" data-is-followed-by="${u.is_followed_by ? '1' : '0'}">
+                                <i class="bi ${u.is_following ? 'bi-person-check-fill' : (u.is_followed_by ? 'bi-arrow-repeat' : 'bi-person-plus-fill')} me-1"></i>
+                                <span>${u.is_following ? 'Following' : (u.is_followed_by ? 'Follow Back' : 'Follow')}</span>
+                            </button>
+                        </form>
+                    ` : ''}
+                </div>
+            `;
+        });
+        html += '</div>';
+
+        modalBody.innerHTML = html;
+    })
+    .catch(err => {
+        if (!modalBody) return;
+        modalBody.innerHTML = `
+            <div class="p-5 text-center text-danger">
+                <i class="bi bi-exclamation-triangle fs-1 mb-2 d-block"></i>
+                <h6 class="fw-bold mb-1">Failed to load list</h6>
+                <p class="small mb-0">Please check your connection and try again.</p>
+            </div>
+        `;
+    });
+}
+
+function handleFollowInModal(e, form) {
+    e.preventDefault();
+    e.stopPropagation();
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
+
+    const formData = new FormData(form);
+    formData.append('ajax', '1');
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+    if (csrfToken && !formData.has('csrf_token')) {
+        formData.append('csrf_token', csrfToken);
+    }
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (btn) btn.disabled = false;
+        if (data && data.success) {
+            const icon = btn.querySelector('i');
+            const textSpan = btn.querySelector('span');
+            const isFollowedBy = (typeof data.is_followed_by !== 'undefined') ? Boolean(data.is_followed_by) : (btn.getAttribute('data-is-followed-by') === '1');
+            btn.setAttribute('data-is-followed-by', isFollowedBy ? '1' : '0');
+
+            if (data.is_following) {
+                btn.className = 'btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold';
+                if (icon) icon.className = 'bi bi-person-check-fill me-1';
+                if (textSpan) textSpan.textContent = 'Following';
+            } else {
+                if (isFollowedBy) {
+                    btn.className = 'btn btn-sm btn-primary rounded-pill px-3 fw-semibold';
+                    if (icon) icon.className = 'bi bi-arrow-repeat me-1';
+                    if (textSpan) textSpan.textContent = 'Follow Back';
+                } else {
+                    btn.className = 'btn btn-sm btn-navy rounded-pill px-3 fw-semibold';
+                    if (icon) icon.className = 'bi bi-person-plus-fill me-1';
+                    if (textSpan) textSpan.textContent = 'Follow';
+                }
+            }
+        }
+    })
+    .catch(() => {
+        if (btn) btn.disabled = false;
+    });
+}
+
 function toggleComments(postId) {
     const box = document.getElementById('comments-box-' + postId);
     if (!box) return;
@@ -494,155 +771,38 @@ function toggleComments(postId) {
     }
 }
 
-let followListModalInstance = null;
-
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function openFollowListModal(type, targetUserId) {
-    const modalEl = document.getElementById('followListModal');
-    if (!modalEl) return;
-
-    if (!followListModalInstance) {
-        followListModalInstance = new bootstrap.Modal(modalEl);
-    }
-
-    const titleEl = document.getElementById('followListModalHeading');
-    const iconEl = document.getElementById('followListModalIcon');
-    const bodyEl = document.getElementById('followListModalBody');
-
-    const isFollowers = (type === 'followers');
-    if (titleEl) {
-        titleEl.textContent = isFollowers ? 'Followers' : 'Following';
-    }
-    if (iconEl) {
-        iconEl.className = isFollowers ? 'bi bi-people-fill text-primary' : 'bi bi-person-check-fill text-primary';
-    }
-
-    bodyEl.innerHTML = `
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="text-muted small mt-2 mb-0">Loading ${isFollowers ? 'followers' : 'following'}...</p>
-        </div>
-    `;
-
-    followListModalInstance.show();
-
-    const fetchUrl = `<?= BASE_URL ?>/index.php?action=get_follow_list&user_id=${targetUserId}&type=${type}`;
-
-    fetch(fetchUrl, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.is_private) {
-            bodyEl.innerHTML = `
-                <div class="text-center py-5 px-4">
-                    <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center p-3 mb-3 border shadow-sm" style="width: 64px; height: 64px;">
-                        <i class="bi bi-lock-fill text-secondary fs-3"></i>
-                    </div>
-                    <h6 class="fw-bold text-dark mb-1">Follow List is Private</h6>
-                    <p class="text-muted small mb-0 px-3">
-                        ${escapeHtml(data.message || 'This account has made their follower and following list private.')}
-                    </p>
-                </div>
-            `;
-            return;
-        }
-
-        if (!data.success) {
-            bodyEl.innerHTML = `
-                <div class="alert alert-danger m-3 text-center small rounded-3">
-                    ${escapeHtml(data.error || 'Unable to load list.')}
-                </div>
-            `;
-            return;
-        }
-
-        if (titleEl) {
-            titleEl.textContent = `${isFollowers ? 'Followers' : 'Following'} (${data.count})`;
-        }
-
-        if (!data.users || data.users.length === 0) {
-            bodyEl.innerHTML = `
-                <div class="text-center py-5 text-muted px-3">
-                    <i class="bi bi-people fs-1 text-secondary mb-2 d-block opacity-50"></i>
-                    <h6 class="fw-semibold text-dark mb-1">${isFollowers ? 'No followers yet' : 'Not following anyone yet'}</h6>
-                    <p class="small text-muted mb-0">When people ${isFollowers ? 'follow this profile' : 'are followed by this profile'}, they will appear here.</p>
-                </div>
-            `;
-            return;
-        }
-
-        let html = '<div class="list-group list-group-flush">';
-        data.users.forEach(u => {
-            const profileUrl = `<?= BASE_URL ?>/index.php?action=profile&user_id=${u.id}`;
-            let avatarHtml = '';
-            if (u.profile_image) {
-                const imgUrl = `<?= BASE_URL ?>/public/uploads/avatars/${encodeURIComponent(u.profile_image)}`;
-                avatarHtml = `<img src="${imgUrl}" alt="${escapeHtml(u.full_name)}" class="rounded-circle object-fit-cover shadow-sm flex-shrink-0" style="width: 44px; height: 44px;" onerror="this.onerror=null; this.outerHTML='<div class=\\'rounded-circle text-white fw-bold d-flex align-items-center justify-content-center shadow-sm flex-shrink-0\\' style=\\'width: 44px; height: 44px; background-color: #07193d; font-size: 0.85rem;\\'>${escapeHtml(u.initials)}</div>';">`;
-            } else {
-                avatarHtml = `<div class="rounded-circle text-white fw-bold d-flex align-items-center justify-content-center shadow-sm flex-shrink-0" style="width: 44px; height: 44px; background-color: #07193d; font-size: 0.85rem;">${escapeHtml(u.initials)}</div>`;
+// Synchronize profile tabs with URL hash (#photos or #posts)
+document.addEventListener('DOMContentLoaded', function() {
+    function checkHashTab() {
+        if (window.location.hash === '#photos' || window.location.hash === '#album' || window.location.hash === '#albums') {
+            const photosTabBtn = document.getElementById('tab-photos-btn');
+            if (photosTabBtn && typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                bootstrap.Tab.getOrCreateInstance(photosTabBtn).show();
             }
+        } else if (window.location.hash === '#posts') {
+            const postsTabBtn = document.getElementById('tab-posts-btn');
+            if (postsTabBtn && typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                bootstrap.Tab.getOrCreateInstance(postsTabBtn).show();
+            }
+        }
+    }
+    checkHashTab();
+    window.addEventListener('hashchange', checkHashTab);
 
-            html += `
-                <div class="list-group-item d-flex align-items-center justify-content-between px-3 py-3 border-0 border-bottom">
-                    <div class="d-flex align-items-center gap-3 text-truncate">
-                        <a href="${profileUrl}" class="text-decoration-none">
-                            ${avatarHtml}
-                        </a>
-                        <div class="text-truncate">
-                            <a href="${profileUrl}" class="text-dark fw-bold text-decoration-none d-block small text-truncate">
-                                ${escapeHtml(u.full_name)}
-                                ${u.is_self ? '<span class="badge bg-secondary-subtle text-secondary ms-1" style="font-size: 0.65rem;">You</span>' : ''}
-                                ${(!u.is_self && u.is_followed_by) ? '<span class="badge bg-secondary-subtle text-secondary border ms-1" style="font-size: 0.65rem;">Follows you</span>' : ''}
-                            </a>
-                            <a href="${profileUrl}" class="text-muted text-decoration-none d-block small text-truncate">@${escapeHtml(u.username)}</a>
-                        </div>
-                    </div>
-                    <div class="ms-2 flex-shrink-0 d-flex align-items-center gap-2">
-                        ${!u.is_self ? `
-                            <form action="<?= BASE_URL ?>/index.php?action=follow_user" method="POST" class="m-0 d-inline">
-                                <?= csrf_field(); ?>
-                                <input type="hidden" name="user_id" value="${u.id}">
-                                <button type="submit" class="btn btn-sm ${u.is_following ? 'btn-outline-secondary' : (u.is_followed_by ? 'btn-primary' : 'btn-navy')} rounded-pill px-3 fw-semibold" style="font-size: 0.78rem;" data-is-followed-by="${u.is_followed_by ? '1' : '0'}">
-                                    <i class="bi ${u.is_following ? 'bi-person-check-fill' : (u.is_followed_by ? 'bi-arrow-repeat' : 'bi-person-plus-fill')} me-1"></i>
-                                    <span>${u.is_following ? 'Following' : (u.is_followed_by ? 'Follow Back' : 'Follow')}</span>
-                                </button>
-                            </form>
-                        ` : ''}
-                        <a href="${profileUrl}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold" style="font-size: 0.78rem;">
-                            View
-                        </a>
-                    </div>
-                </div>
-            `;
+    // Update hash when tabs are clicked
+    const photosBtn = document.getElementById('tab-photos-btn');
+    if (photosBtn) {
+        photosBtn.addEventListener('shown.bs.tab', function() {
+            history.replaceState(null, null, '#photos');
         });
-        html += '</div>';
-
-        bodyEl.innerHTML = html;
-    })
-    .catch(err => {
-        bodyEl.innerHTML = `
-            <div class="alert alert-danger m-3 text-center small rounded-3">
-                Failed to load follow list. Please try again.
-            </div>
-        `;
-    });
-}
+    }
+    const postsBtn = document.getElementById('tab-posts-btn');
+    if (postsBtn) {
+        postsBtn.addEventListener('shown.bs.tab', function() {
+            history.replaceState(null, null, '#posts');
+        });
+    }
+});
 </script>
 
 <?php

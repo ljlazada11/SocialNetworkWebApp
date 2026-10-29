@@ -1501,27 +1501,45 @@ img.comment-avatar,
 }
 
 /* Responsive Rules */
-
+@media (max-width: 991.98px) {
     .header-search {
-        max-width: 260px;
+        max-width: 240px;
     }
+}
 
-
-@media (max-width: 575.98px) {
+@media (max-width: 767.98px) {
     .header-search {
         display: none;
     }
 
     .header-search.mobile-active {
-        display: block;
+        display: block !important;
         position: absolute;
         top: 100%;
         left: 0;
         right: 0;
+        width: 100%;
         max-width: 100%;
-        padding: 0.5rem 1rem;
+        padding: 0.65rem 1rem;
         background: #ffffff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-bottom: 1px solid var(--card-border, #e2e8f0);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        z-index: 1050;
+    }
+
+    .header-search.mobile-active input {
+        width: 100%;
+        height: 38px;
+        padding-left: 2.3rem;
+        padding-right: 1rem;
+    }
+
+    .header-search.mobile-active .search-shortcut {
+        display: none !important;
+    }
+
+    .header-search.mobile-active .search-icon {
+        left: 1.85rem;
     }
 
     .post-footer-actions {
@@ -1621,9 +1639,11 @@ body.dark-theme {
     color: #93c5fd;
 }
 
-[data-bs-theme="dark"] .header-search.mobile-active {
-    background: #081534;
-    box-shadow: 0 4px 12px rgba(7, 18, 42, 0.6);
+[data-bs-theme="dark"] .header-search.mobile-active,
+.dark-theme .header-search.mobile-active {
+    background: #081534 !important;
+    border-bottom: 1px solid #1b356d !important;
+    box-shadow: 0 4px 14px rgba(7, 18, 42, 0.6) !important;
 }
 
 [data-bs-theme="dark"] .header-icon-btn {
@@ -4470,6 +4490,44 @@ html.dark-theme img.cliq-logo-dark {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.38) !important;
 }
 
+/* Profile Cover Actions — Left/Right button layout */
+.profile-cover-actions {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+
+.profile-cover-actions > a,
+.profile-cover-actions > button {
+    pointer-events: auto;
+}
+
+/* Edit Profile button inside cover — match cover-photo-action sizing */
+.profile-cover-actions .btn-accent {
+    padding: 0.38rem 0.95rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .profile-cover-actions {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+    }
+
+    .profile-cover-actions .btn {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.7rem;
+    }
+}
+
 /* ========================================================
    PASSWORD VISIBILITY TOGGLE BUTTONS & INPUT GROUPS
    ======================================================== */
@@ -4528,6 +4586,13 @@ html.dark-theme img.cliq-logo-dark {
    COMPACT SEARCH CARD & TOOLBAR LAYOUT
    ======================================================== */
 
+/* Keep the Search CLIQ card clipped to its rounded border-radius */
+.search-view-container .card-modern {
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 .search-card-header {
     background-color: var(--card-bg, #ffffff);
     padding: 0.65rem 1rem !important;
@@ -4560,6 +4625,8 @@ html.dark-theme img.cliq-logo-dark {
     padding: 0.2rem 0.3rem 0.2rem 0.7rem;
     box-shadow: none;
     transition: all 0.15s ease;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .card-modern .search-input-wrapper:focus-within {
@@ -4605,6 +4672,8 @@ html.dark-theme img.cliq-logo-dark {
     box-shadow: none !important;
     padding: 0 !important;
     margin-bottom: 0 !important;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .card-modern .search-tabs-pills {
@@ -4777,6 +4846,40 @@ html.dark-theme img.cliq-logo-dark {
 
 .search-view-container {
     padding: 0 0.5rem !important;
+}
+
+/* Prevent search filter pills from overflowing on narrow screens */
+.search-filters-group {
+    max-width: 100%;
+}
+
+.search-filter-pill-box {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.card-modern .search-select-pill {
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+
+/* Stack search tabs and filters vertically on small mobile screens */
+@media (max-width: 480px) {
+    .card-modern .search-nav-toolbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .card-modern .search-tabs-pills {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .card-modern .search-filters-group {
+        margin-left: 0 !important;
+        width: 100%;
+        margin-top: 0.4rem;
+    }
 }
 
 /* ========================================================
@@ -5032,6 +5135,7 @@ html.dark-theme img.cliq-logo-dark {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 0.5rem !important;
     height: 40px !important;
     line-height: 1 !important;
     font-size: 0.88rem !important;
@@ -5188,6 +5292,97 @@ html.dark-theme img.cliq-logo-dark {
 .dark-theme .friends-empty-icon {
     background-color: rgba(59, 130, 246, 0.15);
     color: #60a5fa;
+}
+
+/* Mobile responsive refinements for Friends & Connections page */
+@media (max-width: 575.98px) {
+    .friends-page-container {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+
+    .friends-header-icon-box {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+    }
+
+    .friends-header-title {
+        font-size: 1rem !important;
+    }
+
+    .friends-stat-pill-group {
+        padding: 0.2rem 0.65rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .friends-stat-pill-group span.fs-6 {
+        font-size: 0.85rem !important;
+    }
+
+    .friends-stat-pill-group small {
+        font-size: 0.62rem !important;
+    }
+
+    .friends-tabs-strip {
+        padding: 0.5rem 0.65rem !important;
+    }
+
+    .friends-nav-pills .nav-link {
+        font-size: 0.8rem !important;
+        padding: 0.45rem 0.5rem !important;
+        border-radius: 8px !important;
+    }
+
+    .friends-nav-pills .nav-link .badge {
+        font-size: 0.68rem !important;
+        padding: 0.2em 0.45em !important;
+    }
+
+    .friend-list-item {
+        padding: 0.65rem 0.75rem !important;
+    }
+
+    .friend-card-avatar,
+    .friend-card-avatar-initials {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .friend-card-name {
+        font-size: 0.86rem !important;
+    }
+
+    .friend-card-username {
+        font-size: 0.72rem !important;
+    }
+
+    .friend-card-bio {
+        font-size: 0.72rem !important;
+        max-width: 170px !important;
+    }
+
+    .friend-card-actions .btn {
+        font-size: 0.75rem !important;
+        padding: 0.25rem 0.6rem !important;
+    }
+
+    .friend-card-actions .friend-msg-btn {
+        width: 30px !important;
+        height: 30px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .friend-card-actions .friend-toggle-btn {
+        font-size: 0.72rem !important;
+        padding: 0.22rem 0.55rem !important;
+    }
 }
 
 
@@ -5476,4 +5671,560 @@ html.dark-theme img.cliq-logo-dark {
     background-color: #122654 !important;
     color: #93c5fd !important;
     border-color: #1b356d !important;
+}
+/* ========================================================
+   PROFILE TABS & ALBUM GALLERY
+   ======================================================== */
+.profile-tabs-card {
+    border-radius: 14px;
+}
+
+.profile-nav-tabs .nav-link {
+    color: var(--text-muted, #64748b);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 0.92rem;
+}
+
+.profile-nav-tabs .nav-link:hover {
+    color: var(--text-primary, #07193d);
+    background-color: rgba(7, 25, 61, 0.04);
+}
+
+.profile-nav-tabs .nav-link.active {
+    background-color: #07193d !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(7, 25, 61, 0.2);
+}
+
+.profile-nav-tabs .nav-link.active i {
+    color: var(--accent-yellow, #f1bd27) !important;
+}
+
+.profile-nav-tabs .nav-link.active .badge {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .profile-nav-tabs .nav-link.active,
+.dark-theme .profile-nav-tabs .nav-link.active {
+    background-color: #1e3a8a !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .profile-nav-tabs .nav-link:hover,
+.dark-theme .profile-nav-tabs .nav-link:hover {
+    color: #93c5fd;
+    background-color: rgba(30, 58, 138, 0.2);
+}
+
+/* Album Card */
+.profile-album-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--card-border, #e2e8f0);
+    background: var(--card-bg, #ffffff);
+}
+
+.profile-album-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.profile-album-cover-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: #07193d;
+}
+
+.profile-album-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.profile-album-card:hover .profile-album-cover-img {
+    transform: scale(1.04);
+}
+
+.profile-album-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    backdrop-filter: blur(4px);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50rem;
+    font-weight: 600;
+}
+
+/* Photo Grid */
+.album-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+}
+
+@media (max-width: 576px) {
+    .album-photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.45rem;
+    }
+}
+
+.album-photo-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #0f172a;
+    display: block;
+}
+
+.album-photo-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+}
+
+.album-photo-tile:hover img {
+    transform: scale(1.05);
+}
+
+.album-photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 25, 61, 0.55);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: opacity 0.2s ease;
+    backdrop-filter: blur(2px);
+}
+
+.album-photo-tile:hover .album-photo-overlay {
+    opacity: 1;
+}
+
+.album-photo-indicator {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(15, 23, 42, 0.75);
+    color: #ffffff;
+    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   MOBILE HOME PAGE REDESIGN & NATIVE-FEELING NAVIGATION (CLIQ)
+   ========================================================================== */
+
+/* 1. Mobile Top App Bar (Screens <= 767.98px) - Normal Compact Size */
+@media (max-width: 767.98px) {
+    .app-header {
+        height: 52px;
+        padding: 0 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+        border-bottom: 1px solid var(--card-border, #e2e8f0);
+    }
+
+    .header-container {
+        gap: 0.5rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-brand-group {
+        margin-right: 0 !important;
+        flex-shrink: 0;
+    }
+
+    .cliq-logo-header {
+        height: 25px !important;
+        width: auto !important;
+        max-width: 95px;
+        object-fit: contain;
+    }
+
+    /* Right Header Actions on Mobile: Notifications first, followed by Dark Mode toggle */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .header-actions .header-notif-wrap {
+        order: 1;
+    }
+
+    .header-actions .theme-toggle-btn {
+        order: 2;
+        width: 35px;
+        height: 35px;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: none;
+        background-color: var(--subtle-bg, #f1f5f9);
+        color: var(--text-primary, #1e293b);
+        transition: background-color 0.15s ease, transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .header-actions .notif-bell-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1.05rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: none;
+        background-color: var(--subtle-bg, #f1f5f9);
+        color: var(--text-primary, #1e293b);
+        transition: background-color 0.15s ease, transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .header-actions .theme-toggle-btn:active,
+    .header-actions .notif-bell-btn:active {
+        transform: scale(0.92);
+    }
+}
+
+/* 2. Mobile Fixed Bottom Navigation Bar - Normal Proportions */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(50px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: #ffffff;
+    border-top: 1px solid var(--card-border, #e2e8f0);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+    z-index: 1035;
+    display: flex;
+    align-items: center;
+}
+
+.mobile-nav-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 44px;
+    padding: 3px 0 2px 0;
+    text-decoration: none;
+    color: #64748b;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.1s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item:active {
+    transform: scale(0.92);
+}
+
+.mobile-nav-icon-wrap {
+    position: relative;
+    font-size: 1.15rem;
+    line-height: 1;
+    margin-bottom: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-nav-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+}
+
+/* Active Navigation Item Highlight */
+.mobile-nav-item.active {
+    color: #192f5d;
+    font-weight: 700;
+}
+
+.mobile-nav-item.active .mobile-nav-icon-wrap {
+    color: #192f5d;
+}
+
+/* Unread Badge on Bottom Navigation Items */
+.mobile-nav-badge {
+    position: absolute;
+    top: -3px;
+    right: -8px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 0.58rem;
+    font-weight: 700;
+    min-width: 15px;
+    height: 15px;
+    line-height: 15px;
+    border-radius: 8px;
+    text-align: center;
+    padding: 0 3px;
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+/* 3. Mobile Menu Drawer / Offcanvas Bottom Sheet */
+.mobile-menu-offcanvas {
+    height: auto !important;
+    max-height: 50vh !important;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    background-color: #ffffff;
+    border-top: 1px solid var(--card-border, #e2e8f0);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+    z-index: 1045 !important;
+}
+
+.mobile-sheet-drag-handle {
+    width: 32px;
+    height: 4px;
+    background-color: #cbd5e1;
+    border-radius: 2px;
+    margin: 8px auto 4px auto;
+}
+
+.mobile-menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.mobile-menu-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    color: #1e293b;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-card:active,
+.mobile-menu-card:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.mobile-menu-card-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.mobile-menu-card-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mobile-menu-card-title {
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #1e293b;
+}
+
+.mobile-menu-card-desc {
+    font-size: 0.72rem;
+    color: #64748b;
+    line-height: 1.2;
+}
+
+.mobile-menu-card-danger {
+    background-color: #fef2f2;
+    border-color: #fee2e2;
+}
+
+.mobile-menu-card-danger:active,
+.mobile-menu-card-danger:hover {
+    background-color: #fee2e2;
+}
+
+/* 4. Normal Proportional Feed & Page Content Layout */
+@media (max-width: 767.98px) {
+    /* Normal bottom padding so fixed bottom nav does not cover content */
+    body.app-logged-in main {
+        padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .app-footer {
+        margin-bottom: calc(50px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    /* Feed container: normal comfortable maximum width on mobile/tablet */
+    .feed-layout-container {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Normal compact card spacing */
+    .composer-card,
+    .post-card {
+        margin-bottom: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Post Images fit naturally inside card bounds without horizontal overflow */
+    .post-image-container img,
+    .post-gallery-item img {
+        max-width: 100% !important;
+        height: auto;
+    }
+}
+
+/* 5. Dark Theme Styles for Mobile Redesign Components */
+[data-bs-theme="dark"] .mobile-bottom-nav,
+.dark-theme .mobile-bottom-nav {
+    background-color: #081534;
+    border-top-color: #1b356d;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.45);
+}
+
+[data-bs-theme="dark"] .mobile-nav-item,
+.dark-theme .mobile-nav-item {
+    color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .mobile-nav-item.active,
+.dark-theme .mobile-nav-item.active {
+    color: #f1bd27; /* High contrast CLIQ gold accent */
+}
+
+[data-bs-theme="dark"] .mobile-nav-item.active .mobile-nav-icon-wrap,
+.dark-theme .mobile-nav-item.active .mobile-nav-icon-wrap {
+    color: #f1bd27;
+}
+
+[data-bs-theme="dark"] .mobile-nav-badge,
+.dark-theme .mobile-nav-badge {
+    box-shadow: 0 0 0 2px #081534;
+}
+
+@media (max-width: 767.98px) {
+    [data-bs-theme="dark"] .app-header,
+    .dark-theme .app-header {
+        background-color: #081534;
+        border-bottom-color: #1b356d;
+    }
+
+    [data-bs-theme="dark"] .header-actions .theme-toggle-btn,
+    .dark-theme .header-actions .theme-toggle-btn,
+    [data-bs-theme="dark"] .header-actions .notif-bell-btn,
+    .dark-theme .header-actions .notif-bell-btn {
+        background-color: #0e224e;
+        color: #f0f6ff;
+    }
+}
+
+/* Dark Mode Support for Mobile Offcanvas Bottom Sheet */
+[data-bs-theme="dark"] .mobile-menu-offcanvas,
+.dark-theme .mobile-menu-offcanvas {
+    background-color: #0b1a3e;
+    border-top-color: #1b356d;
+    color: #f0f6ff;
+}
+
+[data-bs-theme="dark"] .mobile-sheet-drag-handle,
+.dark-theme .mobile-sheet-drag-handle {
+    background-color: #334155;
+}
+
+[data-bs-theme="dark"] .mobile-menu-user-name,
+.dark-theme .mobile-menu-user-name {
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .mobile-menu-card,
+.dark-theme .mobile-menu-card {
+    background-color: #0e224e;
+    border-color: #1e3a78;
+    color: #f0f6ff;
+}
+
+[data-bs-theme="dark"] .mobile-menu-card:active,
+.dark-theme .mobile-menu-card:active,
+[data-bs-theme="dark"] .mobile-menu-card:hover,
+.dark-theme .mobile-menu-card:hover {
+    background-color: #142d65;
+    color: #ffffff;
+}
+
+[data-bs-theme="dark"] .mobile-menu-card-title,
+.dark-theme .mobile-menu-card-title {
+    color: #f0f6ff;
+}
+
+[data-bs-theme="dark"] .mobile-menu-card-desc,
+.dark-theme .mobile-menu-card-desc {
+    color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .mobile-menu-card-danger,
+.dark-theme .mobile-menu-card-danger {
+    background-color: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+[data-bs-theme="dark"] .mobile-menu-card-danger:active,
+.dark-theme .mobile-menu-card-danger:active,
+[data-bs-theme="dark"] .mobile-menu-card-danger:hover,
+.dark-theme .mobile-menu-card-danger:hover {
+    background-color: rgba(239, 68, 68, 0.2);
 }

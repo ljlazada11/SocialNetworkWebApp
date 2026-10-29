@@ -43,6 +43,13 @@ switch ($action) {
         $authController->login();
         break;
 
+    case 'forgot_password':
+    case 'reset_password':
+        require_once __DIR__ . '/../app/controllers/AuthController.php';
+        $authController = new AuthController();
+        $authController->forgotPassword();
+        break;
+
     case 'logout':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $authController = new AuthController();
@@ -211,6 +218,18 @@ switch ($action) {
         require_once __DIR__ . '/../app/controllers/NotificationController.php';
         $notifController = new NotificationController();
         $notifController->markAllRead();
+        break;
+
+    case 'clear_all_notifications':
+        require_once __DIR__ . '/../app/controllers/NotificationController.php';
+        $notifController = new NotificationController();
+        $notifController->clearAll();
+        break;
+
+    case 'delete_notification':
+        require_once __DIR__ . '/../app/controllers/NotificationController.php';
+        $notifController = new NotificationController();
+        $notifController->delete();
         break;
 
     // Follow and Unfollow Actions

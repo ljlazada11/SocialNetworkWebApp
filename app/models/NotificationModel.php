@@ -38,15 +38,24 @@ class NotificationModel {
                          WHERE recipient_id = :recipient_id 
                            AND actor_id = :actor_id 
                            AND type = 'follow' 
-                           AND is_read = 0 
                          LIMIT 1";
             $stmt = $this->db->prepare($checkSql);
             $stmt->execute([
                 ':recipient_id' => $recipientId,
                 ':actor_id'     => $actorId
             ]);
-            if ($stmt->fetch()) {
-                return false; // Already notified
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($existing) {
+                // If a follow notification already exists, update it to unread and refresh timestamp
+                $updateSql = "UPDATE notifications 
+                              SET is_read = 0, message = :message, created_at = NOW() 
+                              WHERE id = :id";
+                $updateStmt = $this->db->prepare($updateSql);
+                $updateStmt->execute([
+                    ':message' => $message,
+                    ':id'      => (int)$existing['id']
+                ]);
+                return (int)$existing['id'];
             }
         } elseif ($type === 'like' && $relatedPostId) {
             $checkSql = "SELECT id FROM notifications 
@@ -54,7 +63,6 @@ class NotificationModel {
                            AND actor_id = :actor_id 
                            AND type = 'like' 
                            AND related_post_id = :post_id 
-                           AND is_read = 0 
                          LIMIT 1";
             $stmt = $this->db->prepare($checkSql);
             $stmt->execute([
@@ -62,8 +70,18 @@ class NotificationModel {
                 ':actor_id'     => $actorId,
                 ':post_id'      => $relatedPostId
             ]);
-            if ($stmt->fetch()) {
-                return false; // Already notified
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($existing) {
+                // If a like notification already exists, update it to unread and refresh timestamp
+                $updateSql = "UPDATE notifications 
+                              SET is_read = 0, message = :message, created_at = NOW() 
+                              WHERE id = :id";
+                $updateStmt = $this->db->prepare($updateSql);
+                $updateStmt->execute([
+                    ':message' => $message,
+                    ':id'      => (int)$existing['id']
+                ]);
+                return (int)$existing['id'];
             }
         }
 
@@ -168,5 +186,74 @@ class NotificationModel {
             ':user_id' => (int)$userId
         ]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Delete follow notification when a user unfollows another user.
+     *
+     * @param int $recipientId User who was being followed
+     * @param int $actorId User who unfollowed
+     * @return bool
+     */
+    public function deleteFollowNotification(int $recipientId, int $actorId): bool {
+        $sql = "DELETE FROM notifications 
+                WHERE recipient_id = :recipient_id 
+                  AND actor_id = :actor_id 
+                  AND type = 'follow'";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':recipient_id' => (int)$recipientId,
+            ':actor_id'     => (int)$actorId
+        ]);
+    }
+
+    /**
+     * Delete like notification when a user unlikes a post.
+     *
+     * @param int $recipientId
+     * @param int $actorId
+     * @param int $postId
+     * @return bool
+     */
+    public function deleteLikeNotification(int $recipientId, int $actorId, int $postId): bool {
+        $sql = "DELETE FROM notifications 
+                WHERE recipient_id = :recipient_id 
+                  AND actor_id = :actor_id 
+                  AND type = 'like' 
+                  AND related_post_id = :post_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':recipient_id' => (int)$recipientId,
+            ':actor_id'     => (int)$actorId,
+            ':post_id'      => (int)$postId
+        ]);
+    }
+
+    /**
+     * Delete all notifications for a specific user.
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function deleteAllByUserId(int $userId): bool {
+        $sql = "DELETE FROM notifications WHERE recipient_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':user_id' => (int)$userId]);
+    }
+
+    /**
+     * Delete a single notification for a user.
+     *
+     * @param int $notificationId
+     * @param int $userId
+     * @return bool
+     */
+    public function deleteNotification(int $notificationId, int $userId): bool {
+        $sql = "DELETE FROM notifications WHERE id = :id AND recipient_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id'      => (int)$notificationId,
+            ':user_id' => (int)$userId
+        ]);
     }
 }

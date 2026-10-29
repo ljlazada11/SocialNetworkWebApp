@@ -31,15 +31,7 @@ require_once __DIR__ . '/../layouts/header.php';
     <!-- HERO SECTION -->
     <div class="landing-hero-content mx-auto" style="max-width: 760px;">
 
-        <!-- Prestigious Top Badge Pill -->
-        <div class="mb-4">
-            <div class="landing-badge-pill">
-                <span class="badge-dot"></span>
-                <span>SMCC Collegiate Network</span>
-                <span class="opacity-50">•</span>
-                <span>Campus Community Hub</span>
-            </div>
-        </div>
+
 
         <!-- CLIQ Brand Emblem -->
         <div class="mb-3">

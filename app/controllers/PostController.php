@@ -636,6 +636,13 @@ class PostController {
                         $postId
                     );
                 }
+            } else {
+                $postAuthorId = (int)$post['user_id'];
+                if ($postAuthorId !== $userId) {
+                    require_once __DIR__ . '/../models/NotificationModel.php';
+                    $notifModel = new NotificationModel();
+                    $notifModel->deleteLikeNotification($postAuthorId, $userId, $postId);
+                }
             }
         } catch (Throwable $e) {
             error_log("Error toggling like on post {$postId}: " . $e->getMessage());

@@ -175,6 +175,67 @@ class AuthController {
     /**
      * Log out current user and destroy session.
      */
+
+    /**
+     * Show forgot/reset password form or process password reset.
+     */
+    public function forgotPassword() {
+        // If already logged in, redirect to home
+        if (isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/index.php');
+            exit;
+        }
+
+        $errors = [];
+        $username = '';
+        $fullName = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validate CSRF Token
+            if (!validate_csrf_token()) {
+                $errors[] = 'Security Error: Invalid or expired CSRF token. Please try submitting again.';
+            }
+
+            $username        = trim($_POST['username'] ?? '');
+            $fullName        = trim($_POST['full_name'] ?? '');
+            $newPassword     = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+
+            if (empty($username)) {
+                $errors[] = 'Username is required.';
+            }
+            if (empty($fullName)) {
+                $errors[] = 'Full name is required for account verification.';
+            }
+
+            $complexityErrors = self::validatePasswordComplexity($newPassword, $confirmPassword);
+            if (!empty($complexityErrors)) {
+                $errors = array_merge($errors, $complexityErrors);
+            }
+
+            if (empty($errors)) {
+                $user = $this->userModel->findByUsername($username);
+
+                // Verify user exists and full name matches (case-insensitive check)
+                if (!$user || strcasecmp(trim($user['full_name']), $fullName) !== 0) {
+                    $errors[] = 'Verification failed: No matching account found with the provided username and full name.';
+                } else {
+                    $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                    if ($this->userModel->updatePassword($user['id'], $newHash)) {
+                        $_SESSION['success_message'] = 'Your password has been reset successfully! You can now log in with your new password.';
+                        header('Location: ' . BASE_URL . '/index.php?action=login');
+                        exit;
+                    } else {
+                        $errors[] = 'Failed to reset password. Please try again.';
+                    }
+                }
+            }
+        }
+
+        $pageTitle = 'Reset Password';
+        require __DIR__ . '/../views/auth/forgot_password.php';
+    }
+
     public function logout() {
         // Clear all session variables
         $_SESSION = [];

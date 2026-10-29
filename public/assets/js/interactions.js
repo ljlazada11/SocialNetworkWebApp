@@ -847,21 +847,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         : (submitBtn.getAttribute('data-is-followed-by') === '1');
 
                     submitBtn.setAttribute('data-is-followed-by', isFollowedBy ? '1' : '0');
+                    const isProfileBtn = submitBtn.classList.contains('profile-action-btn');
+                    const profileBtnClass = isProfileBtn ? ' profile-action-btn' : '';
                     const padClass = isSm ? 'px-3' : 'px-4';
                     const smClass = isSm ? 'btn-sm' : '';
 
                     if (data.is_following) {
-                        submitBtn.className = `btn btn-outline-secondary ${smClass} ${padClass} fw-semibold rounded-pill`.replace(/\s+/g, ' ').trim();
-                        if (icon) icon.className = 'bi bi-person-check-fill me-1';
+                        submitBtn.className = `btn btn-outline-secondary ${smClass} ${padClass} fw-semibold rounded-pill${profileBtnClass}`.replace(/\s+/g, ' ').trim();
+                        if (icon) icon.className = 'bi bi-person-check-fill me-2';
                         if (textSpan) textSpan.textContent = 'Following';
                     } else {
                         if (isFollowedBy) {
-                            submitBtn.className = `btn btn-primary ${smClass} ${padClass} fw-semibold rounded-pill`.replace(/\s+/g, ' ').trim();
-                            if (icon) icon.className = 'bi bi-arrow-repeat me-1';
+                            submitBtn.className = `btn btn-primary ${smClass} ${padClass} fw-semibold rounded-pill${profileBtnClass}`.replace(/\s+/g, ' ').trim();
+                            if (icon) icon.className = 'bi bi-arrow-repeat me-2';
                             if (textSpan) textSpan.textContent = 'Follow Back';
                         } else {
-                            submitBtn.className = `btn btn-navy ${smClass} ${padClass} fw-semibold rounded-pill`.replace(/\s+/g, ' ').trim();
-                            if (icon) icon.className = 'bi bi-person-plus-fill me-1';
+                            submitBtn.className = `btn btn-navy ${smClass} ${padClass} fw-semibold rounded-pill${profileBtnClass}`.replace(/\s+/g, ' ').trim();
+                            if (icon) icon.className = 'bi bi-person-plus-fill me-2';
                             if (textSpan) textSpan.textContent = 'Follow';
                         }
                     }

@@ -32,6 +32,15 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                         </button>
                     </form>
                 <?php endif; ?>
+                <?php if (!empty($notifications)): ?>
+                    <form action="<?= BASE_URL ?>/index.php?action=clear_all_notifications" method="POST" class="d-inline" id="clearAllNotifsForm" onsubmit="return confirm('Are you sure you want to clear all notifications?');">
+                        <?= csrf_field(); ?>
+                        <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-3 py-1-5 d-flex align-items-center gap-2 shadow-sm" id="clearAllNotifsBtn" title="Clear all notifications">
+                            <i class="bi bi-trash3"></i>
+                            <span>Clear all</span>
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -109,8 +118,8 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                 </div>
                             </a>
 
-                            <!-- Action Buttons: Unread Dot / Mark as Read -->
-                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                            <!-- Action Buttons: Unread Dot / Mark as Read / Delete -->
+                            <div class="d-flex align-items-center gap-1 flex-shrink-0">
                                 <?php if ($isUnread): ?>
                                     <button type="button" 
                                             class="btn btn-sm btn-icon-subtle mark-read-single-btn" 
@@ -120,6 +129,13 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                         <span class="notif-unread-dot"></span>
                                     </button>
                                 <?php endif; ?>
+                                <button type="button" 
+                                        class="btn btn-sm btn-icon-subtle delete-notif-btn text-muted" 
+                                        data-id="<?= (int)$n['id'] ?>" 
+                                        title="Delete notification"
+                                        aria-label="Delete notification">
+                                    <i class="bi bi-x-lg" style="font-size: 0.75rem;"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -209,10 +225,123 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(err => {
-                // Fallback to normal form submit
                 markAllForm.submit();
             });
         });
     }
+
+    // Clear all notifications via AJAX
+    const clearAllForm = document.getElementById('clearAllNotifsForm');
+    if (clearAllForm) {
+        clearAllForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!confirm('Are you sure you want to clear all notifications?')) {
+                return;
+            }
+            fetch(window.BASE_URL + '/index.php?action=clear_all_notifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    csrf_token: csrfToken,
+                    ajax: '1'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const listCard = document.getElementById('notificationsListCard');
+                    if (listCard) {
+                        const notifList = document.getElementById('notificationsList');
+                        if (notifList) notifList.remove();
+                        if (markAllForm) markAllForm.remove();
+                        clearAllForm.remove();
+
+                        const emptyHtml = `
+                            <div class="p-5 text-center">
+                                <div class="notif-empty-icon mx-auto mb-3">
+                                    <i class="bi bi-bell-slash"></i>
+                                </div>
+                                <h5 class="fw-bold text-themed mb-2">You're all caught up!</h5>
+                                <p class="text-muted small mx-auto mb-0" style="max-width: 420px;">
+                                    When someone follows you, likes, or comments on your posts, you'll receive notifications here.
+                                </p>
+                            </div>
+                        `;
+                        listCard.insertAdjacentHTML('beforeend', emptyHtml);
+                    }
+                    if (window.updateHeaderNotificationBadge) {
+                        window.updateHeaderNotificationBadge(0);
+                    }
+                }
+            })
+            .catch(err => {
+                clearAllForm.submit();
+            });
+        });
+    }
+
+    // Delete single notification via AJAX
+    document.querySelectorAll('.delete-notif-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const notifId = this.getAttribute('data-id');
+            const item = document.getElementById('notif-item-' + notifId);
+
+            fetch(window.BASE_URL + '/index.php?action=delete_notification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    id: notifId,
+                    csrf_token: csrfToken,
+                    ajax: '1'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (item) {
+                        item.style.transition = 'all 0.25s ease';
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateX(20px)';
+                        setTimeout(function() {
+                            item.remove();
+                            const remaining = document.querySelectorAll('.notification-item');
+                            if (remaining.length === 0) {
+                                if (markAllForm) markAllForm.remove();
+                                if (clearAllForm) clearAllForm.remove();
+                                const listCard = document.getElementById('notificationsListCard');
+                                const notifList = document.getElementById('notificationsList');
+                                if (notifList) notifList.remove();
+                                if (listCard) {
+                                    listCard.insertAdjacentHTML('beforeend', `
+                                        <div class="p-5 text-center">
+                                            <div class="notif-empty-icon mx-auto mb-3">
+                                                <i class="bi bi-bell-slash"></i>
+                                            </div>
+                                            <h5 class="fw-bold text-themed mb-2">You're all caught up!</h5>
+                                            <p class="text-muted small mx-auto mb-0" style="max-width: 420px;">
+                                                When someone follows you, likes, or comments on your posts, you'll receive notifications here.
+                                            </p>
+                                        </div>
+                                    `);
+                                }
+                            }
+                        }, 250);
+                    }
+                    if (window.updateHeaderNotificationBadge) {
+                        window.updateHeaderNotificationBadge(data.unread_count);
+                    }
+                }
+            })
+            .catch(err => console.error('Error deleting notification:', err));
+        });
+    });
 });
 </script>

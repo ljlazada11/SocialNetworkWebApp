@@ -31,12 +31,13 @@ class MessageController {
 
     /**
      * Display the messages inbox — a list of all conversations for the logged-in user.
+     * In the unified split-screen layout, if conversations exist and 'list' is not requested,
+     * it automatically opens the most recent conversation.
      */
     public function inbox(): void {
         $this->requireAuth();
 
         $currentUserId = (int)$_SESSION['user_id'];
-
         $conversations = $this->messageModel->getInbox($currentUserId);
 
         // Resolve avatar URLs for each conversation partner
@@ -49,16 +50,27 @@ class MessageController {
         }
         unset($conv);
 
+        // Render main messages inbox view: lists all conversations with placeholder on right when no partner is selected
+        $partner              = null;
+        $messages             = [];
+        $partnerAvatarUrl     = null;
+        $partnerInitials      = '';
+        $currentUser          = $this->userModel->findById($currentUserId);
+        $currentUserAvatarUrl = $this->resolveAvatarUrl($currentUser['profile_image'] ?? null);
+        $currentParts         = explode(' ', trim($currentUser['full_name'] ?? ''));
+        $currentUserInitials  = count($currentParts) >= 2
+            ? strtoupper(mb_substr($currentParts[0], 0, 1) . mb_substr($currentParts[count($currentParts) - 1], 0, 1))
+            : strtoupper(mb_substr($currentUser['full_name'] ?? 'U', 0, 2));
+
         $pageTitle = 'Messages';
         require_once __DIR__ . '/../views/layouts/header.php';
-        require_once __DIR__ . '/../views/messages/inbox.php';
+        require_once __DIR__ . '/../views/messages/conversation.php';
         require_once __DIR__ . '/../views/layouts/footer.php';
     }
 
     /**
      * Display the conversation between the current user and a specific partner.
-     * If partner_id is provided via GET, open that conversation.
-     * Also marks incoming messages in this conversation as read.
+     * Also loads all conversations for the left sidebar in the split-screen view.
      */
     public function conversation(): void {
         $this->requireAuth();
@@ -102,6 +114,39 @@ class MessageController {
         $currentUserInitials = count($currentParts) >= 2
             ? strtoupper(mb_substr($currentParts[0], 0, 1) . mb_substr($currentParts[count($currentParts) - 1], 0, 1))
             : strtoupper(mb_substr($currentUser['full_name'] ?? 'U', 0, 2));
+
+        // Load all conversations for the left sidebar
+        $conversations = $this->messageModel->getInbox($currentUserId);
+        foreach ($conversations as &$conv) {
+            $conv['partner_avatar_url'] = $this->resolveAvatarUrl($conv['partner_profile_image'] ?? null);
+            $cParts = explode(' ', trim($conv['partner_full_name'] ?? ''));
+            $conv['partner_initials'] = count($cParts) >= 2
+                ? strtoupper(mb_substr($cParts[0], 0, 1) . mb_substr($cParts[count($cParts) - 1], 0, 1))
+                : strtoupper(mb_substr($conv['partner_full_name'] ?? 'U', 0, 2));
+        }
+        unset($conv);
+
+        // If active partner is not yet in conversations list (e.g. brand-new conversation), prepend them
+        $found = false;
+        foreach ($conversations as $c) {
+            if ((int)$c['partner_id'] === $partnerId) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            array_unshift($conversations, [
+                'partner_id'            => $partner['id'],
+                'partner_full_name'     => $partner['full_name'],
+                'partner_username'      => $partner['username'],
+                'partner_profile_image' => $partner['profile_image'],
+                'partner_avatar_url'    => $partnerAvatarUrl,
+                'partner_initials'      => $partnerInitials,
+                'last_message'          => '',
+                'last_at'               => null,
+                'unread_count'          => 0,
+            ]);
+        }
 
         $pageTitle = 'Chat with ' . htmlspecialchars($partner['full_name']);
         require_once __DIR__ . '/../views/layouts/header.php';

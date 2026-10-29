@@ -26,7 +26,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
         <?php unset($_SESSION['error_message']); ?>
     <?php endif; ?>
 
-    <div class="row g-4">
+    <div class="row g-3 g-md-4">
         <!-- ==============================================
              CENTER COLUMN: POST COMPOSER & SOCIAL FEED
              ============================================== -->
@@ -549,6 +549,8 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                     </div>
                 <?php endif; ?>
             </div>
+
+
         </div>
     </div>
 

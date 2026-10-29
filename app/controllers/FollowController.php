@@ -131,11 +131,14 @@ class FollowController {
         if ($isCurrentlyFollowing) {
             $this->followModel->unfollow($followerId, $followingId);
             $newStatus = false;
+
+            // Remove follow notification so unfollowing doesn't leave an obsolete notification
+            $this->notificationModel->deleteFollowNotification($followingId, $followerId);
         } else {
             $this->followModel->follow($followerId, $followingId);
             $newStatus = true;
 
-            // Send notification to target user
+            // Send notification to target user (updates timestamp if existing, never duplicates)
             $this->notificationModel->create(
                 $followingId,
                 $followerId,

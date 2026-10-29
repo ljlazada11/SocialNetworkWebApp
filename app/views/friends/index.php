@@ -5,7 +5,7 @@
 $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 ?>
 
-<div class="friends-page-container mx-auto py-4" style="max-width: 820px;">
+<div class="friends-page-container mx-auto py-2 py-md-4" style="max-width: 820px;">
 
     <!-- Navigation Back to Feed Bar -->
     <div class="d-flex align-items-center justify-content-between mb-3 px-1 profile-nav-bar">
@@ -22,18 +22,18 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
     <div class="card-modern border-0 shadow-sm overflow-hidden p-0" id="friendsMainCard">
 
         <!-- 1. Card Header -->
-        <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-3">
+        <div class="p-3 px-md-4 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2 friends-main-header">
+            <div class="d-flex align-items-center gap-2 gap-md-3 min-w-0">
                 <div class="friends-header-icon-box">
                     <i class="bi bi-people-fill"></i>
                 </div>
-                <div>
-                    <h5 class="fw-bold text-themed mb-0">Friends & Connections</h5>
-                    <p class="text-muted small mb-0">Manage your connections and network in the SMCC community.</p>
+                <div class="min-w-0">
+                    <h5 class="fw-bold text-themed mb-0 text-truncate friends-header-title">Friends & Connections</h5>
+                    <p class="text-muted small mb-0 d-none d-sm-block">Manage your connections and network in the SMCC community.</p>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center ms-auto">
                 <div class="friends-stat-pill-group">
                     <div class="text-center">
                         <span class="fw-bold text-themed fs-6" id="headerFollowersCount"><?= (int)$followersCount ?></span>
@@ -49,7 +49,7 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
         </div>
 
         <!-- 2. Integrated Navigation Tabs -->
-        <div class="px-4 py-3 border-bottom friends-tabs-strip">
+        <div class="px-2 px-md-4 py-2 py-md-3 border-bottom friends-tabs-strip">
             <ul class="nav nav-pills nav-fill friends-nav-pills gap-2" id="friendsTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link <?= $activeTab === 'followers' ? 'active' : '' ?> d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 fw-semibold" 
@@ -107,8 +107,8 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                     ? strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[count($parts)-1], 0, 1))
                                     : strtoupper(mb_substr($uFullName, 0, 2));
                                 ?>
-                                <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap gap-3 friend-list-item" id="friend-card-<?= $uId ?>">
-                                    <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
+                                <div class="list-group-item px-3 px-md-4 py-2.5 py-md-3 d-flex align-items-center justify-content-between gap-2 gap-md-3 friend-list-item" id="friend-card-<?= $uId ?>">
+                                    <div class="d-flex align-items-center gap-2 gap-md-3 min-w-0 flex-grow-1">
                                         <!-- Avatar Link -->
                                         <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none flex-shrink-0" title="View <?= htmlspecialchars($uFullName); ?>'s profile">
                                             <?php if (!empty($uAvatarPath)): ?>
@@ -122,14 +122,14 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 
                                         <!-- User Info -->
                                         <div class="min-w-0 flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none">
+                                            <div class="d-flex align-items-baseline gap-1 gap-md-2 flex-wrap">
+                                                <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none text-truncate">
                                                     <span class="fw-bold text-themed friend-card-name"><?= htmlspecialchars($uFullName); ?></span>
                                                 </a>
-                                                <span class="text-muted small">@<?= htmlspecialchars($uUsername); ?></span>
+                                                <span class="text-muted small friend-card-username text-truncate">@<?= htmlspecialchars($uUsername); ?></span>
                                             </div>
                                             <?php if (!empty($uBio)): ?>
-                                                <p class="text-secondary small mb-0 mt-1 text-truncate" style="max-width: 480px;" title="<?= htmlspecialchars($uBio); ?>">
+                                                <p class="text-secondary small mb-0 mt-0.5 text-truncate friend-card-bio" style="max-width: 480px;" title="<?= htmlspecialchars($uBio); ?>">
                                                     <?= htmlspecialchars($uBio); ?>
                                                 </p>
                                             <?php endif; ?>
@@ -137,10 +137,10 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                     </div>
 
                                     <!-- Action Buttons -->
-                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                    <div class="d-flex align-items-center gap-1.5 gap-md-2 flex-shrink-0 friend-card-actions">
                                         <!-- Direct Message Button -->
                                         <a href="<?= BASE_URL ?>/index.php?action=conversation&user_id=<?= $uId ?>" 
-                                           class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1-5 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-2.5 px-md-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm friend-msg-btn"
                                            title="Send a message to <?= htmlspecialchars($uFullName); ?>">
                                             <i class="bi bi-chat-dots-fill"></i>
                                             <span class="d-none d-md-inline">Message</span>
@@ -152,7 +152,7 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                             <input type="hidden" name="user_id" value="<?= $uId ?>">
                                             <input type="hidden" name="redirect" value="friends">
                                             <button type="submit" 
-                                                    class="btn btn-sm <?= $isFollowing ? 'btn-outline-secondary' : 'btn-navy' ?> rounded-pill px-3 py-1-5 fw-semibold d-inline-flex align-items-center gap-1-5 friend-toggle-btn shadow-sm"
+                                                    class="btn btn-sm <?= $isFollowing ? 'btn-outline-secondary' : 'btn-navy' ?> rounded-pill px-2.5 px-md-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 friend-toggle-btn shadow-sm"
                                                     data-following="<?= $isFollowing ? '1' : '0' ?>">
                                                 <i class="bi <?= $isFollowing ? 'bi-check-lg' : 'bi-person-plus-fill' ?>"></i>
                                                 <span class="btn-text"><?= $isFollowing ? 'Following' : 'Follow back' ?></span>
@@ -207,8 +207,8 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                     ? strtoupper(mb_substr($parts[0], 0, 1) . mb_substr($parts[count($parts)-1], 0, 1))
                                     : strtoupper(mb_substr($uFullName, 0, 2));
                                 ?>
-                                <div class="list-group-item px-4 py-3 d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap gap-3 friend-list-item" id="friend-card-<?= $uId ?>">
-                                    <div class="d-flex align-items-center gap-3 min-w-0 flex-grow-1">
+                                <div class="list-group-item px-3 px-md-4 py-2.5 py-md-3 d-flex align-items-center justify-content-between gap-2 gap-md-3 friend-list-item" id="friend-card-<?= $uId ?>">
+                                    <div class="d-flex align-items-center gap-2 gap-md-3 min-w-0 flex-grow-1">
                                         <!-- Avatar Link -->
                                         <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none flex-shrink-0" title="View <?= htmlspecialchars($uFullName); ?>'s profile">
                                             <?php if (!empty($uAvatarPath)): ?>
@@ -222,14 +222,14 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 
                                         <!-- User Info -->
                                         <div class="min-w-0 flex-grow-1">
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none">
+                                            <div class="d-flex align-items-baseline gap-1 gap-md-2 flex-wrap">
+                                                <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $uId ?>" class="text-decoration-none text-truncate">
                                                     <span class="fw-bold text-themed friend-card-name"><?= htmlspecialchars($uFullName); ?></span>
                                                 </a>
-                                                <span class="text-muted small">@<?= htmlspecialchars($uUsername); ?></span>
+                                                <span class="text-muted small friend-card-username text-truncate">@<?= htmlspecialchars($uUsername); ?></span>
                                             </div>
                                             <?php if (!empty($uBio)): ?>
-                                                <p class="text-secondary small mb-0 mt-1 text-truncate" style="max-width: 480px;" title="<?= htmlspecialchars($uBio); ?>">
+                                                <p class="text-secondary small mb-0 mt-0.5 text-truncate friend-card-bio" style="max-width: 480px;" title="<?= htmlspecialchars($uBio); ?>">
                                                     <?= htmlspecialchars($uBio); ?>
                                                 </p>
                                             <?php endif; ?>
@@ -237,10 +237,10 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                     </div>
 
                                     <!-- Action Buttons -->
-                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                    <div class="d-flex align-items-center gap-1.5 gap-md-2 flex-shrink-0 friend-card-actions">
                                         <!-- Direct Message Button -->
                                         <a href="<?= BASE_URL ?>/index.php?action=conversation&user_id=<?= $uId ?>" 
-                                           class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1-5 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-2.5 px-md-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm friend-msg-btn"
                                            title="Send a message to <?= htmlspecialchars($uFullName); ?>">
                                             <i class="bi bi-chat-dots-fill"></i>
                                             <span class="d-none d-md-inline">Message</span>
@@ -252,7 +252,7 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                                             <input type="hidden" name="user_id" value="<?= $uId ?>">
                                             <input type="hidden" name="redirect" value="friends">
                                             <button type="submit" 
-                                                    class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1-5 fw-semibold d-inline-flex align-items-center gap-1-5 friend-toggle-btn shadow-sm"
+                                                    class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 px-md-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 friend-toggle-btn shadow-sm"
                                                     data-following="1">
                                                 <i class="bi bi-check-lg"></i>
                                                 <span class="btn-text">Following</span>

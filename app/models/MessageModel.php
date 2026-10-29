@@ -144,13 +144,14 @@ class MessageModel {
     }
 
     /**
-     * Get total count of unread messages for the logged-in user across all conversations.
+     * Get count of conversations with unread messages for the logged-in user.
+     * Multiple messages from the same person count as one notification.
      *
      * @param int $userId
      * @return int
      */
     public function getUnreadCount(int $userId): int {
-        $sql = "SELECT COUNT(*) FROM messages WHERE receiver_id = :user_id AND is_read = 0";
+        $sql = "SELECT COUNT(DISTINCT sender_id) FROM messages WHERE receiver_id = :user_id AND is_read = 0";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':user_id' => (int)$userId]);
         return (int)$stmt->fetchColumn();

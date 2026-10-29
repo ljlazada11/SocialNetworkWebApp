@@ -105,19 +105,22 @@ if ($isLoggedIn) {
                         </a>
                     </div>
 
-                    <!-- Search Bar -->
-                    <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search" role="search">
+                    <!-- Search Bar (Desktop only: on mobile, Search & Explore is in the Menu drawer) -->
+                    <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search d-none d-md-block" id="headerSearchForm" role="search">
                         <input type="hidden" name="action" value="search">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="text" name="q" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
+                        <input type="text" name="q" id="headerSearchInput" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
                         <span class="search-shortcut">⌘K</span>
                     </form>
 
-                    <!-- Right Header Actions -->
+                    <!-- Right Header Actions:
+                         Screen View (Desktop): Messages -> Notifications -> Dark Mode Toggle -> Profile Dropdown
+                         Mobile View: Notifications -> Dark Mode Toggle
+                    -->
                     <div class="header-actions">
-                        <!-- Messages Icon -->
+                        <!-- 1. Messages Icon (Desktop only: on mobile it is in the fixed bottom navigation bar) -->
                         <?php if ($isLoggedIn): ?>
-                        <div class="position-relative">
+                        <div class="position-relative d-none d-md-block">
                             <a href="<?= BASE_URL ?>/index.php?action=messages" class="header-icon-btn" title="Messages" aria-label="Messages" id="headerMsgBtn">
                                 <i class="bi bi-chat-dots-fill"></i>
                                 <?php
@@ -131,9 +134,9 @@ if ($isLoggedIn) {
                         </div>
                         <?php endif; ?>
 
-                        <!-- Notifications Bell -->
+                        <!-- 2. Notifications Bell (Follows Messages on desktop, 1st on mobile) -->
                         <?php if ($isLoggedIn): ?>
-                        <div class="position-relative">
+                        <div class="position-relative header-notif-wrap">
                             <a href="<?= BASE_URL ?>/index.php?action=notifications" class="header-icon-btn notif-bell-btn" title="Notifications" aria-label="Notifications" id="headerNotifBtn">
                                 <i class="bi bi-bell-fill"></i>
                                 <?php
@@ -147,13 +150,13 @@ if ($isLoggedIn) {
                         </div>
                         <?php endif; ?>
 
-                        <!-- Dark Mode / Light Mode Toggle -->
+                        <!-- 3. Dark Mode / Light Mode Toggle (Follows Notifications on desktop, last control on mobile) -->
                         <button class="header-icon-btn theme-toggle-btn" type="button" onclick="toggleTheme()" title="Switch Theme" aria-label="Switch Theme">
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
 
-                        <!-- Facebook-Style Profile Dropdown (Only for Authenticated Users) -->
-                        <div class="dropdown fb-profile-dropdown">
+                        <!-- Facebook-Style Profile Dropdown (Desktop only: on mobile Profile & Menu are in the fixed bottom nav) -->
+                        <div class="dropdown fb-profile-dropdown d-none d-md-block">
                             <button class="fb-profile-trigger" 
                                     type="button" 
                                     id="headerUserDropdown" 
@@ -258,13 +261,13 @@ if ($isLoggedIn) {
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
 
-                        <?php if (!$isLandingPage && $currentAction !== 'login'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'login' && $currentAction !== 'register' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> Log In
                             </a>
                         <?php endif; ?>
 
-                        <?php if (!$isLandingPage && $currentAction !== 'register'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'register' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-sm btn-navy rounded-pill px-3 fw-semibold d-none d-sm-inline-flex align-items-center">
                                 <i class="bi bi-person-plus-fill me-1"></i> Register
                             </a>
@@ -278,7 +281,7 @@ if ($isLoggedIn) {
         <main class="<?= $isLoggedIn ? 'p-3 p-md-4 flex-grow-1' : 'auth-main flex-grow-1 d-flex align-items-center justify-content-center p-3 p-md-4' ?>">
 
             <!-- Global Flash Messages -->
-            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
+            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
                 <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['error_message']); ?>
@@ -287,7 +290,7 @@ if ($isLoggedIn) {
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login'): ?>
+            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['success_message']); ?>

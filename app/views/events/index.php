@@ -1,6 +1,6 @@
 <?php
 // app/views/events/index.php
-// Dedicated full-page view for SMCC Campus Events Calendar
+// Dedicated full-page view for CLIQ Campus Events Calendar
 ?>
 
 <div class="container py-4">
@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold text-themed mb-0">Campus Events Calendar</h3>
-                    <p class="text-muted small mb-0">Official schedule of SMCC community events, assemblies, and activities</p>
+                    <p class="text-muted small mb-0">Official schedule of community events, assemblies, and activities on CLIQ</p>
                 </div>
             </div>
         </div>
@@ -173,7 +173,7 @@
                                 <h5 class="modal-title fw-bold mb-0 text-themed" id="pageEventModalLabel<?= (int)$evt['id']; ?>">
                                     <?= htmlspecialchars($evt['title']); ?>
                                 </h5>
-                                <span class="micro-text text-muted">Official SMCC Campus Event</span>
+                                <span class="micro-text text-muted">Official Campus Event</span>
                             </div>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

@@ -1,6 +1,6 @@
 <?php
 // app/views/insights/index.php
-// Redesigned Community Search View for CLIQ — The SMCC Community Hub
+// Redesigned Community Search View for CLIQ
 
 $currentUserId = (int)($_SESSION['user_id'] ?? 0);
 $type = $type ?? 'users';
@@ -40,7 +40,7 @@ $totalCount = (int)($totalCount ?? 0);
                     </div>
                     <div>
                         <h3 class="fw-bold insights-title mb-0" style="letter-spacing: -0.5px;">Community Search</h3>
-                        <p class="text-secondary small mb-0">Discover SMCC community members and find posts that matter to you.</p>
+                        <p class="text-secondary small mb-0">Discover community members and find posts that matter to you on CLIQ.</p>
                     </div>
                 </div>
             </div>
@@ -142,18 +142,18 @@ $totalCount = (int)($totalCount ?? 0);
         <div id="searchResultsSection">
 
             <?php if (!$hasSearched): ?>
-                <!-- 1. Initial State: Explore SMCC Community -->
+                <!-- 1. Initial State: Explore CLIQ Community -->
                 <div class="search-reports-card text-center py-5 border-0 shadow-sm">
                     <div class="insights-header-icon-box mx-auto mb-3" style="width: 56px; height: 56px;">
                         <i class="bi bi-compass fs-4"></i>
                     </div>
-                    <h5 class="fw-bold insights-title mb-2">Explore the SMCC Community</h5>
+                    <h5 class="fw-bold insights-title mb-2">Explore the CLIQ Community</h5>
                     <p class="text-secondary small mb-3 mx-auto" style="max-width: 460px; line-height: 1.6;">
                         Type a name or keyword above and press Search to discover students, faculty, and updates from across the campus.
                     </p>
                     <div class="d-flex justify-content-center flex-wrap gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1-5 quick-search-tag" data-query="SMCC" data-type="posts" data-filter="newest">
-                            <i class="bi bi-tag me-1"></i> #SMCC
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1-5 quick-search-tag" data-query="CLIQ" data-type="posts" data-filter="newest">
+                            <i class="bi bi-tag me-1"></i> #CLIQ
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1-5 quick-search-tag" data-query="sample" data-type="posts" data-filter="photos">
                             <i class="bi bi-images me-1"></i> Photos

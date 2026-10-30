@@ -1,6 +1,6 @@
 <?php
 // app/views/auth/welcome.php
-// Welcome & Authentication Landing View for CLIQ - The SMCC Community Hub
+// Welcome & Authentication Landing View for CLIQ
 
 require_once __DIR__ . '/../layouts/header.php';
 ?>
@@ -47,7 +47,7 @@ require_once __DIR__ . '/../layouts/header.php';
         </h1>
 
         <!-- Subheading -->
-        <div class="landing-subheading mb-3">CLIQ &bull; The SMCC Community Hub</div>
+        <div class="landing-subheading mb-3">CLIQ &bull; Campus Social Network</div>
 
         <!-- Website Description -->
         <p class="landing-description mb-4">
@@ -92,7 +92,7 @@ require_once __DIR__ . '/../layouts/header.php';
         <div class="text-center mb-5">
             <span class="badge bg-secondary-subtle text-secondary px-3 py-1-5 rounded-pill fw-semibold text-uppercase" style="font-size: 0.76rem; letter-spacing: 0.5px;">Platform Highlights</span>
             <h2 class="fw-bold mt-2 text-dark" style="letter-spacing: -0.5px;">Everything you need to thrive on campus</h2>
-            <p class="text-muted mx-auto" style="max-width: 540px; font-size: 0.98rem;">Explore the interactive spaces and features designed specifically for the SMCC collegiate network.</p>
+            <p class="text-muted mx-auto" style="max-width: 540px; font-size: 0.98rem;">Explore the interactive spaces and features designed specifically for the CLIQ campus network.</p>
         </div>
 
         <div class="row g-4">

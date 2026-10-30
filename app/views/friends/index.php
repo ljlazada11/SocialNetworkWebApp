@@ -29,7 +29,7 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                 </div>
                 <div class="min-w-0">
                     <h5 class="fw-bold text-themed mb-0 text-truncate friends-header-title">Friends & Connections</h5>
-                    <p class="text-muted small mb-0 d-none d-sm-block">Manage your connections and network in the SMCC community.</p>
+                    <p class="text-muted small mb-0 d-none d-sm-block">Manage your connections and network in the CLIQ community.</p>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ $currentUserId = (int)($_SESSION['user_id'] ?? 0);
                             </div>
                             <h5 class="fw-bold text-themed mb-2">No followers yet</h5>
                             <p class="text-muted small mx-auto mb-3" style="max-width: 420px;">
-                                When fellow SMCC students follow your profile, they will appear here. Share posts and connect with peers to grow your network!
+                                When fellow members follow your profile on CLIQ, they will appear here. Share posts and connect with peers to grow your network!
                             </p>
                             <a href="<?= BASE_URL ?>/index.php?action=insights" class="btn btn-navy btn-sm rounded-pill px-4 py-2 fw-semibold shadow-sm">
                                 <i class="bi bi-compass me-1"></i> Discover People

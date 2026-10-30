@@ -297,7 +297,7 @@ switch ($action) {
             </div>
             <h3 class="fw-bold text-dark"><?= htmlspecialchars(ucfirst($action)); ?></h3>
             <p class="text-muted col-md-6 mx-auto mb-4">
-                Explore campus <?= htmlspecialchars(strtolower($action)); ?> and connect with members of the SMCC community.
+                Explore campus <?= htmlspecialchars(strtolower($action)); ?> and connect with members of the CLIQ community.
             </p>
             <a href="<?= BASE_URL ?>/" class="btn btn-outline-primary px-4 rounded-pill">
                 <i class="bi bi-arrow-left me-1"></i> Back to Feed

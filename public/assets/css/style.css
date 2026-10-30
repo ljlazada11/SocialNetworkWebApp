@@ -1569,7 +1569,7 @@ img.comment-avatar,
 [data-bs-theme="dark"],
 .dark-theme,
 body.dark-theme {
-    /* Bootstrap 5.3 theme variables for deep SMCC Navy theme */
+    /* Bootstrap 5.3 theme variables for deep CLIQ Navy theme */
     --bs-body-bg: #07122a;
     --bs-body-color: #f0f6ff;
     --bs-emphasis-color: #ffffff;
@@ -1591,7 +1591,7 @@ body.dark-theme {
     --bs-modal-header-border-color: #1b356d;
     --bs-modal-footer-border-color: #1b356d;
 
-    /* SMCC Connect Navy Dark Mode Palette */
+    /* CLIQ Navy Dark Mode Palette */
     --sidebar-bg: #081534;
     --sidebar-hover: rgba(255, 255, 255, 0.08);
     --sidebar-active-bg: rgba(255, 255, 255, 0.14);
@@ -2179,7 +2179,7 @@ textarea::placeholder,
 }
 
 /* ========================================================
-   CENTERED SEARCH PAGE DESIGN (SMCC Connect Design System)
+   CENTERED SEARCH PAGE DESIGN (CLIQ Design System)
    Solid, clean, responsive, and dark-mode compatible
 ======================================================== */
 /* Flexbox min-width helper for text truncation */

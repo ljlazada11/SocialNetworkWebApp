@@ -63,7 +63,7 @@ if ($isLoggedIn) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-    <title><?= isset($pageTitle) ? (strpos($pageTitle, 'CLIQ') !== false ? htmlspecialchars($pageTitle) : htmlspecialchars($pageTitle) . ' - CLIQ') : 'CLIQ - The SMCC Community Hub'; ?></title>
+    <title><?= isset($pageTitle) ? (strpos($pageTitle, 'CLIQ') !== false ? htmlspecialchars($pageTitle) : htmlspecialchars($pageTitle) . ' - CLIQ') : 'CLIQ'; ?></title>
 
     <!-- CLIQ Official Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="<?= BASE_URL ?>/public/assets/images/favicon-32x32.png">
@@ -251,7 +251,7 @@ if ($isLoggedIn) {
                 <?php else: ?>
                     <!-- Public / Unauthenticated Header -->
                     <div class="d-flex align-items-center">
-                        <a href="<?= BASE_URL ?>/" class="brand-link d-inline-flex align-items-center" title="CLIQ - The SMCC Community Hub">
+                        <a href="<?= BASE_URL ?>/" class="brand-link d-inline-flex align-items-center" title="CLIQ">
                             <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-light.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-light">
                             <img src="<?= BASE_URL ?>/public/assets/images/cliq-logo-dark.png" alt="CLIQ" class="cliq-logo-full cliq-logo-header cliq-logo-dark">
                         </a>

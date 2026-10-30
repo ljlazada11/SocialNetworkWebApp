@@ -1,6 +1,6 @@
 <?php
 // app/views/auth/forgot_password.php
-// Forgot / Reset Password View for CLIQ - The SMCC Community Hub
+// Forgot / Reset Password View for CLIQ
 
 require_once __DIR__ . '/../layouts/header.php';
 ?>

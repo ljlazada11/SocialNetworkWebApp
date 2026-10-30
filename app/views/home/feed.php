@@ -112,7 +112,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                     </div>
                     <h2 class="fw-bold text-dark mb-2">Welcome to CLIQ</h2>
                     <p class="text-muted fs-6 mb-4 col-md-10 mx-auto">
-                        The SMCC Community Hub. Sign in or create an account to view campus posts, connect with fellow students, comment, and engage with the community.
+                        Connect with fellow students, view campus posts, share updates, comment, and engage with your community on CLIQ.
                     </p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
                         <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-medium">
@@ -144,7 +144,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                         <div class="card-modern p-4 text-center h-100">
                             <i class="bi bi-shield-check text-success fs-2 mb-2 d-block"></i>
                             <h6 class="fw-bold text-dark">Protected Community</h6>
-                            <p class="small text-muted mb-0">Private to verified members of the SMCC collegiate network.</p>
+                            <p class="small text-muted mb-0">Protected community for verified campus members.</p>
                         </div>
                     </div>
                 </div>
@@ -579,7 +579,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                                     <h5 class="modal-title fw-bold mb-0 text-themed" id="eventModalLabel<?= (int)$evt['id']; ?>">
                                         <?= htmlspecialchars($evt['title']); ?>
                                     </h5>
-                                    <span class="micro-text text-muted">Official SMCC Campus Event</span>
+                                    <span class="micro-text text-muted">Official Campus Event</span>
                                 </div>
                             </div>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -669,7 +669,7 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                             </div>
                             <div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <h5 class="ve-modal-title mb-0" id="allEventsModalLabel">SMCC Campus Events</h5>
+                                    <h5 class="ve-modal-title mb-0" id="allEventsModalLabel">Campus Events</h5>
                                     <span class="badge bg-primary-subtle text-primary border-0 rounded-pill px-2 py-0.5 micro-text fw-semibold">
                                         <?= count($upcomingEvents); ?> Upcoming
                                     </span>

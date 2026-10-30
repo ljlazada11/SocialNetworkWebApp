@@ -316,10 +316,7 @@ if (!empty($user['full_name'])) {
     </div>
 </div>
 
-<!-- Cropper.js Library Script -->
-<script src="<?= BASE_URL ?>/public/assets/js/cropper.min.js"></script>
-
-<!-- Interactive Image Adjustment Controller Script -->
+<!-- Interactive Image Adjustment Controller Script (Cropper.js loaded via footer.php) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('profile_image');

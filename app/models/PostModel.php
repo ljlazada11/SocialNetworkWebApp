@@ -6,9 +6,23 @@ require_once __DIR__ . '/../../config/database.php';
 
 class PostModel {
     private $db;
+    private $commentModel = null;
 
     public function __construct() {
         $this->db = Database::connect();
+    }
+
+    /**
+     * Get the lazily-loaded CommentModel instance.
+     *
+     * @return CommentModel
+     */
+    private function getCommentModel() {
+        if ($this->commentModel === null) {
+            require_once __DIR__ . '/CommentModel.php';
+            $this->commentModel = new CommentModel();
+        }
+        return $this->commentModel;
     }
 
     /**
@@ -93,9 +107,7 @@ class PostModel {
      * @return array
      */
     public function getCommentsByPostId($postId) {
-        require_once __DIR__ . '/CommentModel.php';
-        $commentModel = new CommentModel();
-        return $commentModel->getCommentsByPost($postId);
+        return $this->getCommentModel()->getCommentsByPost($postId);
     }
 
     /**
@@ -174,9 +186,7 @@ class PostModel {
      * @return bool
      */
     public function addComment($postId, $userId, $content) {
-        require_once __DIR__ . '/CommentModel.php';
-        $commentModel = new CommentModel();
-        return (bool)$commentModel->createComment($postId, $userId, $content);
+        return (bool)$this->getCommentModel()->createComment($postId, $userId, $content);
     }
 
     /**

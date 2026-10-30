@@ -2345,47 +2345,6 @@ textarea::placeholder,
 }
 
 /* User Card in Search */
-.search-user-card {
-    background-color: var(--card-bg, #ffffff);
-    border: 1px solid var(--card-border, #e8ecf2);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-    transition: all 0.15s ease;
-}
-
-.search-user-card:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
-}
-
-[data-bs-theme="dark"] .search-user-card,
-.dark-theme .search-user-card {
-    background-color: var(--card-bg, #0d1e44);
-    border-color: var(--card-border, #1b356d);
-}
-
-[data-bs-theme="dark"] .search-user-card:hover,
-.dark-theme .search-user-card:hover {
-    border-color: #2e59a8;
-}
-
-/* Empty & Guidance States */
-.search-empty-state {
-    background-color: var(--card-bg, #ffffff);
-    border: 1px solid var(--card-border, #e8ecf2);
-    border-radius: 14px;
-    padding: 2.75rem 1.5rem;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-[data-bs-theme="dark"] .search-empty-state,
-.dark-theme .search-empty-state {
-    background-color: var(--card-bg, #0d1e44);
-    border-color: var(--card-border, #1b356d);
-}
-
 .search-empty-icon {
     width: 48px;
     height: 48px;
@@ -2987,34 +2946,6 @@ form[action*="delete_comment"] button.dropdown-item:hover {
 
 .password-requirements .req-item[data-satisfied="true"] .req-icon {
     transform: scale(1.15);
-}
-
-.toggle-password-btn {
-    border-color: var(--input-border, #e2e8f0);
-    background-color: var(--input-bg, #f8fafc);
-    color: var(--text-muted, #64748b);
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.toggle-password-btn:hover,
-.toggle-password-btn:focus {
-    background-color: var(--subtle-bg, #f1f5f9);
-    color: var(--text-primary, #1e293b);
-}
-
-[data-bs-theme="dark"] .toggle-password-btn,
-.dark-theme .toggle-password-btn {
-    background-color: var(--input-bg, #0b1a3a);
-    border-color: var(--input-border, #1e3a78);
-    color: var(--text-muted, #93c5fd);
-}
-
-[data-bs-theme="dark"] .toggle-password-btn:hover,
-[data-bs-theme="dark"] .toggle-password-btn:focus,
-.dark-theme .toggle-password-btn:hover,
-.dark-theme .toggle-password-btn:focus {
-    background-color: var(--subtle-bg, #122654);
-    color: #ffffff;
 }
 
 
@@ -4842,10 +4773,6 @@ html.dark-theme img.cliq-logo-dark {
     height: 38px !important;
     font-size: 1rem;
     margin-bottom: 0.65rem !important;
-}
-
-.search-view-container {
-    padding: 0 0.5rem !important;
 }
 
 /* Prevent search filter pills from overflowing on narrow screens */

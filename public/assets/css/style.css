@@ -2240,12 +2240,14 @@ textarea::placeholder,
 
 .search-main-control {
     flex: 1;
+    min-width: 0;
     border: none;
     background: transparent;
     font-size: 0.95rem;
     color: var(--text-primary);
     outline: none;
     padding: 0.45rem 0;
+    text-overflow: ellipsis;
 }
 
 .search-main-control::placeholder {
@@ -4584,9 +4586,12 @@ html.dark-theme img.cliq-logo-dark {
 }
 
 .card-modern .search-main-control {
+    flex: 1;
+    min-width: 0;
     font-size: 0.85rem;
     padding: 0.2rem 0;
     color: var(--text-primary);
+    text-overflow: ellipsis;
 }
 
 .card-modern .search-submit-btn {
@@ -4594,6 +4599,8 @@ html.dark-theme img.cliq-logo-dark {
     padding: 0.28rem 0.85rem;
     font-size: 0.8rem;
     font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* Compact Non-intrusive Search Navigation Toolbar */
@@ -4738,9 +4745,9 @@ html.dark-theme img.cliq-logo-dark {
 .search-user-card {
     background-color: var(--card-bg, #ffffff);
     border: 1px solid var(--card-border, #e8ecf2);
-    border-radius: 10px !important;
-    padding: 0.6rem 0.75rem !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    border-radius: 12px !important;
+    padding: 0.75rem 0.95rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: all 0.15s ease;
 }
 
@@ -4760,19 +4767,129 @@ html.dark-theme img.cliq-logo-dark {
     border-color: #2e59a8;
 }
 
+/* User Card Actions Layout */
+.search-user-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+.search-user-actions .search-action-btn {
+    white-space: nowrap;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1.25;
+}
+
+/* Responsive Search User Card: Prevent button overlap and clipping on mobile */
+@media (max-width: 576px) {
+    .search-user-card {
+        padding: 0.75rem 0.85rem !important;
+    }
+
+    .search-user-card .search-user-card-inner {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.65rem !important;
+    }
+
+    .search-user-card .search-user-info {
+        width: 100% !important;
+    }
+
+    .search-user-card .search-user-actions {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.35rem !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .search-user-card .search-user-actions .search-action-form {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    .search-user-card .search-user-actions .search-action-form .search-follow-btn {
+        width: 100% !important;
+        padding: 0.4rem 0.25rem !important;
+        font-size: 0.74rem !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .search-user-card .search-user-actions .search-action-btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 0.4rem 0.25rem !important;
+        font-size: 0.74rem !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Search input and button fit cleanly without overlapping on mobile screens */
+    .search-input-wrapper {
+        padding: 0.25rem 0.35rem 0.25rem 0.65rem;
+        gap: 0.35rem;
+    }
+
+    .search-main-control,
+    .card-modern .search-main-control {
+        min-width: 0 !important;
+        font-size: 0.82rem;
+    }
+
+    .search-submit-btn,
+    .card-modern .search-submit-btn {
+        padding: 0.25rem 0.65rem !important;
+        font-size: 0.78rem !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    .search-clear-btn {
+        font-size: 1.1rem;
+        padding: 0.1rem 0.3rem;
+        margin-right: 0.1rem;
+        flex-shrink: 0;
+    }
+}
+
 /* Compact Empty States */
 .card-modern .search-empty-state {
+    text-align: center !important;
     background: transparent;
     border: none;
     box-shadow: none;
-    padding: 1.75rem 1rem !important;
+    padding: 2rem 1rem !important;
 }
 
 .card-modern .search-empty-icon {
-    width: 38px !important;
-    height: 38px !important;
-    font-size: 1rem;
-    margin-bottom: 0.65rem !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.15rem;
+    margin: 0 auto 0.75rem auto !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
 /* Prevent search filter pills from overflowing on narrow screens */

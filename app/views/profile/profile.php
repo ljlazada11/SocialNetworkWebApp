@@ -196,9 +196,6 @@ if (!empty($user['full_name'])) {
                             aria-selected="true">
                         <i class="bi bi-file-earmark-post"></i>
                         <span>All Posts</span>
-                        <span class="badge rounded-pill bg-light text-secondary border small px-2 py-0.5">
-                            <?= !empty($posts) ? count($posts) : 0; ?>
-                        </span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -212,9 +209,6 @@ if (!empty($user['full_name'])) {
                             aria-selected="false">
                         <i class="bi bi-images"></i>
                         <span>Photos</span>
-                        <span class="badge rounded-pill bg-light text-secondary border small px-2 py-0.5">
-                            <?= $totalPhotosCount ?>
-                        </span>
                     </button>
                 </li>
 
@@ -231,9 +225,6 @@ if (!empty($user['full_name'])) {
                 <h4 class="fw-bold mb-0 text-themed d-flex align-items-center gap-2">
                     <i class="bi bi-file-earmark-post text-primary"></i>
                     <span><?= !empty($isOwnProfile) ? 'My Posts' : 'Posts'; ?></span>
-                    <span class="badge rounded-pill bg-light text-secondary border fs-6 fw-semibold">
-                        <?= !empty($posts) ? count($posts) : 0; ?>
-                    </span>
                 </h4>
             </div>
 
@@ -335,11 +326,6 @@ if (!empty($user['full_name'])) {
                                 </div>
                             <?php endif; ?>
                         <?php elseif ($totalPostImages > 1): ?>
-                            <div class="d-flex align-items-center gap-2 mb-2 px-1">
-                                <span class="badge bg-secondary-subtle text-secondary border rounded-pill px-2.5 py-1 small d-inline-flex align-items-center gap-1.5 fw-semibold">
-                                    <i class="bi bi-images text-primary"></i> Album &bull; <?= $totalPostImages ?> photos
-                                </span>
-                            </div>
                             <div class="post-gallery post-gallery-<?= min($totalPostImages, 4) ?> mb-3" data-post-id="<?= (int)$post['id'] ?>">
                                 <?php foreach (array_slice($postImages, 0, 4) as $idx => $imgFile): ?>
                                     <?php
@@ -498,11 +484,7 @@ if (!empty($user['full_name'])) {
                             </h5>
                             <p class="text-muted small mb-0"><?= !empty($isOwnProfile) ? 'All photos you have shared in your posts' : 'All photos shared by ' . htmlspecialchars($user['full_name']); ?></p>
                         </div>
-                        <div>
-                            <span class="badge rounded-pill bg-secondary-subtle text-secondary border px-3 py-1.5 small fw-semibold">
-                                <?= $totalPhotosCount ?> <?= $totalPhotosCount === 1 ? 'Photo' : 'Photos' ?>
-                            </span>
-                        </div>
+                        
                     </div>
 
                     <?php if ($totalPhotosCount > 0): ?>

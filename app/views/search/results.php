@@ -63,7 +63,7 @@ $authorId = $_GET['author_id'] ?? null;
                     <small class="text-muted d-block" style="font-size: 0.74rem;">Find students, faculty, posts, and topics</small>
                 </div>
             </div>
-            <span class="text-muted small d-none d-sm-inline" style="font-size: 0.75rem;">Community Hub</span>
+
         </div>
 
         <!-- Search Form inside card -->
@@ -72,7 +72,8 @@ $authorId = $_GET['author_id'] ?? null;
         <form action="<?= BASE_URL ?>/index.php" method="GET" class="mb-2" role="search" id="searchMainForm">
         <input type="hidden" name="action" value="search">
         <input type="hidden" name="type" value="<?= htmlspecialchars($type); ?>" id="searchTypeInput">
-        <input type="hidden" name="filter" value="<?= htmlspecialchars($filter); ?>" id="searchFilterInput">
+        <?php if ($type === 'users'): ?><input type="hidden" name="filter" value="<?= htmlspecialchars($filter); ?>" id="searchFilterInput"><?php endif; ?>
+        <?php if (!empty($authorId)): ?><input type="hidden" name="author_id" value="<?= (int)$authorId; ?>"><?php endif; ?>
 
         <div class="search-input-wrapper mb-2">
             <i class="bi bi-search search-icon-lead"></i>
@@ -80,7 +81,7 @@ $authorId = $_GET['author_id'] ?? null;
                 type="text" 
                 name="q" 
                 class="search-main-control" 
-                placeholder="Search by name, username, or keywords..." 
+                placeholder="Search..." 
                 value="<?= htmlspecialchars($query ?? ''); ?>" 
                 autocomplete="off"
             >
@@ -118,23 +119,8 @@ $authorId = $_GET['author_id'] ?? null;
                 </li>
             </ul>
 
-            <!-- Refine Dropdowns: Author & Sort -->
+            <!-- Refine Dropdowns: Sort -->
             <div class="d-flex align-items-center gap-2 flex-wrap ms-auto search-filters-group">
-                <!-- Author Filter -->
-                <div class="search-filter-pill-box">
-                    <i class="bi bi-person-fill search-filter-icon"></i>
-                    <select name="author_id" id="author_id_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Filter by author">
-                        <option value="">All Authors</option>
-                        <?php if (!empty($allAuthors)): ?>
-                            <?php foreach ($allAuthors as $authorItem): ?>
-                                <option value="<?= $authorItem['id']; ?>" <?= (!empty($authorId) && (int)$authorId === (int)$authorItem['id']) ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($authorItem['full_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                </div>
-
                 <!-- Sort Order (When posts are shown) -->
                 <?php if ($type !== 'users'): ?>
                     <div class="search-filter-pill-box">
@@ -142,8 +128,6 @@ $authorId = $_GET['author_id'] ?? null;
                         <select name="filter" id="filter_select" class="form-select form-select-sm search-select-pill" onchange="this.form.submit()" aria-label="Sort results">
                             <option value="newest" <?= ($filter === 'newest') ? 'selected' : ''; ?>>Newest</option>
                             <option value="oldest" <?= ($filter === 'oldest') ? 'selected' : ''; ?>>Oldest</option>
-                            <option value="most_liked" <?= ($filter === 'most_liked') ? 'selected' : ''; ?>>Most Liked</option>
-                            <option value="most_commented" <?= ($filter === 'most_commented') ? 'selected' : ''; ?>>Most Commented</option>
                         </select>
                     </div>
                 <?php endif; ?>
@@ -176,34 +160,26 @@ $authorId = $_GET['author_id'] ?? null;
     <!-- 4. SEARCH & REPORT RESULTS CONTENT -->
     <?php if ($isEmptySearch && empty($users) && empty($posts)): ?>
         <!-- Initial Guidance State -->
-        <div class="search-empty-state">
-            <div class="search-empty-icon">
+        <div class="search-empty-state text-center py-4">
+            <div class="search-empty-icon mx-auto">
                 <i class="bi bi-search"></i>
             </div>
             <h5 class="fw-bold text-themed mb-2">Search & Filter Social Content</h5>
-            <p class="small text-muted mb-3 col-md-9 mx-auto">
-                Type a username, full name, or post content keyword above, or filter posts by selecting a specific author from the dropdown list.
+            <p class="small text-muted mb-0 col-md-9 mx-auto">
+                Type a username, full name, or post content keyword above to discover people and posts across the community.
             </p>
-            <div class="d-flex justify-content-center gap-2">
-                <a href="<?= BASE_URL ?>/index.php?action=search&type=posts&filter=newest" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                    <i class="bi bi-grid me-1"></i> Browse All Posts
-                </a>
-                <a href="<?= BASE_URL ?>/index.php?action=search&type=posts&filter=most_liked" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                    <i class="bi bi-heart me-1"></i> View Most Liked Posts
-                </a>
-            </div>
         </div>
 
     <?php elseif (($type === 'all' && empty($users) && empty($posts)) || ($type === 'users' && empty($users)) || ($type === 'posts' && empty($posts))): ?>
         <!-- No Results Found State -->
-        <div class="search-empty-state">
-            <div class="search-empty-icon">
+        <div class="search-empty-state text-center py-4">
+            <div class="search-empty-icon mx-auto">
                 <i class="bi bi-slash-circle"></i>
             </div>
             <h5 class="fw-bold text-themed mb-2">No matching results found</h5>
             <p class="small text-muted mb-0 col-md-9 mx-auto">
                 No matching results were found for your search query or filter criteria.
-                <br>Try adjusting keywords, selecting another author, or clearing filters.
+                <br>Try adjusting keywords, checking spelling, or clearing filters.
             </p>
             <div class="mt-3">
                 <a href="<?= BASE_URL ?>/index.php?action=search" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
@@ -231,26 +207,26 @@ $authorId = $_GET['author_id'] ?? null;
                             ? strtoupper(mb_substr($uParts[0], 0, 1) . mb_substr($uParts[count($uParts)-1], 0, 1))
                             : strtoupper(mb_substr($user['full_name'], 0, 2));
                         ?>
-                        <div class="search-user-card">
-                            <div class="d-flex align-items-center justify-content-between gap-3">
-                                <div class="d-flex align-items-center gap-3 min-w-0">
-                                    <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="text-decoration-none">
+                        <div class="search-user-card mb-2">
+                            <div class="search-user-card-inner d-flex align-items-center justify-content-between gap-3">
+                                <div class="search-user-info d-flex align-items-center gap-3 min-w-0">
+                                    <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="text-decoration-none flex-shrink-0">
                                         <?php if (!empty($user['profile_image'])): ?>
                                             <img 
                                                 src="<?= BASE_URL ?>/public/uploads/avatars/<?= htmlspecialchars(basename($user['profile_image'])) ?>" 
                                                 alt="<?= htmlspecialchars($user['full_name']); ?>" 
                                                 class="post-avatar"
-                                                style="width: 40px; height: 40px; object-fit: cover;"
+                                                style="width: 44px; height: 44px; object-fit: cover;"
                                                 onerror="this.onerror=null; this.outerHTML='<div class=\'post-avatar\' style=\'width: 44px; height: 44px; font-size: 1rem;\'><?= htmlspecialchars($uInitials) ?></div>';"
                                             >
                                         <?php else: ?>
-                                            <div class="post-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                            <div class="post-avatar" style="width: 44px; height: 44px; font-size: 0.95rem;">
                                                 <?= htmlspecialchars($uInitials) ?>
                                             </div>
                                         <?php endif; ?>
                                     </a>
 
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 flex-grow-1">
                                         <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="fw-bold text-themed text-decoration-none d-block text-truncate">
                                             <?= htmlspecialchars($user['full_name']); ?>
                                             <?php if (!empty($user['is_followed_by'])): ?>
@@ -269,21 +245,21 @@ $authorId = $_GET['author_id'] ?? null;
                                     </div>
                                 </div>
 
-                                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <div class="search-user-actions d-flex align-items-center gap-2 flex-shrink-0">
                                     <?php if ($currentUserId && (int)$currentUserId !== (int)$user['id']): ?>
-                                        <form action="<?= BASE_URL ?>/index.php?action=follow_user" method="POST" class="m-0 d-inline">
+                                        <form action="<?= BASE_URL ?>/index.php?action=follow_user" method="POST" class="m-0 d-inline search-action-form">
                                             <?= csrf_field(); ?>
                                             <input type="hidden" name="user_id" value="<?= (int)$user['id']; ?>">
-                                            <button type="submit" class="btn btn-sm <?= !empty($user['is_following']) ? 'btn-outline-secondary' : (!empty($user['is_followed_by']) ? 'btn-primary' : 'btn-navy') ?> rounded-pill px-3 fw-semibold" data-is-followed-by="<?= !empty($user['is_followed_by']) ? '1' : '0' ?>" style="font-size: 0.78rem;">
+                                            <button type="submit" class="btn btn-sm <?= !empty($user['is_following']) ? 'btn-outline-secondary' : (!empty($user['is_followed_by']) ? 'btn-primary' : 'btn-navy') ?> rounded-pill px-3 fw-semibold search-action-btn search-follow-btn" data-is-followed-by="<?= !empty($user['is_followed_by']) ? '1' : '0' ?>" style="font-size: 0.78rem;">
                                                 <i class="bi <?= !empty($user['is_following']) ? 'bi-person-check-fill' : (!empty($user['is_followed_by']) ? 'bi-arrow-repeat' : 'bi-person-plus-fill') ?> me-1"></i>
                                                 <span><?= !empty($user['is_following']) ? 'Following' : (!empty($user['is_followed_by']) ? 'Follow Back' : 'Follow') ?></span>
                                             </button>
                                         </form>
                                     <?php endif; ?>
-                                    <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $user['id']; ?>&type=posts" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Filter posts by this author">
-                                        <i class="bi bi-funnel me-1"></i> Posts
+                                    <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $user['id']; ?>&type=posts" class="btn btn-sm btn-outline-secondary rounded-pill px-3 search-action-btn search-posts-btn" title="Filter posts by this author">
+                                        <i class="bi bi-file-earmark-text me-1"></i> Posts
                                     </a>
-                                    <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    <a href="<?= BASE_URL ?>/index.php?action=profile&user_id=<?= $user['id']; ?>" class="btn btn-outline-primary btn-sm rounded-pill px-3 search-action-btn search-profile-btn">
                                         <i class="bi bi-person me-1"></i> Profile
                                     </a>
                                 </div>
@@ -347,11 +323,8 @@ $authorId = $_GET['author_id'] ?? null;
                                 </div>
                             </div>
 
-                            <!-- Post Menu & Author Filter Link -->
+                            <!-- Post Actions Header -->
                             <div class="post-actions-header">
-                                <a href="<?= BASE_URL ?>/index.php?action=search&author_id=<?= $post['user_id']; ?>&type=posts" class="btn btn-sm search-author-btn rounded-pill px-2 py-1 micro-text" title="View all posts by this author">
-                                    <i class="bi bi-funnel me-1"></i>Author Posts
-                                </a>
 
                                 <div class="dropdown">
                                     <button type="button" class="btn post-menu-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Post actions" title="Post actions">

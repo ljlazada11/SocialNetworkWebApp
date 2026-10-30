@@ -34,7 +34,7 @@
 <script>
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
-        const searchInput = document.querySelector('.header-search input[name="q"]');
+        const searchInput = document.querySelector('.header-search input[name="q"]') || document.querySelector('.search-main-control');
         if (searchInput) {
             e.preventDefault();
             searchInput.focus();

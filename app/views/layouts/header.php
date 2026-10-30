@@ -105,13 +105,15 @@ if ($isLoggedIn) {
                         </a>
                     </div>
 
-                    <!-- Search Bar (Desktop only: on mobile, Search & Explore is in the Menu drawer) -->
+                    <!-- Search Bar (Desktop only, hidden on Search page to avoid duplicate) -->
+                    <?php if ($currentAction !== 'search'): ?>
                     <form action="<?= BASE_URL ?>/index.php" method="GET" class="header-search d-none d-md-block" id="headerSearchForm" role="search">
                         <input type="hidden" name="action" value="search">
                         <i class="bi bi-search search-icon"></i>
-                        <input type="text" name="q" id="headerSearchInput" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search posts, people, or topics..." aria-label="Search" autocomplete="off">
+                        <input type="text" name="q" id="headerSearchInput" value="<?= htmlspecialchars($_GET['q'] ?? ''); ?>" placeholder="Search..." aria-label="Search" autocomplete="off">
                         <span class="search-shortcut">⌘K</span>
                     </form>
+                    <?php endif; ?>
 
                     <!-- Right Header Actions:
                          Screen View (Desktop): Messages -> Notifications -> Dark Mode Toggle -> Profile Dropdown

@@ -90,7 +90,7 @@ $totalCount = (int)($totalCount ?? 0);
                         id="communitySearchInput"
                         class="form-control border-0 py-2-5 ps-1" 
                         style="height: 50px; font-size: 0.95rem; box-shadow: none;"
-                        placeholder="<?= $type === 'users' ? 'Search by name or username...' : 'Search posts by keywords...'; ?>" 
+                        placeholder="<?= $type === 'users' ? 'Search users...' : 'Search posts...'; ?>" 
                         value="<?= htmlspecialchars($query); ?>"
                         autocomplete="off"
                         required
@@ -484,8 +484,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Placeholders mapping
     const placeholders = {
-        users: 'Search by name or username...',
-        posts: 'Search posts by keywords...'
+        users: 'Search users...',
+        posts: 'Search posts...'
     };
 
     function setMode(mode, submitOnChange = false) {

@@ -450,8 +450,10 @@ class PostModel {
         }
 
         if ($trimmedQuery !== '') {
-            $whereConditions[] = "p.content LIKE :search_term";
+            $whereConditions[] = "(p.content LIKE :search_term OR u.username LIKE :search_user OR u.full_name LIKE :search_name)";
             $params[':search_term'] = '%' . $trimmedQuery . '%';
+            $params[':search_user'] = '%' . $trimmedQuery . '%';
+            $params[':search_name'] = '%' . $trimmedQuery . '%';
         }
 
         if (!empty($authorId)) {
@@ -533,14 +535,15 @@ class PostModel {
         if ($trimmed === '') {
             return 0;
         }
+        $searchTerm = '%' . $trimmed . '%';
         if ($mediaOnly) {
-            $sql = "SELECT COUNT(*) FROM posts p WHERE p.content LIKE ? AND (p.image IS NOT NULL AND p.image != '')";
+            $sql = "SELECT COUNT(*) FROM posts p JOIN users u ON p.user_id = u.id WHERE (p.content LIKE ? OR u.username LIKE ? OR u.full_name LIKE ?) AND (p.image IS NOT NULL AND p.image != '')";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['%' . $trimmed . '%']);
+            $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         } else {
-            $sql = "SELECT COUNT(*) FROM posts p WHERE p.content LIKE ?";
+            $sql = "SELECT COUNT(*) FROM posts p JOIN users u ON p.user_id = u.id WHERE (p.content LIKE ? OR u.username LIKE ? OR u.full_name LIKE ?)";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['%' . $trimmed . '%']);
+            $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
         }
         return (int)$stmt->fetchColumn();
     }
@@ -559,8 +562,10 @@ class PostModel {
         $params = [];
 
         if (trim($query) !== '') {
-            $whereConditions[] = "p.content LIKE :search_term";
+            $whereConditions[] = "(p.content LIKE :search_term OR u.username LIKE :search_user OR u.full_name LIKE :search_name)";
             $params[':search_term'] = '%' . trim($query) . '%';
+            $params[':search_user'] = '%' . trim($query) . '%';
+            $params[':search_name'] = '%' . trim($query) . '%';
         }
 
         if (!empty($authorId)) {

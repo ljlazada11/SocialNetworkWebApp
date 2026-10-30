@@ -138,7 +138,7 @@ CREATE TABLE `post_images` (
 -- Sample Seed Data
 -- Users: passwords hashed with PHP password_hash('password123', PASSWORD_BCRYPT)
 INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `bio`, `profile_image`, `role`, `created_at`) VALUES
-(1, 'alice_wonder', '$2y$10$PVswc38Z/JDrR05o5TymYOTATOAseMbDa6l4BhK6jznYj95Z4K1/.', 'Alice Wonderland', 'Web developer and open-source enthusiast.', NULL, 'admin', NOW()),
+(1, 'alice_wonder', '$2y$10$PVswc38Z/JDrR05o5TymYOTATOAseMbDa6l4BhK6jznYj95Z4K1/.', 'Alice Wonderland', 'Web developer and open-source enthusiast.', NULL, 'user', NOW()),
 (2, 'bob_builder', '$2y$10$c3DAdkBGY9YDj.vwnoSmw.RY0RQv7Ju3tONif.zln0gsM3lJ/wCuq', 'Bob Builder', 'Passionate about coding, architecture, and technology.', 'bob.png', 'user', NOW()),
 (3, 'charlie_brown', '$2y$10$OoRSTbniHwss1bKPGjiYyeB2nYKu84352zTded63nh63RK5/Wa3.y', 'Charlie Brown', 'Coffee lover and backend explorer.', NULL, 'user', NOW());
 

@@ -1548,17 +1548,17 @@ img.comment-avatar,
 
     .post-image-container.is-portrait {
         max-width: 100%;
-        max-height: 480px;
+        max-height: 420px;
         aspect-ratio: 4 / 5;
     }
 
     .post-image-container.is-landscape img,
     .post-image-container:not(.is-portrait) img {
-        max-height: 360px !important;
+        max-height: 320px !important;
     }
 
     .post-gallery {
-        max-height: 300px;
+        max-height: 280px;
     }
 }
 
@@ -6199,7 +6199,46 @@ html.dark-theme img.cliq-logo-dark {
     }
 
     /* Post Images fit naturally inside card bounds without horizontal overflow */
-    .post-image-container img,
+    .post-image-container {
+        width: calc(100% + 2.5rem) !important;
+        margin-left: -1.25rem !important;
+        margin-right: -1.25rem !important;
+        max-width: none !important;
+        overflow: hidden !important;
+    }
+
+    .post-image-container img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        object-fit: cover !important;
+    }
+
+    .post-image-container.is-portrait {
+        aspect-ratio: 4 / 5 !important;
+        max-height: 480px !important;
+    }
+
+    .post-image-container.is-portrait img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .post-image-container.is-landscape,
+    .post-image-container:not(.is-portrait) {
+        max-height: 360px !important;
+    }
+
+    .post-image-container.is-landscape img,
+    .post-image-container:not(.is-portrait) img {
+        max-height: 360px !important;
+    }
+
+    .post-gallery {
+        max-height: 300px;
+    }
+
     .post-gallery-item img {
         max-width: 100% !important;
         height: auto;

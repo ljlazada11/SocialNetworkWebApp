@@ -4455,9 +4455,42 @@ html.dark-theme img.cliq-logo-dark {
         bottom: 8px;
     }
 
-    .profile-cover-actions .btn {
-        font-size: 0.72rem;
-        padding: 0.3rem 0.7rem;
+    .profile-cover-actions .btn,
+    .profile-cover-actions .btn-cover-photo-action {
+        font-size: 0.68rem !important;
+        padding: 0.22rem 0.52rem !important;
+        line-height: 1.2 !important;
+        border-radius: 99px !important;
+        white-space: nowrap !important;
+        max-width: calc(50% - 66px) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        gap: 0.2rem !important;
+    }
+
+    .profile-cover-actions .btn i,
+    .profile-cover-actions .btn-cover-photo-action i {
+        font-size: 0.72rem !important;
+        margin-right: 2px !important;
+    }
+
+    .btn-cover-photo-action {
+        font-size: 0.72rem !important;
+        padding: 0.24rem 0.58rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .profile-cover-actions .btn,
+    .profile-cover-actions .btn-cover-photo-action {
+        font-size: 0.62rem !important;
+        padding: 0.18rem 0.42rem !important;
+        max-width: calc(50% - 62px) !important;
+    }
+
+    .btn-cover-photo-action {
+        font-size: 0.68rem !important;
+        padding: 0.2rem 0.48rem !important;
     }
 }
 

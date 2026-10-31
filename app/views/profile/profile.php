@@ -68,10 +68,10 @@ if (!empty($user['full_name'])) {
                 <?php if (!empty($isOwnProfile)): ?>
                     <div class="profile-cover-actions">
                         <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-sm btn-cover-photo-action shadow" title="Edit Cover Photo">
-                            <i class="bi bi-camera-fill me-1"></i> Edit Cover Photo
+                            <i class="bi bi-camera-fill me-1"></i> Edit Cover<span class="d-none d-sm-inline"> Photo</span>
                         </a>
                         <a href="<?= BASE_URL ?>/index.php?action=edit_profile" class="btn btn-sm btn-cover-photo-action shadow" title="Edit Profile">
-                            <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                            <i class="bi bi-pencil-square me-1"></i> Edit<span class="d-none d-sm-inline"> Profile</span>
                         </a>
                     </div>
                 <?php endif; ?>

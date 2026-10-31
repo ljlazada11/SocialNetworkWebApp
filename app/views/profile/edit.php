@@ -163,7 +163,7 @@ if (!empty($user['full_name'])) {
                     <div class="rounded-3 overflow-hidden position-relative mb-3 border" style="height: 140px; <?= $coverUrl ? "background: url('" . $coverUrl . "') center center / cover no-repeat;" : "background: linear-gradient(135deg, #07193d 0%, #1e3a8a 100%);" ?>" id="coverPreviewContainer">
                         <div class="position-absolute bottom-0 end-0 m-2">
                             <label for="cover_photo" class="btn btn-sm btn-cover-photo-action shadow-sm fw-semibold mb-0 cursor-pointer">
-                                <i class="bi bi-camera me-1"></i> Change Cover Photo
+                                <i class="bi bi-camera me-1"></i> Change Cover<span class="d-none d-sm-inline"> Photo</span>
                             </label>
                             <input 
                                 type="file" 

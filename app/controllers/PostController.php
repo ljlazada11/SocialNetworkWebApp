@@ -782,10 +782,8 @@ class PostController {
             exit;
         }
 
-        // Strict Server-Side Ownership Check (allows author or administrator)
-        $currentUser = $this->userModel->findById($userId);
-        $isAdmin = ($currentUser && isset($currentUser['role']) && $currentUser['role'] === 'admin');
-        if ((int)$post['user_id'] !== $userId && !$isAdmin) {
+        // Strict Server-Side Ownership Check
+        if ((int)$post['user_id'] !== $userId) {
             if ($isAjax) {
                 header('Content-Type: application/json');
                 echo json_encode(['success' => false, 'error' => 'Unauthorized: You can only delete your own posts.']);
@@ -800,7 +798,7 @@ class PostController {
         $postImagesToDelete = $post['images'] ?? PostModel::parseImages($post['image'] ?? null);
 
         // Delete post from database FIRST (ensures DB consistency before unlinking disk assets)
-        $deleted = $this->postModel->deletePost($postId, $isAdmin ? null : $userId);
+        $deleted = $this->postModel->deletePost($postId, $userId);
 
         if ($deleted) {
             // ONLY after successful DB deletion, safely unlink exclusive unreferenced image files

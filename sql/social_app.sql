@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `users` (
     `bio` TEXT DEFAULT NULL,
     `profile_image` VARCHAR(255) DEFAULT NULL,
     `cover_photo` VARCHAR(255) DEFAULT NULL,
-    `role` VARCHAR(20) NOT NULL DEFAULT 'user',
     `privacy_followers` ENUM('public', 'private') NOT NULL DEFAULT 'public',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY `username` (`username`)

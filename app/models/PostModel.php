@@ -272,15 +272,16 @@ class PostModel {
     }
 
     /**
-     * Delete a post (transaction-safe; verifies ownership if userId is provided).
+     * Delete a post (transaction-safe; strictly enforces ownership by requiring matching user_id).
      *
      * @param int $postId
-     * @param int|null $userId
+     * @param int $userId
      * @return bool
      */
-    public function deletePost($postId, $userId = null) {
+    public function deletePost($postId, $userId) {
         $postId = (int)$postId;
-        if ($postId <= 0) {
+        $userId = (int)$userId;
+        if ($postId <= 0 || $userId <= 0) {
             return false;
         }
 
@@ -290,15 +291,9 @@ class PostModel {
                 $this->db->beginTransaction();
             }
 
-            if ($userId !== null && (int)$userId > 0) {
-                $sql = "DELETE FROM posts WHERE id = :post_id AND user_id = :user_id";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute([':post_id' => $postId, ':user_id' => (int)$userId]);
-            } else {
-                $sql = "DELETE FROM posts WHERE id = :post_id";
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute([':post_id' => $postId]);
-            }
+            $sql = "DELETE FROM posts WHERE id = :post_id AND user_id = :user_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':post_id' => $postId, ':user_id' => $userId]);
 
             $deleted = $stmt->rowCount() > 0;
 

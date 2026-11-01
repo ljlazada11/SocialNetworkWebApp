@@ -635,17 +635,6 @@ body {
     color: #e4e6eb;
 }
 
-.fb-icon-admin {
-    background-color: #fef3c7;
-    color: #d97706;
-}
-
-[data-bs-theme="dark"] .fb-icon-admin,
-.dark-theme .fb-icon-admin {
-    background-color: rgba(245, 158, 11, 0.18);
-    color: #fbbf24;
-}
-
 .fb-icon-signout {
     background-color: #fee2e2;
     color: #dc2626;
@@ -2953,53 +2942,10 @@ form[action*="delete_comment"] button.dropdown-item:hover {
 
 
 /* ========================================================
-   ADMIN DASHBOARD - COMPREHENSIVE LIGHT & DARK MODE FIXES
+   TABLE & COMPONENT STYLING - LIGHT & DARK MODE FIXES
    Ensures all text, tables, tabs, badges, modals, forms,
    and pagination remain readable in both themes.
 ======================================================== */
-
-/* --- Admin Tab Buttons (Light Mode) --- */
-.admin-tab-btn {
-    transition: all 0.2s ease !important;
-}
-
-.admin-tab-btn.active {
-    color: #192f5d !important;
-    background-color: #ffffff !important;
-    font-weight: 700 !important;
-    border-color: var(--card-border, #e2e8f0) !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
-}
-
-.admin-tab-btn:not(.active) {
-    color: #475569 !important;
-    background-color: #f1f5f9 !important;
-    border-color: transparent !important;
-}
-
-.admin-tab-btn:not(.active):hover {
-    color: #1e293b !important;
-    background-color: #e2e8f0 !important;
-}
-
-/* --- Admin Tab Buttons (Dark Mode) --- */
-[data-bs-theme="dark"] .admin-tab-btn.active {
-    background-color: var(--card-bg, #0d1e44) !important;
-    color: #ffffff !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
-}
-
-[data-bs-theme="dark"] .admin-tab-btn:not(.active) {
-    background-color: var(--input-bg, #0b1a3a) !important;
-    color: #93c5fd !important;
-    border-color: var(--card-border, #1b356d) !important;
-}
-
-[data-bs-theme="dark"] .admin-tab-btn:not(.active):hover {
-    background-color: #16326e !important;
-    color: #ffffff !important;
-}
 
 /* --- Table Styling (Dark Mode) --- */
 [data-bs-theme="dark"] .table {
@@ -3168,7 +3114,7 @@ form[action*="delete_comment"] button.dropdown-item:hover {
     color: #f0f6ff !important;
 }
 
-/* --- Admin hero header: keep gradient readable in both modes --- */
+/* --- Hero header: keep gradient readable in both modes --- */
 [data-bs-theme="dark"] .card-modern[style*="linear-gradient"] {
     border-color: #1b356d !important;
 }

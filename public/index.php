@@ -43,12 +43,6 @@ switch ($action) {
         $authController->login();
         break;
 
-    case 'forgot_password':
-    case 'reset_password':
-        require_once __DIR__ . '/../app/controllers/AuthController.php';
-        $authController = new AuthController();
-        $authController->forgotPassword();
-        break;
 
     case 'logout':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
@@ -88,6 +82,7 @@ switch ($action) {
         $settingsController = new SettingsController();
         $settingsController->changePassword();
         break;
+
 
     case 'get_follow_list':
         require_once __DIR__ . '/../app/controllers/ProfileController.php';

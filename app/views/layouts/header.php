@@ -263,13 +263,13 @@ if ($isLoggedIn) {
                             <i class="theme-toggle-icon bi bi-moon-fill"></i>
                         </button>
 
-                        <?php if (!$isLandingPage && $currentAction !== 'login' && $currentAction !== 'register' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'login' && $currentAction !== 'register' ): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=login" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
                                 <i class="bi bi-box-arrow-in-right me-1"></i> Log In
                             </a>
                         <?php endif; ?>
 
-                        <?php if (!$isLandingPage && $currentAction !== 'register' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
+                        <?php if (!$isLandingPage && $currentAction !== 'register' && $currentAction !== 'login' ): ?>
                             <a href="<?= BASE_URL ?>/index.php?action=register" class="btn btn-sm btn-navy rounded-pill px-3 fw-semibold d-none d-sm-inline-flex align-items-center">
                                 <i class="bi bi-person-plus-fill me-1"></i> Register
                             </a>
@@ -283,7 +283,7 @@ if ($isLoggedIn) {
         <main class="<?= $isLoggedIn ? 'p-3 p-md-4 flex-grow-1' : 'auth-main flex-grow-1 d-flex align-items-center justify-content-center p-3 p-md-4' ?>">
 
             <!-- Global Flash Messages -->
-            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
+            <?php if (!empty($_SESSION['error_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' ): ?>
                 <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['error_message']); ?>
@@ -292,7 +292,7 @@ if ($isLoggedIn) {
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' && $currentAction !== 'forgot_password' && $currentAction !== 'reset_password'): ?>
+            <?php if (!empty($_SESSION['success_message']) && $currentAction !== 'home' && $currentAction !== 'insights' && $currentAction !== 'search' && $currentAction !== 'welcome' && $currentAction !== 'login' ): ?>
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 mx-auto" style="max-width: 900px;" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     <?= htmlspecialchars($_SESSION['success_message']); ?>

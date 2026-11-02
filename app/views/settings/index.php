@@ -125,13 +125,13 @@ require_once __DIR__ . '/../layouts/header.php';
                     </form>
                 </div>
 
-                <!-- ========================================================
+                                                <!-- ========================================================
                      FEATURE 2: UPDATE PASSWORD
                      ======================================================== -->
                 <div class="card-modern p-4 shadow-sm border rounded-4">
                     <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom">
-                        <div class="fb-icon-circle bg-warning-subtle text-warning">
-                            <i class="bi bi-shield-lock-fill fs-5"></i>
+                        <div class="fb-icon-circle bg-success-subtle text-success">
+                            <i class="bi bi-key-fill fs-5"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-0 text-dark">Update Password</h5>
